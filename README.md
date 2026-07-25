@@ -1,58 +1,346 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/logo.svg" width="150" alt="MMS Group logo">
 </p>
 
-## About Laravel
+<h1 align="center">MMS Group Property Management Platform</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  One platform for property projects, bookings, installments, payments, plot inventory, allotments, commissions, and customer records.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## About the project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The MMS Group Property Management Platform is a Laravel application built to manage the complete property lifecycle—from project setup and plot inventory to customer booking, payment verification, installment tracking, and final plot allotment.
 
-## Learning Laravel
+The application includes dedicated experiences for management, staff, agents, and customers. Public project information, images, descriptions, and blueprints are loaded from the database and displayed on the responsive welcome page.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Main features
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Project management with descriptions, locations, images, and blueprints
+- Block and plot inventory management
+- Plot plan import and inventory review
+- Package and payment-plan configuration
+- Customer booking and approval workflow
+- Installment schedules and overdue-balance tracking
+- Payment proof submission and verification
+- Printable payment receipts
+- Project-based plot allotment
+- Agent referrals and three-level commission tracking
+- Commission withdrawal and payout management
+- Customer, agent, staff, admin, and Super Admin roles
+- Permission-based navigation and route protection
+- Customer portal with bookings, payments, allotments, notifications, and referrals
+- Agent portal with sales, commissions, and payout history
+- Management dashboard with project-level business reporting
+- Email campaigns, WhatsApp notifications, and payment gateway settings
+- Activity/audit log
+- Light and dark themes
+- Passkey support
+- Responsive public and authenticated interfaces
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Technology stack
 
-## Agentic Development
+- PHP 8.3+
+- Laravel 13
+- Laravel Breeze
+- Blade and Alpine.js
+- Tailwind CSS
+- Vite
+- MySQL/MariaDB or SQLite
+- Spatie Laravel Permission
+- Spatie Laravel Activitylog
+- PHPUnit
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Requirements
 
-```bash
-composer require laravel/boost --dev
+Install the following before setting up the project:
 
-php artisan boost:install
+- PHP 8.3 or newer
+- Composer
+- Node.js 20 or newer
+- npm
+- MySQL/MariaDB for production, or SQLite for local development
+
+Required PHP extensions typically include:
+
+```text
+bcmath, ctype, curl, dom, fileinfo, filter, mbstring, openssl,
+pdo, pdo_mysql or pdo_sqlite, session, tokenizer, xml
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Local installation
 
-## Contributing
+Clone the repository and enter the project directory:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone <repository-url> mmsg
+cd mmsg
+```
 
-## Code of Conduct
+Install the application:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+npm install
+```
 
-## Security Vulnerabilities
+### Database configuration
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+For SQLite:
+
+```bash
+touch database/database.sqlite
+```
+
+Then keep the following value in `.env`:
+
+```env
+DB_CONNECTION=sqlite
+```
+
+For MySQL or MariaDB, update `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mmsg
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+Run migrations and seed the required roles, permissions, payment methods, and Super Admin:
+
+```bash
+php artisan migrate --seed
+php artisan storage:link
+```
+
+Build frontend assets:
+
+```bash
+npm run build
+```
+
+Start the local application:
+
+```bash
+composer run dev
+```
+
+Alternatively, run the services separately:
+
+```bash
+php artisan serve
+php artisan queue:work
+npm run dev
+```
+
+## Super Admin account
+
+The database seeder creates the initial Super Admin from these `.env` values:
+
+```env
+SUPER_ADMIN_NAME="Super Admin"
+SUPER_ADMIN_EMAIL=sadmin@mmsgroup.pk
+SUPER_ADMIN_PASSWORD=P@ssWord
+```
+
+Default login:
+
+```text
+Email:    sadmin@mmsgroup.pk
+Password: P@ssWord
+```
+
+> Change the default password immediately after the first login. For production, set a strong password in `.env` before running the seeder.
+
+To run only the Super Admin seeder:
+
+```bash
+php artisan db:seed --class=SuperAdminSeeder
+```
+
+## Development commands
+
+Run all tests:
+
+```bash
+composer test
+```
+
+Run a specific test:
+
+```bash
+php artisan test tests/Feature/DashboardTest.php
+```
+
+Format PHP files:
+
+```bash
+./vendor/bin/pint
+```
+
+Rebuild production assets:
+
+```bash
+npm run build
+```
+
+Clear application caches:
+
+```bash
+php artisan optimize:clear
+```
+
+## Uploaded files
+
+Project images, project blueprints, payment proofs, and other uploaded assets use Laravel storage. Ensure the public storage link exists:
+
+```bash
+php artisan storage:link
+```
+
+The web server must be able to write to:
+
+```text
+storage/
+bootstrap/cache/
+```
+
+## Queue and scheduler
+
+The default environment uses the database queue:
+
+```env
+QUEUE_CONNECTION=database
+```
+
+Run the queue worker:
+
+```bash
+php artisan queue:work --tries=3
+```
+
+For production, configure a process manager so the queue worker remains active.
+
+Add Laravel's scheduler to cron:
+
+```cron
+* * * * * cd /path/to/mmsg && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Email configuration
+
+Local development defaults to logging emails:
+
+```env
+MAIL_MAILER=log
+```
+
+For production, configure a real SMTP provider:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_SCHEME=tls
+MAIL_FROM_ADDRESS=no-reply@mmsgroup.pk
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Do not leave local mail services such as `127.0.0.1:1025` configured on production unless that service is actually running.
+
+## WhatsApp notifications
+
+WhatsApp Cloud API support can be configured with:
+
+```env
+WHATSAPP_NOTIFICATIONS_ENABLED=true
+WHATSAPP_API_URL=https://graph.facebook.com/v23.0
+WHATSAPP_PHONE_NUMBER_ID=
+WHATSAPP_ACCESS_TOKEN=
+WHATSAPP_DEFAULT_COUNTRY_CODE=92
+WHATSAPP_NOTIFICATION_TEMPLATE=account_activity_update
+WHATSAPP_NOTIFICATION_TEMPLATE_LANGUAGE=en
+```
+
+## Plot plan processing
+
+AI-assisted plot plan reading can be enabled with:
+
+```env
+GEMINI_API_KEY=
+GEMINI_VISION_MODEL=gemini-3.1-flash-lite
+```
+
+Never commit API keys or production credentials to the repository.
+
+## Production deployment
+
+Recommended production setup:
+
+1. Point the domain document root to the project's `public` directory.
+2. Create the production `.env` file.
+3. Set `APP_ENV=production`, `APP_DEBUG=false`, and the correct `APP_URL`.
+4. Configure the production database, mail provider, queue, and notification services.
+5. Install optimized Composer dependencies.
+6. Run database migrations.
+7. Build frontend assets.
+8. Create the storage link.
+9. Cache configuration, routes, events, and views.
+10. Start the queue worker and scheduler.
+
+Typical deployment commands:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+php artisan migrate --force
+php artisan storage:link
+php artisan optimize
+```
+
+The following directories must be writable by the web-server user:
+
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+If the hosting account serves files from `public_html`, keep the Laravel application outside `public_html` where possible and point the domain's document root to the repository's `public` directory.
+
+## Security checklist
+
+- Never commit `.env`
+- Disable debug mode in production
+- Replace the default Super Admin password
+- Use HTTPS
+- Restrict database credentials to the production database
+- Configure secure mail and notification credentials
+- Run queue workers under a process manager
+- Back up the database and uploaded files
+- Review role permissions before creating staff accounts
+- Keep PHP, Composer packages, and npm packages updated
+
+## Project structure
+
+```text
+app/                 Application models, controllers, services, and policies
+database/migrations  Database schema
+database/seeders     Roles, permissions, payment methods, and admin seeders
+public/              Public entry point, built assets, and branding
+resources/views/     Blade templates
+resources/js/        Frontend JavaScript
+resources/css/       Tailwind application styles
+routes/web.php       Web routes
+tests/               Feature and unit tests
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary software developed for MMS Group. Unauthorized copying, redistribution, or commercial use is prohibited unless written permission is granted by MMS Group.
