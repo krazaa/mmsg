@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+
+class Customer extends User
+{
+    protected $table = 'users';
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('customer_role', fn (Builder $query) => $query->where('role', 'customer'));
+        static::creating(function (Customer $customer) {
+            $customer->role = 'customer';
+            $customer->email ??= 'customer-'.Str::lower(Str::random(12)).'@example.test';
+            $customer->password ??= Str::random(40);
+            if (! $customer->referral_agent_id) {
+                $customer->referral_agent_id = User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
+            }
+            if (! $customer->referral_code) {
+                do {
+                    $code = 'REF-'.Str::upper(Str::random(8));
+                } while (User::where('referral_code', $code)->exists());
+                $customer->referral_code = $code;
+            }
+        });
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'customer_id');
+    }
+
+    public function latestBooking()
+    {
+        return $this->hasOne(Booking::class, 'customer_id')->latestOfMany('booking_date');
+    }
+
+    public function referralAgent()
+    {
+        return $this->belongsTo(User::class, 'referral_agent_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'customer_id');
+    }
+}

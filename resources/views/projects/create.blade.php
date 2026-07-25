@@ -1,0 +1,10 @@
+<x-app-layout>
+    <x-slot name="header"><h2 class="text-xl font-semibold text-gray-800">Add project</h2></x-slot>
+    <div class="py-8"><div class="mx-auto max-w-3xl px-4">
+        @if($errors->any())<div class="mb-5 rounded-lg bg-red-100 p-4 text-red-800"><ul class="list-disc ms-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+        <form method="POST" action="{{ route('projects.store') }}" enctype="multipart/form-data" class="rounded-xl bg-white p-6 shadow">
+            <p class="mb-6 text-sm text-gray-500">Five standard packages and the 36-month payment plan will be added automatically.</p>
+            @include('projects._form')
+        </form>
+    </div></div>
+</x-app-layout>

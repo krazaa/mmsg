@@ -1,0 +1,16 @@
+<x-app-layout>
+    <x-slot name="header"><div class="flex flex-wrap items-center justify-between gap-4"><div><h2 class="text-xl font-black text-gray-900">Blocks</h2><p class="text-sm text-gray-500">Manage project blocks and their inventory capacity.</p></div><a href="{{ route('blocks.create') }}" class="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-black text-white shadow hover:bg-indigo-700">+ Add block</a></div></x-slot>
+    <div class="py-8"><div class="mx-auto max-w-7xl space-y-5 px-4">
+        @if(session('success'))<div class="rounded-xl border border-green-200 bg-green-50 p-4 text-green-800">{{ session('success') }}</div>@endif
+        @if($errors->any())<div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">{{ $errors->first() }}</div>@endif
+        <form method="GET" class="grid gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200 sm:grid-cols-[1fr_260px_auto]">
+            <input name="search" value="{{ request('search') }}" placeholder="Search blocks..." class="rounded-xl border-gray-300">
+            <select name="project" class="rounded-xl border-gray-300"><option value="">All projects</option>@foreach($projects as $project)<option value="{{ $project->id }}" @selected(request('project')==$project->id)>{{ $project->name }}</option>@endforeach</select>
+            <button class="rounded-xl bg-slate-900 px-5 py-2.5 font-bold text-white">Filter</button>
+        </form>
+        <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200"><div class="overflow-x-auto"><table class="w-full min-w-[800px] text-sm"><thead class="bg-gray-50 text-left text-xs uppercase text-gray-500"><tr><th class="px-5 py-3">Block</th><th class="px-5 py-3">Project</th><th class="px-5 py-3">Total area</th><th class="px-5 py-3">Saleable area</th><th class="px-5 py-3">Plots</th><th class="px-5 py-3">Status</th><th class="px-5 py-3 text-right">Actions</th></tr></thead><tbody class="divide-y divide-gray-100">
+            @forelse($blocks as $block)<tr><td class="px-5 py-4 font-black">{{ $block->name }}</td><td class="px-5 py-4">{{ $block->project?->name ?? 'Deleted project' }}</td><td class="px-5 py-4">{{ number_format($block->total_area_marla,2) }} marla</td><td class="px-5 py-4">{{ number_format($block->saleable_area_marla,2) }} marla</td><td class="px-5 py-4">{{ $block->plots_count }}</td><td class="px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-bold {{ $block->status ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600' }}">{{ $block->status ? 'Active' : 'Inactive' }}</span></td><td class="px-5 py-4"><div class="flex justify-end gap-2"><a href="{{ route('blocks.edit',$block) }}" class="rounded-lg border px-3 py-2 font-bold text-indigo-700">Edit</a><form method="POST" action="{{ route('blocks.destroy',$block) }}" onsubmit="return confirm('Delete this block?')">@csrf @method('DELETE')<button class="rounded-lg border border-red-200 px-3 py-2 font-bold text-red-700">Delete</button></form></div></td></tr>
+            @empty<tr><td colspan="7" class="px-5 py-12 text-center text-gray-400">No blocks found.</td></tr>@endforelse
+            </tbody></table></div>@if($blocks->hasPages())<div class="border-t p-4">{{ $blocks->links() }}</div>@endif</div>
+    </div></div>
+</x-app-layout>
