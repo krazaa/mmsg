@@ -145,7 +145,7 @@ class CustomerController extends Controller
     private function referrerId(?string $code): int
     {
         if (! $code) {
-            return (int) User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
+            return (int) User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
         }
 
         $referrer = Customer::where('referral_code', $code)->firstOrFail();

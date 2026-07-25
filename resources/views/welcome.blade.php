@@ -5,28 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="MMS Group property booking, installment, inventory and customer portal.">
     <title>MMS Group · Property made simple</title>
+    <link rel="icon" href="{{ asset('logo.svg') }}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-grid { background-image: linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 34px 34px; }
         .glass-ring { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 30px 80px rgba(2,6,23,.35); }
+        [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: var(--reveal-delay, 0ms); }
+        [data-reveal][data-effect="left"] { transform: translateX(-28px); }
+        [data-reveal][data-effect="right"] { transform: translateX(28px); }
+        [data-reveal][data-effect="scale"] { transform: translateY(14px) scale(.96); }
+        [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
         @media (prefers-reduced-motion:no-preference) {
             .float-card { animation: float 5s ease-in-out infinite; }
             .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+            .hero-copy { animation: hero-in .8s cubic-bezier(.2,.7,.2,1) both; }
+            .hero-visual { animation: hero-visual-in 1s .12s cubic-bezier(.2,.7,.2,1) both; }
+            .ambient-glow { animation: glow-drift 9s ease-in-out infinite alternate; }
             @keyframes float { 50% { transform: translateY(-9px); } }
             @keyframes pulse-dot { 50% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } }
+            @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes hero-visual-in { from { opacity: 0; transform: translateX(28px) scale(.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+            @keyframes glow-drift { from { transform: translate3d(-2%,0,0) scale(.96); } to { transform: translate3d(2%,3%,0) scale(1.04); } }
+        }
+        @media (prefers-reduced-motion:reduce) {
+            [data-reveal] { opacity: 1; transform: none; transition: none; }
         }
     </style>
 </head>
 <body class="bg-slate-950 font-sans text-slate-100 antialiased">
     <div class="relative overflow-hidden">
-        <div class="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(124,58,237,.32),transparent_36%),radial-gradient(circle_at_82%_20%,rgba(14,165,233,.2),transparent_30%)]"></div>
+        <div class="ambient-glow pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(124,58,237,.32),transparent_36%),radial-gradient(circle_at_82%_20%,rgba(14,165,233,.2),transparent_30%)]"></div>
 
-        <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+        <header class="hero-copy sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
             <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Main navigation">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-700 font-black text-white shadow-lg shadow-violet-950 ring-1 ring-white/20">M</span>
+                    <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
                     <span><b class="block text-base font-black tracking-tight">MMS Group</b><span class="block text-[10px] font-bold uppercase tracking-[.2em] text-indigo-300">Property platform</span></span>
                 </a>
                 <div class="hidden items-center gap-7 text-sm font-semibold text-slate-300 md:flex"><a href="#projects" class="hover:text-white">Projects</a><a href="#platform" class="hover:text-white">Platform</a><a href="#journey" class="hover:text-white">How it works</a><a href="#access" class="hover:text-white">Portal access</a></div>
@@ -44,7 +59,7 @@
         <main>
             <section class="hero-grid relative">
                 <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-12">
-                    <div class="relative z-10">
+                    <div class="hero-copy relative z-10">
                         <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-bold text-emerald-300 shadow-lg shadow-emerald-950/20"><span class="pulse-dot h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_0_rgba(52,211,153,.5)]"></span> One secure property account</div>
                         <h1 class="mt-7 text-5xl font-black leading-[1.02] tracking-[-.045em] text-white sm:text-6xl lg:text-7xl">Your property journey, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">clearly managed.</span></h1>
                         <p class="mt-7 max-w-xl text-lg leading-8 text-slate-300">Book a plot, follow every installment, submit payment proof and keep your verified receipts together—from first payment to final allotment.</p>
@@ -66,7 +81,7 @@
                             ? (str_starts_with($heroSecondProject->image_path, 'projects/') ? asset('storage/'.$heroSecondProject->image_path) : asset($heroSecondProject->image_path))
                             : asset('images/projects/mms-guardian.jpg');
                     @endphp
-                    <div class="relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
+                    <div class="hero-visual relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
                         <div class="absolute -inset-12 rounded-full bg-gradient-to-br from-violet-500/20 to-sky-400/10 blur-3xl"></div>
                         <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border border-white/15 bg-slate-900 p-2.5">
                             <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
@@ -98,21 +113,21 @@
             <section class="relative border-y border-white/10 bg-white/[.035]">
                 <div class="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-white/10 px-5 sm:grid-cols-4 sm:divide-y-0 lg:px-8">
                     @foreach([['✓','Verified receipts'],['⌂','Organized inventory'],['↗','Live payment status'],['◇','Secure account access']] as $item)
-                        <div class="flex items-center justify-center gap-2 px-3 py-5 text-center text-xs font-bold text-slate-300 sm:text-sm"><span class="text-indigo-300">{{ $item[0] }}</span>{{ $item[1] }}</div>
+                        <div class="flex items-center justify-center gap-2 px-3 py-5 text-center text-xs font-bold text-slate-300 sm:text-sm" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 80 }}ms"><span class="text-indigo-300">{{ $item[0] }}</span>{{ $item[1] }}</div>
                     @endforeach
                 </div>
             </section>
 
-            <section id="projects" class="relative border-y border-white/10 bg-slate-950 py-12">
+            <section id="projects" class="relative border-y border-white/10 bg-slate-950 py-10 sm:py-12 lg:py-16">
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,.18),transparent_42%)]"></div>
-                <div class="relative mx-auto max-w-7xl px-5 lg:px-8">
-                    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-                        <div class="max-w-2xl">
+                <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" data-reveal data-effect="left">
+                        <div class="min-w-0 lg:flex-1">
                             <span class="text-xs font-black uppercase tracking-[.2em] text-indigo-300">Our developments</span>
-                            <h2 class="mt-3 whitespace-nowrap text-4xl font-black tracking-tight text-white sm:text-5xl">Find your place in an MMS Group project.</h2>
-                            <p class="mt-4 text-lg leading-8 text-slate-400">Explore our growing portfolio of thoughtfully planned communities.</p>
+                            <h2 class="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl xl:whitespace-nowrap">Find your place in an MMS Group project.</h2>
+                            <p class="mt-4 max-w-3xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">Explore our growing portfolio of thoughtfully planned communities.</p>
                         </div>
-                        <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="inline-flex w-fit rounded-xl bg-white px-5 py-3 font-black text-slate-950 hover:bg-indigo-50">{{ auth()->check() ? 'View my properties' : 'Start your journey' }} →</a>
+                        <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-black text-slate-950 hover:bg-indigo-50 sm:w-fit lg:shrink-0">{{ auth()->check() ? 'View my properties' : 'Start your journey' }} →</a>
                     </div>
 
                     <div class="mt-12 grid gap-6 md:grid-cols-2">
@@ -126,7 +141,7 @@
                                     ? (str_starts_with($project->blueprint_path, 'projects/') ? asset('storage/'.$project->blueprint_path) : asset($project->blueprint_path))
                                     : null;
                             @endphp
-                            <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.06] shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300/30">
+                            <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.06] shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300/30" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">
                                     @if($projectImage)
                                         <img src="{{ $projectImage }}" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy">
@@ -174,9 +189,16 @@
                 </div>
             </section>
 
-            <section id="platform" class="bg-slate-50 py-12 text-slate-900">
-                <div class="mx-auto max-w-7xl px-5 lg:px-8">
-                    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div class="max-w-2xl"><span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Everything connected</span><h2 class="mt-3 whitespace-nowrap text-4xl font-black tracking-tight sm:text-5xl">One platform. Every property milestone.</h2><p class="mt-4 text-lg text-slate-600">Clear records for customers and complete operational control for the MMS Group team.</p></div><span class="w-fit rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-xs font-black uppercase tracking-wider text-indigo-700">Built for clarity</span></div>
+            <section id="platform" class="bg-slate-50 py-10 text-slate-900 sm:py-12 lg:py-16">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" data-reveal data-effect="right">
+                        <div class="min-w-0 lg:flex-1">
+                            <span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Everything connected</span>
+                            <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl xl:whitespace-nowrap">One platform. Every property milestone.</h2>
+                            <p class="mt-4 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">Clear records for customers and complete operational control for the MMS Group team.</p>
+                        </div>
+                        <span class="w-fit shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-xs font-black uppercase tracking-wider text-indigo-700">Built for clarity</span>
+                    </div>
                     <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach([
                             ['01','Plot booking','Choose a package and submit your booking through a guided property account.','bg-violet-50 text-violet-700'],
@@ -186,7 +208,7 @@
                             ['05','Referral network','Use a unique referral code and follow a transparent three-level network.','bg-fuchsia-50 text-fuchsia-700'],
                             ['06','Secure management','Bookings, payments, projects and commissions stay organized in one system.','bg-slate-100 text-slate-700']
                         ] as $feature)
-                            <article class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl"><span class="absolute -right-5 -top-8 text-8xl font-black text-slate-50 transition group-hover:text-indigo-50">{{ $feature[0] }}</span><span class="relative grid h-11 w-11 place-items-center rounded-xl text-sm font-black {{ $feature[3] }}">{{ $feature[0] }}</span><h3 class="relative mt-5 text-lg font-black">{{ $feature[1] }}</h3><p class="relative mt-2 leading-7 text-slate-600">{{ $feature[2] }}</p></article>
+                            <article class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl" data-reveal data-effect="scale" style="--reveal-delay: {{ ($loop->index % 3) * 90 }}ms"><span class="absolute -right-5 -top-8 text-8xl font-black text-slate-50 transition group-hover:text-indigo-50">{{ $feature[0] }}</span><span class="relative grid h-11 w-11 place-items-center rounded-xl text-sm font-black {{ $feature[3] }}">{{ $feature[0] }}</span><h3 class="relative mt-5 text-lg font-black">{{ $feature[1] }}</h3><p class="relative mt-2 leading-7 text-slate-600">{{ $feature[2] }}</p></article>
                         @endforeach
                     </div>
                 </div>
@@ -195,10 +217,10 @@
             <section id="journey" class="relative overflow-hidden bg-white py-12 text-slate-900">
                 <div class="absolute right-0 top-0 h-96 w-96 rounded-full bg-indigo-100/60 blur-3xl"></div>
                 <div class="relative mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[.8fr_1.2fr] lg:px-8">
-                    <div><span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Simple by design</span><h2 class="mt-3 text-4xl font-black tracking-tight">From booking to ownership.</h2><p class="mt-5 leading-7 text-slate-600">Your dashboard keeps the next action obvious while maintaining a complete record of everything already completed.</p><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="mt-7 inline-flex rounded-xl bg-slate-950 px-5 py-3 font-black text-white">Open your account →</a></div>
+                    <div data-reveal data-effect="left"><span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Simple by design</span><h2 class="mt-3 text-4xl font-black tracking-tight">From booking to ownership.</h2><p class="mt-5 leading-7 text-slate-600">Your dashboard keeps the next action obvious while maintaining a complete record of everything already completed.</p><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="mt-7 inline-flex rounded-xl bg-slate-950 px-5 py-3 font-black text-white">Open your account →</a></div>
                     <ol class="grid gap-4 sm:grid-cols-2">
                         @foreach([['Book your plot','Select an available package and submit your details.'],['Verify first payment','Upload payment proof for office review.'],['Follow installments','Pay against each scheduled month and track progress.'],['Receive allotment','Your assigned block and plot remain connected to the booking.']] as $index=>$step)
-                            <li class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200 hover:bg-white hover:shadow-lg"><div class="flex items-center justify-between"><span class="text-xs font-black text-indigo-600">STEP 0{{ $index+1 }}</span><span class="grid h-7 w-7 place-items-center rounded-full bg-indigo-100 text-xs text-indigo-700 transition group-hover:bg-indigo-600 group-hover:text-white">→</span></div><h3 class="mt-3 font-black">{{ $step[0] }}</h3><p class="mt-2 text-sm leading-6 text-slate-600">{{ $step[1] }}</p></li>
+                            <li class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200 hover:bg-white hover:shadow-lg" data-reveal data-effect="right" style="--reveal-delay: {{ ($index % 2) * 100 }}ms"><div class="flex items-center justify-between"><span class="text-xs font-black text-indigo-600">STEP 0{{ $index+1 }}</span><span class="grid h-7 w-7 place-items-center rounded-full bg-indigo-100 text-xs text-indigo-700 transition group-hover:bg-indigo-600 group-hover:text-white">→</span></div><h3 class="mt-3 font-black">{{ $step[0] }}</h3><p class="mt-2 text-sm leading-6 text-slate-600">{{ $step[1] }}</p></li>
                         @endforeach
                     </ol>
                 </div>
@@ -206,13 +228,32 @@
 
             <section id="access" class="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-violet-700 to-indigo-900 py-20">
                 <div class="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border-[48px] border-white/5"></div><div class="pointer-events-none absolute -bottom-28 -right-16 h-80 w-80 rounded-full border-[56px] border-white/5"></div>
-                <div class="mx-auto flex max-w-5xl flex-col items-center px-5 text-center"><span class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100">CUSTOMER · AGENT · MANAGEMENT</span><h2 class="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl">Your account is ready when you are.</h2><p class="mt-4 max-w-2xl text-lg text-indigo-100">Sign in to view the information and actions relevant to your role in the MMS Group property network.</p><div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-white px-7 py-3.5 font-black text-indigo-800 shadow-xl hover:bg-indigo-50">{{ auth()->check() ? 'Continue to dashboard' : 'Sign in securely' }} →</a>@guest<a href="{{ route('register') }}" class="rounded-xl border border-white/30 px-7 py-3.5 font-black text-white hover:bg-white/10">Register as customer</a>@endguest</div></div>
+                <div class="mx-auto flex max-w-5xl flex-col items-center px-5 text-center" data-reveal data-effect="scale"><span class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100">CUSTOMER · AGENT · MANAGEMENT</span><h2 class="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl">Your account is ready when you are.</h2><p class="mt-4 max-w-2xl text-lg text-indigo-100">Sign in to view the information and actions relevant to your role in the MMS Group property network.</p><div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-white px-7 py-3.5 font-black text-indigo-800 shadow-xl hover:bg-indigo-50">{{ auth()->check() ? 'Continue to dashboard' : 'Sign in securely' }} →</a>@guest<a href="{{ route('register') }}" class="rounded-xl border border-white/30 px-7 py-3.5 font-black text-white hover:bg-white/10">Register as customer</a>@endguest</div></div>
             </section>
         </main>
 
         <footer class="border-t border-white/10 bg-slate-950">
-            <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between lg:px-8"><div class="flex items-center gap-2"><span class="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-xs font-black text-white">MMS</span><b class="text-slate-200">MMS Group</b></div><p>Property records, payments and allotments in one secure platform.</p><p>© {{ date('Y') }} MMS Group</p></div>
+            <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between lg:px-8" data-reveal><div class="flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200">MMS Group</b></div><p>Property records, payments and allotments in one secure platform.</p><p>© {{ date('Y') }} MMS Group</p></div>
         </footer>
     </div>
+    <script>
+        (() => {
+            const items = document.querySelectorAll('[data-reveal]');
+            if (!items.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                items.forEach(item => item.classList.add('is-visible'));
+                return;
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px' });
+
+            items.forEach(item => observer.observe(item));
+        })();
+    </script>
 </body>
 </html>

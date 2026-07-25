@@ -22,10 +22,13 @@
 
     <main class="receipt mx-auto max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
         <header class="flex flex-col gap-5 bg-gradient-to-r from-indigo-950 to-indigo-700 p-7 text-white sm:flex-row sm:items-center sm:justify-between sm:p-9">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.22em] text-indigo-200">MMS Group</p>
-                <h1 class="mt-2 text-3xl font-black">Payment receipt</h1>
-                <p class="mt-1 text-sm text-indigo-100">Customer property account</p>
+            <div class="flex items-center gap-4">
+                <span class="grid h-11 w-18 shrink-0 flex-none place-items-center overflow-hidden rounded-xl p-1.5"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.22em] text-indigo-200">MMS Group</p>
+                    <h1 class="mt-2 text-3xl font-black">Payment receipt</h1>
+                    <p class="mt-1 text-sm text-indigo-100">Customer property account</p>
+                </div>
             </div>
             <div class="sm:text-right">
                 <p class="text-xs font-bold uppercase tracking-wider text-indigo-200">Receipt number</p>

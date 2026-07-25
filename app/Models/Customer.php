@@ -14,14 +14,14 @@ class Customer extends User
         static::addGlobalScope('customer_role', fn (Builder $query) => $query->where('role', 'customer'));
         static::creating(function (Customer $customer) {
             $customer->role = 'customer';
-            $customer->email ??= 'customer-'.Str::lower(Str::random(12)).'@example.test';
+            $customer->email ??= 'customer-'.Str::lower(Str::random(12)).'@mmsgroup.pk';
             $customer->password ??= Str::random(40);
             if (! $customer->referral_agent_id) {
-                $customer->referral_agent_id = User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
+                $customer->referral_agent_id = User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
             }
             if (! $customer->referral_code) {
                 do {
-                    $code = 'REF-'.Str::upper(Str::random(8));
+                    $code = 'MMSG-'.Str::upper(Str::random(8));
                 } while (User::where('referral_code', $code)->exists());
                 $customer->referral_code = $code;
             }

@@ -20,6 +20,15 @@
                 <div class="grid lg:grid-cols-[1.2fr_.8fr]">
                     <div class="p-6 sm:p-9">
                         <span class="sr-only">My property account</span>
+                        <div class="mb-6 inline-flex items-center gap-3 rounded-2xl bg-white/10 p-2 pr-4 backdrop-blur">
+                            <span class="flex h-11 w-18 shrink-0 flex-none items-center justify-center rounded-xl p-1.5">
+                                <img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain">
+                            </span>
+                            <span>
+                                <span class="block text-sm font-black tracking-wide text-white">MMS Group</span>
+                                <span class="block text-[9px] font-bold uppercase tracking-[.18em] text-indigo-200">Customer portal</span>
+                            </span>
+                        </div>
                         <div class="flex items-center gap-4">
                             <div class="relative grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/30 bg-gradient-to-br from-fuchsia-500 to-indigo-700 text-lg font-black shadow-xl ring-4 ring-white/10">
                                 {{ $customerInitials ?: 'CU' }}

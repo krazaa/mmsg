@@ -1,18 +1,30 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div><div class="text-xs font-black uppercase tracking-[.2em] text-indigo-600 dark:text-indigo-300">Management command center</div><h2 class="mt-1 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Business dashboard</h2><p class="text-sm text-slate-500 dark:text-slate-300">Sales, collections, inventory and commissions at a glance</p></div>
-            <a href="{{ route('sales.create', ['project' => $projectId]) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-xl dark:shadow-none"><span class="text-lg">+</span> New booking</a>
-        </div>
-    </x-slot>
-
     <div class="min-h-screen bg-gradient-to-b from-indigo-50/60 via-slate-50 to-white py-6 dark:from-slate-950 dark:via-slate-900 dark:to-gray-950 sm:py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
             <section class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-800 p-6 text-white shadow-2xl shadow-indigo-200 dark:shadow-none sm:p-8">
                 <div class="absolute -right-16 -top-20 -z-10 h-64 w-64 rounded-full bg-fuchsia-500/25 blur-3xl"></div><div class="absolute -bottom-24 left-1/3 -z-10 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl"></div>
-                <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                    <div><div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100 backdrop-blur"><span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></span>Live business overview</div><h3 class="mt-5 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Welcome back, {{ auth()->user()->name }}.</h3><p class="mt-3 max-w-xl text-sm leading-6 text-indigo-200">Monitor the health of every project, follow collections, and act quickly on overdue balances.</p></div>
-                    <form method="GET" class="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl"><label class="block text-[10px] font-black uppercase tracking-[.18em] text-indigo-200">Dashboard scope<select name="project" onchange="this.form.submit()" class="mt-2 w-full min-w-64 rounded-xl border-white/20 bg-slate-950/60 text-sm font-bold text-white focus:border-violet-300 focus:ring-violet-300"><option value="">All projects</option>@foreach($projects as $project)<option value="{{ $project->id }}" @selected($projectId == $project->id)>{{ $project->name }}</option>@endforeach</select></label><div class="mt-2 text-[10px] text-indigo-300">Updated {{ now()->format('d M Y, h:i A') }}</div></form>
+                <div class="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-indigo-200 backdrop-blur">Management command center</div>
+                            <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100 backdrop-blur"><span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></span>Live business overview</div>
+                        </div>
+                        <h3 class="mt-5 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Welcome back, {{ auth()->user()->name }}.</h3>
+                        <div class="mt-3 text-lg font-black text-white">Business dashboard</div>
+                        <p class="mt-1 max-w-2xl text-sm leading-6 text-indigo-200">Sales, collections, inventory and commissions at a glance.</p>
+                    </div>
+                    <div class="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:items-stretch lg:w-auto lg:flex-col">
+                        <a href="{{ route('sales.create', ['project' => $projectId]) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-indigo-900 shadow-xl transition hover:-translate-y-0.5 hover:bg-indigo-50"><span class="text-lg">+</span> New booking</a>
+                        <form method="GET" class="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl">
+                            <label class="block text-[10px] font-black uppercase tracking-[.18em] text-indigo-200">Dashboard scope
+                                <select name="project" onchange="this.form.submit()" class="mt-2 w-full min-w-64 rounded-xl border-white/20 bg-slate-950/60 text-sm font-bold text-white focus:border-violet-300 focus:ring-violet-300">
+                                    <option value="">All projects</option>
+                                    @foreach($projects as $project)<option value="{{ $project->id }}" @selected($projectId == $project->id)>{{ $project->name }}</option>@endforeach
+                                </select>
+                            </label>
+                            <div class="mt-2 text-[10px] text-indigo-300">Updated {{ now()->format('d M Y, h:i A') }}</div>
+                        </form>
+                    </div>
                 </div>
             </section>
 

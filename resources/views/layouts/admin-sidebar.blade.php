@@ -4,11 +4,11 @@
         ['label' => 'Bookings', 'route' => 'bookings.index', 'active' => 'bookings.*', 'permission' => 'manage bookings', 'icon' => '▤'],
         ['label' => 'Installments', 'route' => 'installments.index', 'active' => 'installments.*', 'permission' => 'manage installments', 'icon' => '◫'],
         ['label' => 'Customers', 'route' => 'customers.index', 'active' => 'customers.*', 'permission' => 'manage customers', 'icon' => '♙'],
-        ['label' => 'Staff', 'route' => 'staff.index', 'active' => 'staff.*', 'permission' => 'manage staff', 'icon' => '♟'],
+        ['label' => 'Staff', 'route' => 'staff.index', 'active' => 'staff.*', 'permission' => 'manage staff', 'icon' => '♟', 'hide_from_staff' => true],
         ['label' => 'Payments', 'route' => 'payments.index', 'active' => 'payments.*', 'permission' => 'manage payments', 'icon' => '₨'],
         ['label' => 'Withdrawals', 'route' => 'withdrawal-requests.index', 'active' => 'withdrawal-requests.*', 'permission' => 'manage commissions', 'icon' => '↗'],
         ['label' => 'Alerts', 'route' => 'management.notifications.index', 'active' => 'management.notifications.*', 'permission' => 'manage notifications', 'icon' => '◉'],
-        ['label' => 'Audit log', 'route' => 'management.activity-log.index', 'active' => 'management.activity-log.*', 'permission' => 'view activity log', 'icon' => '≡'],
+        ['label' => 'Audit log', 'route' => 'management.activity-log.index', 'active' => 'management.activity-log.*', 'permission' => 'view activity log', 'icon' => '≡', 'hide_from_staff' => true],
     ];
     $settingsItems = [
         ['label' => 'Projects', 'route' => 'projects.index', 'active' => 'projects.*', 'permission' => 'manage projects', 'color' => 'bg-cyan-400'],
@@ -18,9 +18,9 @@
         ['label' => 'Packages', 'route' => 'packages.index', 'active' => 'packages.*', 'permission' => 'manage packages', 'color' => 'bg-violet-400'],
         ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
-        ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400'],
-        ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400'],
-        ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400'],
+        ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
+        ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],
+        ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400', 'super_admin_only' => true],
     ];
     $settingsActive = collect($settingsItems)->contains(fn ($item) => request()->routeIs($item['active']));
 @endphp
@@ -34,7 +34,7 @@
 >
     <div class="flex h-20 items-center justify-between border-b border-white/10 px-5">
         <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-3">
-            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 font-black shadow-lg shadow-indigo-950">{{ str(config('app.name', 'Laravel'))->explode(' ')->map(fn ($word) => $word[0])->join('') }}</span>
+            <span class="grid h-11 w-18 shrink-0 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
             <span x-show="sidebarOpen || sidebarExpanded || sidebarHover" x-transition.opacity class="min-w-0 whitespace-nowrap"><b class="block truncate text-sm">{{ config('app.name', 'Laravel') }}</b><span class="text-[10px] font-bold uppercase tracking-[.18em] text-indigo-300">Management</span></span>
         </a>
         <button type="button" @click="sidebarOpen = false" class="rounded-lg p-2 text-white/60 hover:bg-white/10 hover:text-white lg:hidden">✕</button>
@@ -46,6 +46,7 @@
     <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-5">
         <div x-show="sidebarOpen || sidebarExpanded || sidebarHover" x-transition.opacity class="mb-3 whitespace-nowrap px-3 text-[9px] font-black uppercase tracking-[.2em] text-indigo-400">Workspace</div>
         @foreach($items as $item)
+            @if(!($item['hide_from_staff'] ?? false) || Auth::user()->role !== 'staff')
             @can($item['permission'])
                 <a href="{{ route($item['route']) }}" @click="sidebarOpen = false" :title="(sidebarExpanded || sidebarHover) ? '' : @js($item['label'])" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition {{ request()->routeIs($item['active']) ? 'bg-white text-indigo-950 shadow-lg shadow-black/20' : 'text-indigo-100/75 hover:bg-white/10 hover:text-white' }}">
                     <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-base {{ request()->routeIs($item['active']) ? 'bg-indigo-100 text-indigo-700' : 'bg-white/5 text-indigo-300 group-hover:bg-white/10' }}">{{ $item['icon'] }}</span>
@@ -55,6 +56,7 @@
                     @endif
                 </a>
             @endcan
+            @endif
         @endforeach
 
         @if(in_array(Auth::user()->role, ['super_admin', 'admin'], true))
@@ -70,12 +72,14 @@
 
                 <div x-show="settingsOpen && (sidebarOpen || sidebarExpanded || sidebarHover)" x-transition class="ml-7 mt-1 space-y-1 border-l border-indigo-400/25 pl-3">
                     @foreach($settingsItems as $setting)
-                        @can($setting['permission'])
+                        @if(!($setting['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin')
+                            @can($setting['permission'])
                             <a href="{{ route($setting['route']) }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($setting['active']) ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
                                 <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $setting['color'] }} {{ request()->routeIs($setting['active']) ? 'ring-4 ring-indigo-100' : '' }}"></span>
                                 <span class="whitespace-nowrap">{{ $setting['label'] }}</span>
                             </a>
-                        @endcan
+                            @endcan
+                        @endif
                     @endforeach
                 </div>
             </div>

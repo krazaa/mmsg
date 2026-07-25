@@ -59,7 +59,7 @@ class RegisteredUserController extends Controller
             'cnic' => ['required', 'string', 'max:15', 'unique:users,cnic'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone' => ['required', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:2000'],
+            'address' => ['required', 'string', 'max:200'],
             'referral_code' => [
                 'nullable', 'string', 'max:30',
                 Rule::exists('users', 'referral_code')->where(fn ($query) => $query->where('role', 'customer')->where('status', true)),
@@ -78,7 +78,7 @@ class RegisteredUserController extends Controller
 
         $sponsorId = $request->filled('referral_code')
             ? Customer::where('referral_code', $request->string('referral_code')->trim())->value('id')
-            : User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
+            : User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
 
         $user = DB::transaction(function () use ($request, $sponsorId) {
             foreach (Permissions::customer() as $permission) {
@@ -103,9 +103,17 @@ class RegisteredUserController extends Controller
             return $customer;
         });
 
-        event(new Registered($user));
+        try {
+            event(new Registered($user));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
-        Mail::to($user->email)->send(new CustomerWelcomeMail($user));
+        try {
+            Mail::to($user->email)->send(new CustomerWelcomeMail($user));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
         Auth::login($user);
 

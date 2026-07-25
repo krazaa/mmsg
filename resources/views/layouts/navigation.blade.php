@@ -7,16 +7,13 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
                         @if(Auth::user()->role === 'customer')
-                            <span class="relative grid h-11 w-11 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-indigo-200 ring-1 ring-white/30 dark:shadow-none">
-                                <span class="absolute -right-2 -top-2 h-7 w-7 rounded-full bg-white/20"></span>
-                                <b class="relative text-[11px] font-black tracking-[-.08em]">MMS</b>
-                            </span>
+                            <span class="relative grid h-11 w-18 flex-none place-items-center overflow-hidden  p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
                             <span class="hidden leading-tight lg:block">
                                 <b class="block text-sm font-black tracking-tight text-slate-950 dark:text-white">MMS Group</b>
                                 <span class="block text-[9px] font-bold uppercase tracking-[.18em] text-indigo-500">Customer portal</span>
                             </span>
                         @else
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                            <x-application-logo class="block h-10 w-16" />
                         @endif
                     </a>
                 </div>
@@ -53,15 +50,21 @@
                     </x-nav-link>
                     {{-- <x-nav-link :href="route('allotments.index')" :active="request()->routeIs('allotments.*')">{{ __('Allotments') }}</x-nav-link> --}}
                     <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">{{ __('Customer') }}</x-nav-link>
-                    @can('manage staff')
-                    <x-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">{{ __('Staff') }}</x-nav-link>
-                    @endcan
+                    @if(Auth::user()->role !== 'staff')
+                        @can('manage staff')
+                        <x-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">{{ __('Staff') }}</x-nav-link>
+                        @endcan
+                    @endif
                     <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">{{ __('Payments') }}</x-nav-link>
-                    <x-nav-link :href="route('payment-methods.index')" :active="request()->routeIs('payment-methods.*')">{{ __('Payment settings') }}</x-nav-link>
+                    @if(Auth::user()->role !== 'staff')
+                        <x-nav-link :href="route('payment-methods.index')" :active="request()->routeIs('payment-methods.*')">{{ __('Payment settings') }}</x-nav-link>
+                    @endif
                     <x-nav-link :href="route('commission-rules.index')" :active="request()->routeIs('commission-rules.*')">{{ __('Commissions') }}</x-nav-link>
                     <x-nav-link :href="route('management.notifications.index')" :active="request()->routeIs('management.notifications.*')">{{ __('Alerts') }} @if(Auth::user()->unreadNotifications()->count())<span class="ms-1 rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-black text-white">{{ Auth::user()->unreadNotifications()->count() }}</span>@endif</x-nav-link>
                     <x-nav-link :href="route('management.whatsapp.index')" :active="request()->routeIs('management.whatsapp.*')">{{ __('WhatsApp') }}</x-nav-link>
-                    <x-nav-link :href="route('management.activity-log.index')" :active="request()->routeIs('management.activity-log.*')">{{ __('Audit log') }}</x-nav-link>
+                    @if(Auth::user()->role !== 'staff')
+                        <x-nav-link :href="route('management.activity-log.index')" :active="request()->routeIs('management.activity-log.*')">{{ __('Audit log') }}</x-nav-link>
+                    @endif
                     @endif
                     @endif
                 </div>
@@ -99,7 +102,7 @@
                                 </select>
                             </label>
                         </form>
-                        @if(!in_array(Auth::user()->role, ['customer', 'agent']))
+                        @if(in_array(Auth::user()->role, ['super_admin', 'admin'], true))
                             <div class="border-t border-gray-100 px-4 pb-1 pt-3 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:border-gray-600">Management settings</div>
                             <x-dropdown-link :href="route('allotments.index')">
                                 {{ __('Plot allotments & inventory') }}
@@ -179,15 +182,21 @@
                 {{ __('Bookings') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">{{ __('Customer management') }}</x-responsive-nav-link>
-            @can('manage staff')
-            <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">{{ __('Staff management') }}</x-responsive-nav-link>
-            @endcan
+            @if(Auth::user()->role !== 'staff')
+                @can('manage staff')
+                <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')">{{ __('Staff management') }}</x-responsive-nav-link>
+                @endcan
+            @endif
             <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">{{ __('Payments') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('payment-methods.index')" :active="request()->routeIs('payment-methods.*')">{{ __('Payment settings') }}</x-responsive-nav-link>
+            @if(Auth::user()->role !== 'staff')
+                <x-responsive-nav-link :href="route('payment-methods.index')" :active="request()->routeIs('payment-methods.*')">{{ __('Payment settings') }}</x-responsive-nav-link>
+            @endif
             <x-responsive-nav-link :href="route('commission-rules.index')" :active="request()->routeIs('commission-rules.*')">{{ __('Commissions') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('management.notifications.index')" :active="request()->routeIs('management.notifications.*')">{{ __('Alerts') }} @if(Auth::user()->unreadNotifications()->count())<span class="ms-1 rounded-full bg-rose-500 px-2 py-0.5 text-xs font-black text-white">{{ Auth::user()->unreadNotifications()->count() }}</span>@endif</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('management.whatsapp.index')" :active="request()->routeIs('management.whatsapp.*')">{{ __('WhatsApp') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('management.activity-log.index')" :active="request()->routeIs('management.activity-log.*')">{{ __('Audit log') }}</x-responsive-nav-link>
+            @if(Auth::user()->role !== 'staff')
+                <x-responsive-nav-link :href="route('management.activity-log.index')" :active="request()->routeIs('management.activity-log.*')">{{ __('Audit log') }}</x-responsive-nav-link>
+            @endif
             @endif
         </div>
 
@@ -204,7 +213,7 @@
                         <select name="theme" onchange="this.form.submit()" class="mt-2 w-full rounded-md border-gray-300 text-sm dark:border-gray-500 dark:bg-gray-800 dark:text-white"><option value="light" @selected(Auth::user()->theme !== 'dark')>☀ Light mode</option><option value="dark" @selected(Auth::user()->theme === 'dark')>☾ Dark mode</option></select>
                     </label>
                 </form>
-                @if(!in_array(Auth::user()->role, ['customer', 'agent']))
+                @if(in_array(Auth::user()->role, ['super_admin', 'admin'], true))
                     <div class="px-4 pb-1 pt-3 text-[10px] font-black uppercase tracking-widest text-gray-400">Management settings</div>
                     <x-responsive-nav-link :href="route('allotments.index')" :active="request()->routeIs('allotments.*') || request()->routeIs('inventory.*')">
                         {{ __('Plot allotments & inventory') }}

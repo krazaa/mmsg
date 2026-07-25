@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'MMS Group') }}</title>
+        <link rel="icon" href="{{ asset('logo.svg') }}" type="image/svg+xml">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -22,7 +23,7 @@
                     <div class="absolute -bottom-28 -left-20 h-80 w-80 rounded-full bg-indigo-500/25 blur-3xl"></div>
                     <div class="relative">
                         <a href="{{ url('/') }}" class="inline-flex items-center gap-3">
-                            <span class="grid h-14 w-14 place-items-center rounded-2xl border border-white/20 bg-white/15 text-sm font-black tracking-[-.08em] shadow-xl backdrop-blur">MMS</span>
+                            <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-2xl p-1.5"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
                             <span><b class="block text-xl font-black">MMS Group</b><span class="text-[10px] font-bold uppercase tracking-[.22em] text-emerald-200">Property management</span></span>
                         </a>
                         <div class="mt-16 max-w-md">
@@ -40,7 +41,7 @@
 
                 <section class="flex flex-col bg-gradient-to-br from-white via-white to-indigo-50/70">
                     <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 lg:hidden">
-                        <a href="{{ url('/') }}" class="flex items-center gap-2.5"><span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-emerald-600 to-indigo-700 text-[10px] font-black text-white">MMS</span><span><b class="block text-sm font-black">MMS Group</b><span class="block text-[8px] font-bold uppercase tracking-widest text-indigo-500">Customer portal</span></span></a>
+                        <a href="{{ url('/') }}" class="flex items-center gap-2.5"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><span><b class="block text-sm font-black">MMS Group</b><span class="block text-[8px] font-bold uppercase tracking-widest text-indigo-500">Customer portal</span></span></a>
                         <span class="rounded-full bg-emerald-50 px-3 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-700">Secure</span>
                     </div>
                     <div class="flex flex-1 items-center justify-center p-5 sm:p-10 lg:p-12">

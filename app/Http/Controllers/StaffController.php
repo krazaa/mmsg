@@ -33,7 +33,7 @@ class StaffController extends Controller
     {
         $data = $this->validated($request);
         DB::transaction(function () use ($data): void {
-            $systemId = User::where('email', 'direct-sales@abdullahtown.pk')->firstOrFail()->id;
+            $systemId = User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
             $staff = User::create($data + [
                 'email_verified_at' => now(),
                 'referral_agent_id' => $systemId,
