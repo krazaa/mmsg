@@ -74,7 +74,7 @@ class CustomerPortalTest extends TestCase
             ->assertSee('Level One Member')
             ->assertSee('Level Two Member')
             ->assertSee('Generation 2')
-            ->assertSee('Copy code')
+            ->assertSee('Copy referral link')
             ->assertSee('REF-PORTAL')
             ->assertDontSee('All transactions');
 

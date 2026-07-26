@@ -5,10 +5,10 @@
             <div class="relative">
                 <div class="text-xs font-black uppercase tracking-[.2em] text-violet-200">My referral network</div>
                 <h3 class="mt-2 text-2xl font-black">Invite. Grow. Earn.</h3>
-                <p class="mt-2 text-sm leading-6 text-indigo-100">Share your code with new customers. Their account will be connected to your referral network when they register.</p>
+                <p class="mt-2 text-sm leading-6 text-indigo-100">Share your registration link with new customers. Your referral code will be added automatically when they register.</p>
                 <div x-data="{ copied:false }" class="mt-6 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
                     <div class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">Your referral code</div>
-                    <div class="mt-2 flex items-center justify-between gap-3"><b class="font-mono text-xl">{{ $customer->referral_code }}</b><button type="button" @click="navigator.clipboard.writeText('{{ $customer->referral_code }}');copied=true;setTimeout(()=>copied=false,1500)" class="rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-700" x-text="copied?'Copied ✓':'Copy code'">Copy code</button></div>
+                    <div class="mt-2 flex items-center justify-between gap-3"><div class="min-w-0"><b class="font-mono text-xl">{{ $customer->referral_code }}</b><a href="{{ route('register', ['ref' => $customer->referral_code]) }}" target="_blank" rel="noopener" class="mt-1 block truncate text-[10px] font-semibold text-indigo-100 underline decoration-indigo-300/50 underline-offset-2" title="{{ route('register', ['ref' => $customer->referral_code]) }}">{{ route('register', ['ref' => $customer->referral_code]) }}</a></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code])));copied=true;setTimeout(()=>copied=false,1500)" class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-700" x-text="copied?'Link copied ✓':'Copy referral link'">Copy referral link</button></div>
                 </div>
                 <div class="mt-4 text-xs text-indigo-200">Sponsored by <b class="text-white">{{ $customer->referralAgent?->name ?? 'Direct Sales' }}</b></div>
             </div>
@@ -29,7 +29,7 @@
 
     <div x-data="{ zoom: 1, fullscreen: false, center(){ this.$nextTick(() => this.$refs.network.scrollTo({ left: (this.$refs.network.scrollWidth-this.$refs.network.clientWidth)/2, behavior: 'smooth' })) } }" x-init="center()" :class="fullscreen ? 'fixed inset-0 z-[100] rounded-none' : ''" class="overflow-hidden border-t border-indigo-100 bg-white">
         <div class="flex flex-col gap-3 bg-gradient-to-r from-slate-950 via-indigo-950 to-violet-900 p-4 text-white sm:flex-row sm:items-center sm:justify-between">
-            <div><h3 class="font-black">My team</h3><p class="text-xs text-indigo-200">Your referral network across three levels</p></div>
+            <div><h3 class="font-black">Team</h3><p class="text-xs text-indigo-200">Your referral network across three levels</p></div>
             <div class="flex items-center gap-2"><div class="flex rounded-lg bg-white/10 p-1"><button type="button" @click="zoom=Math.max(.6,zoom-.1)" class="px-2.5 py-1 font-black">−</button><button type="button" @click="zoom=1;center()" class="min-w-14 px-2 text-xs font-bold" x-text="Math.round(zoom*100)+'%'">100%</button><button type="button" @click="zoom=Math.min(1.4,zoom+.1)" class="px-2.5 py-1 font-black">+</button></div><button type="button" @click="$refs.network.scrollBy({left:-500,behavior:'smooth'})" class="rounded-lg bg-white/10 px-3 py-2 font-black">←</button><button type="button" @click="$refs.network.scrollBy({left:500,behavior:'smooth'})" class="rounded-lg bg-white/10 px-3 py-2 font-black">→</button><button type="button" @click="fullscreen=!fullscreen;center()" class="rounded-lg bg-white/10 px-3 py-2 text-xs font-black" x-text="fullscreen?'Exit':'Fullscreen'">Fullscreen</button></div>
         </div>
         <div x-ref="network" :class="fullscreen ? 'h-[calc(100vh-72px)]' : 'min-h-80'" class="network-canvas relative overflow-auto p-4">
