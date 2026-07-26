@@ -82,19 +82,19 @@
 
                     @php
                         $heroProject = $projects->first();
-                        $heroImage = $heroProject?->image_path
-                            ? (str_starts_with($heroProject->image_path, 'projects/') ? asset('storage/'.$heroProject->image_path) : asset($heroProject->image_path))
-                            : asset('images/projects/abdullah-town.jpg');
+                        $heroImage = $heroProject?->image_url;
                         $heroSecondProject = $projects->skip(1)->first();
-                        $heroSecondImage = $heroSecondProject?->image_path
-                            ? (str_starts_with($heroSecondProject->image_path, 'projects/') ? asset('storage/'.$heroSecondProject->image_path) : asset($heroSecondProject->image_path))
-                            : asset('images/projects/mms-guardian.jpg');
+                        $heroSecondImage = $heroSecondProject?->image_url;
                     @endphp
                     <div class="hero-visual relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
                         <div class="absolute -inset-12 rounded-full blur-3xl" style="background-image:radial-gradient(circle at 35% 35%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 24%, transparent),transparent 65%),radial-gradient(circle at 70% 65%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 18%, transparent),transparent 65%)"></div>
                         <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border p-2.5" style="border-color:{{ $pageAppearance['welcome_hero_image_border_color'] }};background:linear-gradient(135deg,{{ $pageAppearance['welcome_hero_image_gradient_start_color'] }},{{ $pageAppearance['welcome_hero_image_gradient_end_color'] }})">
                             <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
-                                <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover">
+                                @if($heroImage)
+                                    <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover">
+                                @else
+                                    <div class="h-full w-full bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"></div>
+                                @endif
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent"></div>
                                 <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
                                     <div class="flex items-end justify-between gap-4">
@@ -108,7 +108,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if($heroSecondProject)
+                        @if($heroSecondProject && $heroSecondImage)
                             <div class="float-card absolute -bottom-3 -right-2 w-44 overflow-hidden rounded-2xl border border-white/20 bg-slate-900 p-2 shadow-2xl backdrop-blur sm:-right-6 sm:w-52">
                                 <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover">
                                 <div class="flex items-center justify-between gap-2 px-2 pb-1 pt-2"><div><b class="block truncate text-xs text-white">{{ $heroSecondProject->name }}</b><span class="text-[10px] text-slate-400">{{ $heroSecondProject->location }}</span></div><span class="text-indigo-300">↗</span></div>
@@ -143,12 +143,8 @@
                         @forelse($projects as $project)
                             @php
                                 $initials = collect(explode(' ', $project->name))->map(fn ($word) => mb_substr($word, 0, 1))->take(3)->implode('');
-                                $projectImage = $project->image_path
-                                    ? (str_starts_with($project->image_path, 'projects/') ? asset('storage/'.$project->image_path) : asset($project->image_path))
-                                    : null;
-                                $blueprintImage = $project->blueprint_path
-                                    ? (str_starts_with($project->blueprint_path, 'projects/') ? asset('storage/'.$project->blueprint_path) : asset($project->blueprint_path))
-                                    : null;
+                                $projectImage = $project->image_url;
+                                $blueprintImage = $project->blueprint_url;
                             @endphp
                             <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.06] shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300/30" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">

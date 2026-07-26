@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $projects = Project::query()
         ->where('status', true)
-        ->orderBy('name')
+        ->latest()
         ->get();
 
     $backgroundColor = SiteSetting::valueFor('welcome_background_color', '#020617');

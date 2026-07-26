@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\AuditsModelChanges;
 use App\Models\Concerns\TracksUserstamps;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Project extends Model
 {
@@ -40,5 +41,32 @@ class Project extends Model
     public function getAvailableAreaMarlaAttribute(): float
     {
         return max(0, (float) $this->saleable_area_marla - (float) $this->sold_area_marla - (float) $this->reserved_area_marla);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->mediaUrl($this->image_path);
+    }
+
+    public function getBlueprintUrlAttribute(): ?string
+    {
+        return $this->mediaUrl($this->blueprint_path);
+    }
+
+    private function mediaUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'projects/')) {
+            return Storage::disk('public')->url($path);
+        }
+
+        if (is_file(public_path($path))) {
+            return asset($path);
+        }
+
+        return null;
     }
 }
