@@ -25,9 +25,11 @@ use App\Http\Controllers\PlotPlanImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\SiteAppearanceController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WhatsAppSettingsController;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,8 +38,15 @@ Route::get('/', function () {
         ->orderBy('name')
         ->get();
 
-    return view('welcome', compact('projects'));
-});
+    $backgroundColor = SiteSetting::valueFor('welcome_background_color', '#020617');
+    $heroGridBackgroundColor = SiteSetting::valueFor('welcome_hero_grid_background_color', '#020617');
+    $heroHeadingColor = SiteSetting::valueFor('welcome_hero_heading_color', '#ffffff');
+    $heroStatValueColor = SiteSetting::valueFor('welcome_hero_stat_value_color', '#ffffff');
+    $heroStatLabelColor = SiteSetting::valueFor('welcome_hero_stat_label_color', '#94a3b8');
+    $pageAppearance = SiteSetting::welcomeAppearance();
+
+    return view('welcome', compact('projects', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance'));
+})->name('home');
 
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');
 Route::post('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'store'])->name('email-unsubscribe.store');
@@ -66,6 +75,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/withdrawal-requests/{withdrawalRequest}', [CustomerWithdrawalController::class, 'review'])->middleware('permission:manage commissions')->name('withdrawal-requests.review');
         Route::get('/management/notifications', [CustomerNotificationController::class, 'managementIndex'])->middleware('permission:manage notifications')->name('management.notifications.index');
         Route::get('/management/whatsapp', [WhatsAppSettingsController::class, 'index'])->middleware('permission:manage notifications')->name('management.whatsapp.index');
+        Route::get('/management/site-appearance', [SiteAppearanceController::class, 'edit'])->middleware('role:super_admin|admin')->name('site-appearance.edit');
+        Route::put('/management/site-appearance', [SiteAppearanceController::class, 'update'])->middleware('role:super_admin|admin')->name('site-appearance.update');
         Route::post('/management/whatsapp/test', [WhatsAppSettingsController::class, 'test'])->middleware('permission:manage notifications')->name('management.whatsapp.test');
         Route::post('/management/notifications/read-all', [CustomerNotificationController::class, 'managementReadAll'])->middleware('permission:manage notifications')->name('management.notifications.read-all');
         Route::post('/management/notifications/{notification}/read', [CustomerNotificationController::class, 'managementRead'])->middleware('permission:manage notifications')->name('management.notifications.read');

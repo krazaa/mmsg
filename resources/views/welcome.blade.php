@@ -17,6 +17,15 @@
         [data-reveal][data-effect="right"] { transform: translateX(28px); }
         [data-reveal][data-effect="scale"] { transform: translateY(14px) scale(.96); }
         [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+        #projects h2, #platform h2, #journey h2, #access h2 { font-size: var(--welcome-section-heading-size) !important; }
+        .hero-primary-button { background: {{ $pageAppearance['welcome_hero_primary_button_background_color'] }}; color: {{ $pageAppearance['welcome_hero_primary_button_text_color'] }}; }
+        .hero-primary-button:hover { background: {{ $pageAppearance['welcome_hero_primary_button_hover_color'] }}; }
+        .hero-secondary-button { background: {{ $pageAppearance['welcome_hero_secondary_button_background_color'] }}; color: {{ $pageAppearance['welcome_hero_secondary_button_text_color'] }}; }
+        .hero-secondary-button:hover { background: {{ $pageAppearance['welcome_hero_secondary_button_hover_color'] }}; }
+        .hero-explore-button { background: {{ $pageAppearance['welcome_hero_explore_button_background_color'] }}; color: {{ $pageAppearance['welcome_hero_explore_button_text_color'] }}; }
+        .hero-explore-button:hover { background: {{ $pageAppearance['welcome_hero_explore_button_hover_color'] }}; }
+        .projects-cta-button { background: {{ $pageAppearance['welcome_projects_cta_background_color'] }}; color: {{ $pageAppearance['welcome_projects_cta_text_color'] }}; }
+        .projects-cta-button:hover { background: {{ $pageAppearance['welcome_projects_cta_hover_color'] }}; }
         @media (prefers-reduced-motion:no-preference) {
             .float-card { animation: float 5s ease-in-out infinite; }
             .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
@@ -34,11 +43,11 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 font-sans text-slate-100 antialiased">
+<body class="font-sans text-slate-100 antialiased" style="background-color:{{ $backgroundColor }};--welcome-section-heading-size:{{ $pageAppearance['welcome_section_heading_font_size'] }}px">
     <div class="relative overflow-hidden">
-        <div class="ambient-glow pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(124,58,237,.32),transparent_36%),radial-gradient(circle_at_82%_20%,rgba(14,165,233,.2),transparent_30%)]"></div>
+        <div class="ambient-glow pointer-events-none absolute inset-x-0 top-0 h-[720px]" style="background-image:radial-gradient(circle at 20% 10%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 32%, transparent),transparent 36%),radial-gradient(circle at 82% 20%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 20%, transparent),transparent 30%)"></div>
 
-        <header class="hero-copy sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+        <header class="hero-copy sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl" style="background-color: {{ $pageAppearance['welcome_header_background_color'] }}e6">
             <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Main navigation">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
                     <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
@@ -57,18 +66,18 @@
         </header>
 
         <main>
-            <section class="hero-grid relative">
+            <section class="hero-grid relative" style="background-color: {{ $heroGridBackgroundColor }}">
                 <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-12">
                     <div class="hero-copy relative z-10">
-                        <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-bold text-emerald-300 shadow-lg shadow-emerald-950/20"><span class="pulse-dot h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_0_rgba(52,211,153,.5)]"></span> One secure property account</div>
-                        <h1 class="mt-7 text-5xl font-black leading-[1.02] tracking-[-.045em] text-white sm:text-6xl lg:text-7xl">Your property journey, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">clearly managed.</span></h1>
-                        <p class="mt-7 max-w-xl text-lg leading-8 text-slate-300">Book a plot, follow every installment, submit payment proof and keep your verified receipts together—from first payment to final allotment.</p>
+                        <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold shadow-lg" style="background-color:{{ $pageAppearance['welcome_hero_badge_background_color'] }};color:{{ $pageAppearance['welcome_hero_badge_text_color'] }};border-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"><span class="pulse-dot h-2 w-2 rounded-full" style="background-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"></span> One secure property account</div>
+                        <h1 class="mt-7 font-black leading-[1.02] tracking-[-.045em]" style="color: {{ $heroHeadingColor }};font-size:clamp(3rem,6vw,{{ $pageAppearance['welcome_hero_heading_font_size'] }}px)">Your property journey, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">clearly managed.</span></h1>
+                        <p class="mt-7 max-w-xl leading-8" style="color: {{ $pageAppearance['welcome_hero_body_color'] }};font-size:{{ $pageAppearance['welcome_hero_body_font_size'] }}px">Book a plot, follow every installment, submit payment proof and keep your verified receipts together—from first payment to final allotment.</p>
                         <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-                            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 px-6 py-3.5 text-center font-black text-white shadow-xl shadow-indigo-950 transition hover:-translate-y-0.5 hover:shadow-indigo-900/50">{{ auth()->check() ? 'Go to my dashboard' : 'Access my property account' }} →</a>
-                            @guest<a href="{{ route('register') }}" class="rounded-xl bg-white px-6 py-3.5 text-center font-black text-slate-950 hover:bg-indigo-50">Create new account</a>@endguest
-                            <a href="#platform" class="rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-center font-bold text-white hover:bg-white/10">Explore the platform</a>
+                            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="hero-primary-button rounded-xl px-6 py-3.5 text-center font-black shadow-xl shadow-indigo-950 transition hover:-translate-y-0.5 hover:shadow-indigo-900/50">{{ auth()->check() ? 'Go to my dashboard' : 'Access my property account' }} →</a>
+                            @guest<a href="{{ route('register') }}" class="hero-secondary-button rounded-xl px-6 py-3.5 text-center font-black transition">Create new account</a>@endguest
+                            <a href="#platform" class="hero-explore-button rounded-xl border border-white/15 px-6 py-3.5 text-center font-bold transition">Explore the platform</a>
                         </div>
-                        <div class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-5"><div><b class="block text-xl text-white">24/7</b><span class="text-xs text-slate-400">Account access</span></div><div class="pl-5"><b class="block text-xl text-white">Live</b><span class="text-xs text-slate-400">Payment status</span></div><div class="pl-5"><b class="block text-xl text-white">Secure</b><span class="text-xs text-slate-400">Digital records</span></div></div>
+                        <div class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-5"><div><b class="block text-xl" style="color: {{ $heroStatValueColor }}">24/7</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Account access</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Live</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Payment status</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Secure</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Digital records</span></div></div>
                     </div>
 
                     @php
@@ -82,8 +91,8 @@
                             : asset('images/projects/mms-guardian.jpg');
                     @endphp
                     <div class="hero-visual relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
-                        <div class="absolute -inset-12 rounded-full bg-gradient-to-br from-violet-500/20 to-sky-400/10 blur-3xl"></div>
-                        <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border border-white/15 bg-slate-900 p-2.5">
+                        <div class="absolute -inset-12 rounded-full blur-3xl" style="background-image:radial-gradient(circle at 35% 35%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 24%, transparent),transparent 65%),radial-gradient(circle at 70% 65%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 18%, transparent),transparent 65%)"></div>
+                        <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border p-2.5" style="border-color:{{ $pageAppearance['welcome_hero_image_border_color'] }};background:linear-gradient(135deg,{{ $pageAppearance['welcome_hero_image_gradient_start_color'] }},{{ $pageAppearance['welcome_hero_image_gradient_end_color'] }})">
                             <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
                                 <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent"></div>
@@ -118,16 +127,16 @@
                 </div>
             </section>
 
-            <section id="projects" class="relative border-y border-white/10 bg-slate-950 py-10 sm:py-12 lg:py-16">
-                <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,.18),transparent_42%)]"></div>
+            <section id="projects" class="relative border-y border-white/10 py-10 sm:py-12 lg:py-16" style="background-color: {{ $pageAppearance['welcome_projects_background_color'] }};color:{{ $pageAppearance['welcome_projects_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
+                <div class="pointer-events-none absolute inset-0" style="background-image:radial-gradient(circle at 50% 0%,color-mix(in srgb, {{ $pageAppearance['welcome_projects_blur_color'] }} 24%, transparent),transparent 42%)"></div>
                 <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" data-reveal data-effect="left">
                         <div class="min-w-0 lg:flex-1">
-                            <span class="text-xs font-black uppercase tracking-[.2em] text-indigo-300">Our developments</span>
-                            <h2 class="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl xl:whitespace-nowrap">Find your place in an MMS Group project.</h2>
+                            <span class="text-xs font-black uppercase tracking-[.2em]" style="color:{{ $pageAppearance['welcome_projects_eyebrow_color'] }}">Our developments</span>
+                            <h2 class="mt-3 font-black tracking-tight xl:whitespace-nowrap" style="color:{{ $pageAppearance['welcome_projects_heading_color'] }};font-size:{{ $pageAppearance['welcome_projects_heading_font_size'] }}px !important">Find your place in an MMS Group project.</h2>
                             <p class="mt-4 max-w-3xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">Explore our growing portfolio of thoughtfully planned communities.</p>
                         </div>
-                        <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-black text-slate-950 hover:bg-indigo-50 sm:w-fit lg:shrink-0">{{ auth()->check() ? 'View my properties' : 'Start your journey' }} →</a>
+                        <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="projects-cta-button inline-flex w-full items-center justify-center rounded-xl px-5 py-3 font-black transition sm:w-fit lg:shrink-0">{{ auth()->check() ? 'View my properties' : 'Start your journey' }} →</a>
                     </div>
 
                     <div class="mt-12 grid gap-6 md:grid-cols-2">
@@ -150,8 +159,8 @@
                                     @endif
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent"></div>
                                     <div class="absolute left-5 top-5 flex items-center gap-3">
-                                        <span class="grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-slate-950/60 text-xs font-black tracking-wide text-white backdrop-blur">{{ $initials }}</span>
-                                        <span class="rounded-full border border-emerald-300/20 bg-slate-950/60 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-200 backdrop-blur">Open for interest</span>
+                                        <span class="grid h-12 w-12 place-items-center rounded-2xl border border-white/20 text-xs font-black tracking-wide backdrop-blur" style="background-color:{{ $pageAppearance['welcome_projects_initials_background_color'] }};color:{{ $pageAppearance['welcome_projects_initials_text_color'] }}">{{ $initials }}</span>
+                                        <span class="rounded-full border border-emerald-300/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest backdrop-blur" style="background-color:{{ $pageAppearance['welcome_projects_status_background_color'] }};color:{{ $pageAppearance['welcome_projects_status_text_color'] }}">Open for interest</span>
                                     </div>
                                     @if($blueprintImage)
                                         <button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="absolute bottom-5 right-5 w-32 overflow-hidden rounded-xl border border-white/25 bg-slate-950/80 p-1.5 text-left shadow-xl backdrop-blur transition hover:-translate-y-1 sm:w-40" aria-label="View {{ $project->name }} masterplan">
@@ -161,13 +170,13 @@
                                     @endif
                                 </div>
                                 <div class="p-7">
-                                    <p class="text-xs font-bold uppercase tracking-[.18em] text-indigo-300">{{ $project->location }}</p>
-                                    <h3 class="mt-2 text-3xl font-black tracking-tight text-white">{{ $project->name }}</h3>
+                                    <p class="text-xs font-bold uppercase tracking-[.18em]" style="color:{{ $pageAppearance['welcome_projects_location_color'] }}">{{ $project->location }}</p>
+                                    <h3 class="mt-2 font-black tracking-tight" style="color:{{ $pageAppearance['welcome_projects_card_heading_color'] }};font-size:{{ $pageAppearance['welcome_projects_card_heading_font_size'] }}px">{{ $project->name }}</h3>
                                     <p class="mt-3 max-w-lg leading-7 text-slate-400">{{ $project->description ?: number_format($project->gross_area_marla / 20, 0).' kanal planned development with secure digital booking and payment records.' }}</p>
                                     <div class="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5">
-                                        <span class="rounded-lg bg-white/[.06] px-3 py-2 text-xs font-bold text-slate-300"><b class="text-white">{{ number_format($project->gross_area_marla / 20) }}</b> kanal total</span>
-                                        <span class="rounded-lg bg-white/[.06] px-3 py-2 text-xs font-bold text-slate-300"><b class="text-white">{{ number_format($project->saleable_area_marla / 20) }}</b> kanal saleable</span>
-                                        @if($blueprintImage)<button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="rounded-lg bg-indigo-500/15 px-3 py-2 text-xs font-black text-indigo-200 hover:bg-indigo-500/25">Explore masterplan →</button>@endif
+                                        <span class="rounded-lg px-3 py-2 font-bold" style="background-color:{{ $pageAppearance['welcome_projects_stat_background_color'] }};color:{{ $pageAppearance['welcome_projects_stat_label_color'] }};font-size:{{ $pageAppearance['welcome_projects_stat_font_size'] }}px"><b style="color:{{ $pageAppearance['welcome_projects_stat_value_color'] }}">{{ number_format($project->gross_area_marla / 20) }}</b> kanal total</span>
+                                        <span class="rounded-lg px-3 py-2 font-bold" style="background-color:{{ $pageAppearance['welcome_projects_stat_background_color'] }};color:{{ $pageAppearance['welcome_projects_stat_label_color'] }};font-size:{{ $pageAppearance['welcome_projects_stat_font_size'] }}px"><b style="color:{{ $pageAppearance['welcome_projects_stat_value_color'] }}">{{ number_format($project->saleable_area_marla / 20) }}</b> kanal saleable</span>
+                                        @if($blueprintImage)<button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="rounded-lg px-3 py-2 font-black" style="background-color:{{ $pageAppearance['welcome_projects_button_background_color'] }};color:{{ $pageAppearance['welcome_projects_button_text_color'] }};font-size:{{ $pageAppearance['welcome_projects_button_font_size'] }}px">Explore masterplan →</button>@endif
                                     </div>
                                 </div>
 
@@ -189,7 +198,7 @@
                 </div>
             </section>
 
-            <section id="platform" class="bg-slate-50 py-10 text-slate-900 sm:py-12 lg:py-16">
+            <section id="platform" class="py-10 sm:py-12 lg:py-16" style="background-color:{{ $pageAppearance['welcome_platform_background_color'] }};color:{{ $pageAppearance['welcome_platform_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" data-reveal data-effect="right">
                         <div class="min-w-0 lg:flex-1">
@@ -214,7 +223,7 @@
                 </div>
             </section>
 
-            <section id="journey" class="relative overflow-hidden bg-white py-12 text-slate-900">
+            <section id="journey" class="relative overflow-hidden py-12" style="background-color:{{ $pageAppearance['welcome_journey_background_color'] }};color:{{ $pageAppearance['welcome_journey_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
                 <div class="absolute right-0 top-0 h-96 w-96 rounded-full bg-indigo-100/60 blur-3xl"></div>
                 <div class="relative mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[.8fr_1.2fr] lg:px-8">
                     <div data-reveal data-effect="left"><span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Simple by design</span><h2 class="mt-3 text-4xl font-black tracking-tight">From booking to ownership.</h2><p class="mt-5 leading-7 text-slate-600">Your dashboard keeps the next action obvious while maintaining a complete record of everything already completed.</p><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="mt-7 inline-flex rounded-xl bg-slate-950 px-5 py-3 font-black text-white">Open your account →</a></div>
@@ -226,13 +235,13 @@
                 </div>
             </section>
 
-            <section id="access" class="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-violet-700 to-indigo-900 py-20">
+            <section id="access" class="relative overflow-hidden py-20" style="background-color:{{ $pageAppearance['welcome_cta_background_color'] }};color:{{ $pageAppearance['welcome_cta_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
                 <div class="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border-[48px] border-white/5"></div><div class="pointer-events-none absolute -bottom-28 -right-16 h-80 w-80 rounded-full border-[56px] border-white/5"></div>
-                <div class="mx-auto flex max-w-5xl flex-col items-center px-5 text-center" data-reveal data-effect="scale"><span class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100">CUSTOMER · AGENT · MANAGEMENT</span><h2 class="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl">Your account is ready when you are.</h2><p class="mt-4 max-w-2xl text-lg text-indigo-100">Sign in to view the information and actions relevant to your role in the MMS Group property network.</p><div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-white px-7 py-3.5 font-black text-indigo-800 shadow-xl hover:bg-indigo-50">{{ auth()->check() ? 'Continue to dashboard' : 'Sign in securely' }} →</a>@guest<a href="{{ route('register') }}" class="rounded-xl border border-white/30 px-7 py-3.5 font-black text-white hover:bg-white/10">Register as customer</a>@endguest</div></div>
+                <div class="mx-auto flex max-w-5xl flex-col items-center px-5 text-center" data-reveal data-effect="scale"><span class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-indigo-100">CUSTOMER · MANAGEMENT</span><h2 class="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl">Your account is ready when you are.</h2><p class="mt-4 max-w-2xl text-lg text-indigo-100">Sign in to view the information and actions relevant to your role in the MMS Group property network.</p><div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-white px-7 py-3.5 font-black text-indigo-800 shadow-xl hover:bg-indigo-50">{{ auth()->check() ? 'Continue to dashboard' : 'Sign in securely' }} →</a>@guest<a href="{{ route('register') }}" class="rounded-xl border border-white/30 px-7 py-3.5 font-black text-white hover:bg-white/10">Register as customer</a>@endguest</div></div>
             </section>
         </main>
 
-        <footer class="border-t border-white/10 bg-slate-950">
+        <footer class="border-t border-white/10" style="background-color:{{ $pageAppearance['welcome_footer_background_color'] }};color:{{ $pageAppearance['welcome_footer_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
             <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between lg:px-8" data-reveal><div class="flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200">MMS Group</b></div><p>Property records, payments and allotments in one secure platform.</p><p>© {{ date('Y') }} MMS Group</p></div>
         </footer>
     </div>
