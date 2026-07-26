@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/theme', [ThemeController::class, 'update'])->name('theme.update');
     Route::middleware(['verified', 'permission:use customer portal'])->group(function () {
         Route::get('/customer/team', [DashboardController::class, 'team'])->name('customer.team');
+        Route::get('/customer/installments', [DashboardController::class, 'installments'])->name('customer.installments');
         Route::get('/customer/commissions', [DashboardController::class, 'commissions'])->name('customer.commissions');
         Route::get('/customer/withdrawals', [CustomerWithdrawalController::class, 'index'])->name('customer.withdrawals.index');
         Route::post('/customer/withdrawals', [CustomerWithdrawalController::class, 'store'])->name('customer.withdrawals.store');

@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6 text-center"><h1 class="text-2xl font-black text-gray-900 dark:text-white">Create your property account</h1><p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Register to book plots and manage payments online.</p></div>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register', array_filter(['ref' => $referralCode])) }}">
         @csrf
 
         <!-- Name -->
@@ -30,8 +30,12 @@
 
         <div class="mt-4">
             <x-input-label for="referral_code" :value="__('Referral code (optional)')" />
-            <x-text-input id="referral_code" class="mt-1 block w-full font-mono uppercase" type="text" name="referral_code" :value="old('referral_code')" maxlength="30" placeholder="Leave blank for Direct Sales" oninput="this.value=this.value.toUpperCase().replace(/\s+/g,'')" />
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">If entered, the code must belong to an active registered customer.</p>
+            <x-text-input id="referral_code" class="mt-1 block w-full font-mono uppercase {{ $referralCode ? 'cursor-not-allowed bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' : '' }}" type="text" name="referral_code" :value="old('referral_code', $referralCode)" maxlength="30" placeholder="Leave blank for Direct Sales" :readonly="filled($referralCode)" oninput="this.value=this.value.toUpperCase().replace(/\s+/g,'')" />
+            @if($referralCode)
+                <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Referral code {{ $referralCode }} was added from your invitation link.</p>
+            @else
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">If entered, the code must belong to an active registered customer.</p>
+            @endif
             <x-input-error :messages="$errors->get('referral_code')" class="mt-2" />
         </div>
 

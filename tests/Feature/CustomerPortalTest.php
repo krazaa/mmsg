@@ -56,6 +56,16 @@ class CustomerPortalTest extends TestCase
             ->assertDontSee('77,777.00')
             ->assertDontSee('Manage projects');
 
+        $this->actingAs($user)->get(route('customer.installments'))
+            ->assertOk()
+            ->assertSee('Plot installment schedules')
+            ->assertSee('BOOK-PORTAL')
+            ->assertSee('RC-FIRST-PORTAL')
+            ->assertSee('First payment receipt')
+            ->assertSee('25,000.00')
+            ->assertSee('77,777.00')
+            ->assertSee('Upcoming');
+
         $this->actingAs($user)->get(route('customer.team'))
             ->assertOk()
             ->assertSee('My team')

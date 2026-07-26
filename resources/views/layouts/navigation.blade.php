@@ -24,6 +24,7 @@
                     @php($customerNavClass = 'inline-flex items-center rounded-xl px-3 py-2 text-xs font-black transition')
                     <a href="{{ route('dashboard') }}" class="{{ $customerNavClass }} {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Overview</a>
                     <a href="{{ route('customer.bookings.create') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.bookings.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Book a plot</a>
+                    <a href="{{ route('customer.installments') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.installments') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Installments</a>
                     <a href="{{ route('dashboard').'#payments' }}" class="{{ $customerNavClass }} text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">Payments</a>
                     <a href="{{ route('customer.team') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.team') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">My team</a>
                     <a href="{{ route('customer.commissions') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.commissions') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Commissions</a>
@@ -159,6 +160,7 @@
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'customer')
             <x-responsive-nav-link :href="route('customer.bookings.create')" :active="request()->routeIs('customer.bookings.*')">{{ __('Book a plot') }}</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('customer.installments')" :active="request()->routeIs('customer.installments')">{{ __('Plot installments') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('dashboard').'#payments'" :active="false">{{ __('Payments') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customer.team')" :active="request()->routeIs('customer.team')">{{ __('Team') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customer.commissions')" :active="request()->routeIs('customer.commissions')">{{ __('Commissions') }}</x-responsive-nav-link>

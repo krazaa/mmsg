@@ -28,15 +28,17 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $firstNumber = random_int(1, 9);
         $secondNumber = random_int(1, 9);
+        $referralCode = Str::upper(trim($request->string('ref')->toString()));
 
         session(['registration_captcha_answer' => $firstNumber + $secondNumber]);
 
         return view('auth.register', [
             'captchaQuestion' => "$firstNumber + $secondNumber",
+            'referralCode' => $referralCode,
         ]);
     }
 

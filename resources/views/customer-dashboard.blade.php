@@ -56,7 +56,7 @@
                             <div class="rounded-2xl border border-white/10 bg-white/10 p-4"><div class="text-[9px] font-bold uppercase tracking-wider text-indigo-200">Due now</div><div class="mt-1 truncate text-lg font-black text-amber-300">Rs {{ number_format($dueNow) }}</div></div>
                         </div>
                         <div x-data="{ copied:false }" class="mt-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/10 to-fuchsia-300/10 p-4">
-                            <div class="flex items-end justify-between gap-3"><div><div class="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-200">Referral code</div><div class="mt-1 font-mono text-lg font-black tracking-wider">{{ $customer->referral_code }}</div></div><button type="button" @click="navigator.clipboard.writeText('{{ $customer->referral_code }}'); copied=true; setTimeout(()=>copied=false,1500)" class="rounded-lg bg-white px-3 py-2 text-[10px] font-black text-indigo-700" x-text="copied ? 'Copied ✓' : 'Copy'">Copy</button></div>
+                            <div class="flex items-end justify-between gap-3"><div><div class="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-200">Referral code</div><div class="mt-1 font-mono text-lg font-black tracking-wider">{{ $customer->referral_code }}</div></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code]))); copied=true; setTimeout(()=>copied=false,1500)" class="rounded-lg bg-white px-3 py-2 text-[10px] font-black text-indigo-700" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button></div>
                         </div>
                     </div>
                 </div>

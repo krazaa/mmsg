@@ -32,9 +32,9 @@
     @mouseleave="sidebarHover = false"
     class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-hidden bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-950 text-white shadow-2xl transition-[width,transform] duration-300 lg:translate-x-0"
 >
-    <div class="flex h-20 items-center justify-between border-b border-white/10 px-5">
+    <div class="flex h-20 items-center justify-between border-b border-white/10 px-2">
         <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-3">
-            <span class="grid h-11 w-18 shrink-0 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
+            <span class="grid h-11 w-16 shrink-0 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
             <span x-show="sidebarOpen || sidebarExpanded || sidebarHover" x-transition.opacity class="min-w-0 whitespace-nowrap"><b class="block truncate text-sm">{{ config('app.name', 'Laravel') }}</b><span class="text-[10px] font-bold uppercase tracking-[.18em] text-indigo-300">Management</span></span>
         </a>
         <button type="button" @click="sidebarOpen = false" class="rounded-lg p-2 text-white/60 hover:bg-white/10 hover:text-white lg:hidden">✕</button>
@@ -43,7 +43,7 @@
         </button>
     </div>
 
-    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-5">
+    <nav class="admin-sidebar-nav flex-1 space-y-1 overflow-y-auto px-3 py-5">
         <div x-show="sidebarOpen || sidebarExpanded || sidebarHover" x-transition.opacity class="mb-3 whitespace-nowrap px-3 text-[9px] font-black uppercase tracking-[.2em] text-indigo-400">Workspace</div>
         @foreach($items as $item)
             @if(!($item['hide_from_staff'] ?? false) || Auth::user()->role !== 'staff')

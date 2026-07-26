@@ -54,9 +54,62 @@ class InstallmentManagementTest extends TestCase
     {
         [$user, $booking, $installment] = $this->records();
         $installment->update(['due_date' => today()->addMonth(), 'status' => 'pending']);
+        $laterInstallment = InstallmentSchedules::create([
+            'booking_id' => $booking->id,
+            'installment_number' => 2,
+            'due_date' => today()->addMonths(2),
+            'regular_amount' => 50000,
+            'balloon_amount' => 0,
+            'total_due' => 50000,
+        ]);
 
         $this->actingAs($user)->get(route('installments.index', ['status' => 'upcoming']))
-            ->assertOk()->assertSee($booking->booking_number)->assertSee('Upcoming');
+            ->assertOk()
+            ->assertSee($booking->booking_number)
+            ->assertSee('Upcoming')
+            ->assertSee(route('installments.edit', $installment))
+            ->assertDontSee(route('installments.edit', $laterInstallment));
+    }
+
+    public function test_only_one_upcoming_installment_is_shown_per_customer(): void
+    {
+        [$user, $booking, $installment] = $this->records();
+        $installment->update(['due_date' => today()->addMonth(), 'status' => 'pending']);
+        $otherBooking = $booking->replicate();
+        $otherBooking->booking_number = 'B-2';
+        $otherBooking->save();
+        $otherInstallment = InstallmentSchedules::create([
+            'booking_id' => $otherBooking->id,
+            'installment_number' => 1,
+            'due_date' => today()->addMonths(2),
+            'regular_amount' => 50000,
+            'balloon_amount' => 0,
+            'total_due' => 50000,
+        ]);
+
+        $this->actingAs($user)->get(route('installments.index', ['status' => 'upcoming']))
+            ->assertOk()
+            ->assertSee(route('installments.edit', $installment))
+            ->assertDontSee(route('installments.edit', $otherInstallment));
+    }
+
+    public function test_default_list_hides_later_installments_for_the_same_customer(): void
+    {
+        [$user, $booking, $installment] = $this->records();
+        $installment->update(['due_date' => today()->addMonth(), 'status' => 'pending']);
+        $laterInstallment = InstallmentSchedules::create([
+            'booking_id' => $booking->id,
+            'installment_number' => 2,
+            'due_date' => today()->addMonths(2),
+            'regular_amount' => 50000,
+            'balloon_amount' => 0,
+            'total_due' => 50000,
+        ]);
+
+        $this->actingAs($user)->get(route('installments.index'))
+            ->assertOk()
+            ->assertSee(route('installments.edit', $installment))
+            ->assertDontSee(route('installments.edit', $laterInstallment));
     }
 
     private function records(): array

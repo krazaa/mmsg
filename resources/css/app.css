@@ -172,3 +172,11 @@
     @keyframes owner-shimmer { 0%, 65% { transform: translateX(-55%) rotate(8deg); } 100% { transform: translateX(55%) rotate(8deg); } }
     @keyframes owner-crown-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-3px) rotate(2deg); } }
 }
+.admin-sidebar-nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.admin-sidebar-nav::-webkit-scrollbar {
+    display: none;
+}

@@ -59,6 +59,17 @@ document.querySelectorAll('[data-allotment-selects]').forEach((form) => {
     filterPlots();
 });
 
+const bookingFilterSelect = $('[data-booking-filter-select]').select2({
+    width: '100%',
+    placeholder: 'Search booking or customer',
+    allowClear: false,
+});
+bookingFilterSelect.on('select2:open', () => {
+    window.setTimeout(() => {
+        document.querySelector('.select2-container--open .select2-search__field')?.focus();
+    });
+});
+
 function showPasskeyMessage(element, message, isError = false) {
     if (!element) return;
     element.textContent = message;

@@ -17,7 +17,7 @@
     </head>
     <body class="font-sans antialiased">
         @if(auth()->user()?->role && !in_array(auth()->user()->role, ['customer', 'agent']))
-            <div x-data="{ sidebarOpen: false, sidebarHover: false, sidebarExpanded: localStorage.getItem('adminSidebarExpanded') === 'true', toggleSidebar(){ this.sidebarExpanded = !this.sidebarExpanded; localStorage.setItem('adminSidebarExpanded', this.sidebarExpanded) } }" class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <div x-data="{ sidebarOpen: false, sidebarHover: false, sidebarExpanded: false, toggleSidebar(){ this.sidebarExpanded = !this.sidebarExpanded } }" class="min-h-screen bg-gray-100 dark:bg-gray-900">
                 @include('layouts.admin-sidebar')
                 <div :class="sidebarExpanded ? 'lg:pl-64' : 'lg:pl-20'" class="min-h-screen transition-[padding] duration-300">
                     <div class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white/90 px-4 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-800/90 sm:px-6">

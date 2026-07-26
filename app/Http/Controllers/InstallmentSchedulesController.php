@@ -16,21 +16,32 @@ class InstallmentSchedulesController extends Controller
     {
         $projects = Project::orderBy('name')->get();
         $bookings = Booking::with('customer')->when($request->integer('project'), fn ($query, $id) => $query->where('project_id', $id))->latest()->get();
+        $nextUpcomingIds = InstallmentSchedules::query()
+            ->join('bookings', 'bookings.id', '=', 'installment_schedules.booking_id')
+            ->where('installment_schedules.status', 'pending')
+            ->whereDate('installment_schedules.due_date', '>', today())
+            ->orderBy('installment_schedules.due_date')
+            ->orderBy('installment_schedules.installment_number')
+            ->get(['installment_schedules.id', 'installment_schedules.booking_id', 'bookings.customer_id'])
+            ->unique('customer_id')
+            ->pluck('id');
+
         $installments = InstallmentSchedules::with(['booking.customer', 'booking.project'])
             ->whereHas('booking')
             ->when($request->integer('project'), fn ($query, $id) => $query->whereHas('booking', fn ($booking) => $booking->where('project_id', $id)))
             ->when($request->integer('booking'), fn ($query, $id) => $query->where('booking_id', $id))
-            ->when($request->filled('status'), function ($query) use ($request) {
+            ->when(! $request->filled('status'), fn ($query) => $query->whereIn('id', $nextUpcomingIds))
+            ->when($request->filled('status'), function ($query) use ($request, $nextUpcomingIds) {
                 if ($request->status === 'overdue') {
                     $query->whereIn('status', ['pending', 'partial'])->whereDate('due_date', '<', today());
                 } elseif ($request->status === 'upcoming') {
-                    $query->where('status', 'pending')->whereDate('due_date', '>', today());
+                    $query->whereIn('id', $nextUpcomingIds);
                 } else {
                     $query->where('status', $request->status);
                 }
             })->orderBy('due_date')->paginate(25)->withQueryString();
 
-        return view('installments.index', compact('projects', 'bookings', 'installments'));
+        return view('installments.index', compact('projects', 'bookings', 'installments', 'nextUpcomingIds'));
     }
 
     public function edit(InstallmentSchedules $installment)

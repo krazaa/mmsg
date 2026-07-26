@@ -105,6 +105,27 @@ class DashboardController extends Controller
         return $this->index($request)->with('portalPreview', true);
     }
 
+    public function installments(Request $request): View
+    {
+        abort_unless($request->user()->role === 'customer', 403);
+
+        $customer = $request->user()->customer;
+        abort_unless($customer, 404);
+
+        $bookings = $customer->bookings()
+            ->with([
+                'project',
+                'package',
+                'allotment.plot.block',
+                'installments' => fn ($query) => $query->orderBy('due_date')->orderBy('installment_number'),
+                'payments' => fn ($query) => $query->whereNull('installment_schedule_id')->latest('payment_date'),
+            ])
+            ->latest('booking_date')
+            ->get();
+
+        return view('customer-installments', compact('customer', 'bookings'));
+    }
+
     public function index(Request $request)
     {
         if ($request->user()->role === 'customer') {

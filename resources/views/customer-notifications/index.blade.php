@@ -2,7 +2,7 @@
     <div class="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-6 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/40 sm:py-8">
         <div class="pointer-events-none absolute -left-32 top-20 h-80 w-80 rounded-full bg-violet-200/40 blur-3xl dark:bg-violet-900/20"></div>
         <div class="pointer-events-none absolute -right-32 top-96 h-96 w-96 rounded-full bg-cyan-200/40 blur-3xl dark:bg-cyan-900/20"></div>
-        <div class="relative mx-auto max-w-5xl space-y-6 px-4 sm:px-6">
+        <div class="relative mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             <section class="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 p-6 text-white shadow-2xl shadow-indigo-200/70 dark:shadow-none sm:p-8">
                 <div class="absolute -right-16 -top-20 -z-10 h-72 w-72 rounded-full bg-fuchsia-400/30 blur-3xl"></div>
                 <div class="absolute inset-0 -z-10 opacity-[.07]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:22px 22px"></div>

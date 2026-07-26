@@ -24,6 +24,16 @@ class RegistrationTest extends TestCase
         $this->assertNotNull(session('registration_captcha_answer'));
     }
 
+    public function test_referral_link_prefills_the_registration_form(): void
+    {
+        $this->get('/register?ref=ref-sponsor')
+            ->assertOk()
+            ->assertSee('value="REF-SPONSOR"', false)
+            ->assertSee('readonly', false)
+            ->assertSee('action="'.route('register', ['ref' => 'REF-SPONSOR']).'"', false)
+            ->assertSee('Referral code REF-SPONSOR was added from your invitation link.');
+    }
+
     public function test_new_users_can_register(): void
     {
         Mail::fake();
