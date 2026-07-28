@@ -86,11 +86,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/management/roles-permissions', [RolePermissionController::class, 'edit'])->middleware('role:super_admin')->name('role-permissions.edit');
         Route::put('/management/roles-permissions/{role}', [RolePermissionController::class, 'update'])->middleware('role:super_admin')->name('role-permissions.update');
         Route::get('/management/activity-log', [ActivityLogController::class, 'index'])->middleware('permission:view activity log')->name('management.activity-log.index');
-        Route::get('/withdrawal-requests', [CustomerWithdrawalController::class, 'managementIndex'])->middleware('permission:manage commissions')->name('withdrawal-requests.index');
-        Route::get('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'editSettings'])->middleware('permission:manage commissions')->name('withdrawal-settings.edit');
-        Route::put('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'updateSettings'])->middleware('permission:manage commissions')->name('withdrawal-settings.update');
-        Route::patch('/withdrawal-requests/{withdrawalRequest}', [CustomerWithdrawalController::class, 'review'])->middleware('permission:manage commissions')->name('withdrawal-requests.review');
-        Route::patch('/withdrawal-pin-locks/{customer}', [CustomerWithdrawalController::class, 'unlockPin'])->middleware('permission:manage commissions')->name('withdrawal-pin-locks.destroy');
+        Route::get('/withdrawal-requests', [CustomerWithdrawalController::class, 'managementIndex'])->middleware('permission:manage withdrawals')->name('withdrawal-requests.index');
+        Route::get('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'editSettings'])->middleware('permission:manage withdrawals')->name('withdrawal-settings.edit');
+        Route::put('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'updateSettings'])->middleware('permission:manage withdrawals')->name('withdrawal-settings.update');
+        Route::patch('/withdrawal-requests/{withdrawalRequest}', [CustomerWithdrawalController::class, 'review'])->middleware('permission:manage withdrawals')->name('withdrawal-requests.review');
+        Route::patch('/withdrawal-pin-locks/{customer}', [CustomerWithdrawalController::class, 'unlockPin'])->middleware('permission:manage withdrawals')->name('withdrawal-pin-locks.destroy');
         Route::get('/management/notifications', [CustomerNotificationController::class, 'managementIndex'])->middleware('permission:manage notifications')->name('management.notifications.index');
         Route::get('/management/whatsapp', [WhatsAppSettingsController::class, 'index'])->middleware('permission:manage notifications')->name('management.whatsapp.index');
         Route::get('/management/site-appearance', [SiteAppearanceController::class, 'edit'])->middleware('role:super_admin|admin')->name('site-appearance.edit');

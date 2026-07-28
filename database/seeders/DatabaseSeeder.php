@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(SuperAdminSeeder::class);
+        $this->call(DirectSalesSeeder::class);
         $this->call(PaymentMethodsSeeder::class);
     }
 }

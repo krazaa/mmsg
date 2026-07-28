@@ -3,11 +3,11 @@
         ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => 'dashboard', 'permission' => 'view dashboard', 'icon' => '⌂'],
         ['label' => 'Bookings', 'route' => 'bookings.index', 'active' => 'bookings.*', 'permission' => 'manage bookings', 'icon' => '▤'],
         ['label' => 'Installments', 'route' => 'installments.index', 'active' => 'installments.*', 'permission' => 'manage installments', 'icon' => '◫'],
-        ['label' => 'Customers & referrals', 'route' => 'customers.index', 'active' => 'customers.*', 'permission' => 'manage customers', 'icon' => '♙'],
+        ['label' => 'Customers', 'route' => 'customers.index', 'active' => 'customers.*', 'permission' => 'manage customers', 'icon' => '♙'],
         ['label' => 'Staff', 'route' => 'staff.index', 'active' => 'staff.*', 'permission' => 'manage staff', 'icon' => '♟', 'hide_from_staff' => true],
         ['label' => 'Roles & permissions', 'route' => 'role-permissions.edit', 'active' => 'role-permissions.*', 'permission' => 'manage staff', 'icon' => '⚿', 'super_admin_only' => true],
         ['label' => 'Payments', 'route' => 'payments.index', 'active' => 'payments.*', 'permission' => 'manage payments', 'icon' => '₨'],
-        ['label' => 'Withdrawals', 'route' => 'withdrawal-requests.index', 'active' => 'withdrawal-requests.*', 'permission' => 'manage commissions', 'icon' => '↗'],
+        ['label' => 'Withdrawals', 'route' => 'withdrawal-requests.index', 'active' => 'withdrawal-requests.*', 'permission' => 'manage withdrawals', 'icon' => '↗'],
         ['label' => 'Alerts', 'route' => 'management.notifications.index', 'active' => 'management.notifications.*', 'permission' => 'manage notifications', 'icon' => '◉'],
         ['label' => 'Audit log', 'route' => 'management.activity-log.index', 'active' => 'management.activity-log.*', 'permission' => 'view activity log', 'icon' => '≡', 'hide_from_staff' => true],
     ];
@@ -18,7 +18,7 @@
         ['label' => 'Plot allotments & inventory', 'route' => 'allotments.index', 'active' => 'allotments.*', 'permission' => 'manage allotments', 'color' => 'bg-lime-400'],
         ['label' => 'Packages', 'route' => 'packages.index', 'active' => 'packages.*', 'permission' => 'manage packages', 'color' => 'bg-violet-400'],
         ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
-        ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-teal-400'],
+        ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage withdrawals', 'color' => 'bg-teal-400'],
         ['label' => 'App settings', 'route' => 'app-settings.edit', 'active' => 'app-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-indigo-400'],
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
         ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
@@ -63,8 +63,7 @@
             @endif
         @endforeach
 
-        @if(in_array(Auth::user()->role, ['super_admin', 'admin'], true))
-        @canany(['manage commissions', 'manage packages', 'manage projects', 'manage allotments', 'manage payments', 'manage notifications'])
+        @canany(['manage commissions', 'manage withdrawals', 'manage packages', 'manage projects', 'manage allotments', 'manage payments', 'manage notifications'])
             <div x-data="{ settingsOpen: @js($settingsActive) }" class="pt-1">
                 <button type="button" @click="settingsOpen = !settingsOpen" :title="(sidebarExpanded || sidebarHover) ? '' : 'Settings'" class="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition {{ $settingsActive ? 'bg-white/15 text-white' : 'text-indigo-100/75 hover:bg-white/10 hover:text-white' }}">
                     <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-base {{ $settingsActive ? 'bg-indigo-400/30 text-white' : 'bg-white/5 text-indigo-300 group-hover:bg-white/10' }}">
@@ -88,7 +87,6 @@
                 </div>
             </div>
         @endcanany
-        @endif
     </nav>
 
     <div class="border-t border-white/10 p-3">

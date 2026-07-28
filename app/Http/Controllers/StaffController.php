@@ -12,10 +12,12 @@ use Illuminate\Validation\ValidationException;
 
 class StaffController extends Controller
 {
+    private const MANAGEMENT_ROLES = ['super_admin', 'admin', 'staff', 'booking', 'verification', 'withdrawal'];
+
     public function index(Request $request)
     {
-        $staff = User::query()->whereIn('role', ['super_admin', 'admin', 'staff'])
-            ->when($request->user()->role !== 'super_admin', fn ($query) => $query->where('role', '!=', 'super_admin'))
+        $staff = User::query()->whereIn('role', self::MANAGEMENT_ROLES)
+            ->when(! $request->user()->hasRole('super_admin'), fn ($query) => $query->where('role', '!=', 'super_admin'))
             ->when($request->filled('search'), function ($query) use ($request): void {
                 $search = '%'.$request->string('search')->trim().'%';
                 $query->where(fn ($inner) => $inner->where('name', 'like', $search)->orWhere('email', 'like', $search)->orWhere('phone', 'like', $search)->orWhere('cnic', 'like', $search)->orWhere('referral_code', 'like', $search));
@@ -33,7 +35,7 @@ class StaffController extends Controller
     {
         $data = $this->validated($request);
         DB::transaction(function () use ($data): void {
-            $systemId = User::where('email', 'direct-sales@abdullahtown.pk')->value('id');
+            $systemId = User::where('referral_code', 'DIRECT-SALES')->value('id');
             $staff = User::create($data + [
                 'email_verified_at' => now(),
                 'referral_agent_id' => $systemId,
@@ -80,8 +82,22 @@ class StaffController extends Controller
     private function validated(Request $request, ?User $staff = null): array
     {
         if (($request->input('role') === 'super_admin' || $staff?->role === 'super_admin')
-            && $request->user()->role !== 'super_admin') {
+            && ! $request->user()->hasRole('super_admin')) {
             throw ValidationException::withMessages(['role' => 'Only the Super Admin can manage the Super Admin role.']);
+        }
+
+        if ($request->input('role') === 'super_admin') {
+            $anotherSuperAdminExists = User::query()
+                ->when($staff, fn ($query) => $query->whereKeyNot($staff->id))
+                ->where(function ($query): void {
+                    $query->where('role', 'super_admin')
+                        ->orWhereHas('roles', fn ($roles) => $roles->where('name', 'super_admin')->where('guard_name', 'web'));
+                })
+                ->exists();
+
+            if ($anotherSuperAdminExists) {
+                throw ValidationException::withMessages(['role' => 'Only one Super Admin account is allowed.']);
+            }
         }
 
         return $request->validate([
@@ -91,7 +107,7 @@ class StaffController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($staff)],
             'phone' => ['required', 'string', 'max:30'],
             'address' => ['required', 'string', 'max:2000'],
-            'role' => ['required', Rule::in(['super_admin', 'admin', 'staff'])],
+            'role' => ['required', Rule::in(self::MANAGEMENT_ROLES)],
             'password' => [$staff ? 'nullable' : 'required', 'nullable', 'confirmed', Password::defaults()],
             'status' => ['required', 'boolean'],
         ]);
@@ -99,7 +115,7 @@ class StaffController extends Controller
 
     private function ensureStaff(User $staff): void
     {
-        abort_unless(in_array($staff->role, ['super_admin', 'admin', 'staff'], true), 404);
+        abort_unless(in_array($staff->role, self::MANAGEMENT_ROLES, true), 404);
     }
 
     private function referralCode(User $staff): string
@@ -107,6 +123,9 @@ class StaffController extends Controller
         $prefix = match ($staff->role) {
             'super_admin' => 'SADM',
             'admin' => 'ADM',
+            'booking' => 'BKG',
+            'verification' => 'VER',
+            'withdrawal' => 'WDR',
             default => 'STF',
         };
         $code = $prefix.'-'.str_pad((string) $staff->id, 6, '0', STR_PAD_LEFT);
@@ -134,6 +153,6 @@ class StaffController extends Controller
 
     private function authorizeSuperAdminAccess(Request $request, User $staff): void
     {
-        abort_if($staff->role === 'super_admin' && $request->user()->role !== 'super_admin', 403);
+        abort_if($staff->role === 'super_admin' && ! $request->user()->hasRole('super_admin'), 403);
     }
 }

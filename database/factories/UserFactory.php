@@ -30,6 +30,9 @@ class UserFactory extends Factory
                 ? Permissions::all()
                 : match ($roleName) {
                     'staff' => array_values(array_diff(Permissions::all(), [Permissions::MANAGE_STAFF, ...Permissions::customer()])),
+                    'booking' => [Permissions::ACCESS_MANAGEMENT, Permissions::VIEW_DASHBOARD, Permissions::MANAGE_BOOKINGS],
+                    'verification' => [Permissions::ACCESS_MANAGEMENT, Permissions::VIEW_DASHBOARD, Permissions::MANAGE_PAYMENTS],
+                    'withdrawal' => [Permissions::ACCESS_MANAGEMENT, Permissions::VIEW_DASHBOARD, Permissions::MANAGE_WITHDRAWALS],
                     'customer' => Permissions::customer(),
                     default => [],
                 };

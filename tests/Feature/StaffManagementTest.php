@@ -25,7 +25,7 @@ class StaffManagementTest extends TestCase
         ])->assertRedirect(route('staff.index'));
 
         $staff = User::where('email', 'staff2@example.com')->firstOrFail();
-        $system = User::where('email', 'direct-sales@abdullahtown.pk')->firstOrFail();
+        $system = User::where('email', 'direct-sales@mmsgroup.pk')->firstOrFail();
         $this->assertSame('staff', $staff->role);
         $this->assertSame('STF-'.str_pad((string) $staff->id, 6, '0', STR_PAD_LEFT), $staff->referral_code);
         $this->assertSame($system->id, $staff->referral_agent_id);
@@ -84,6 +84,7 @@ class StaffManagementTest extends TestCase
             'email' => 'sadmin@mmsg.com',
             'role' => 'super_admin',
         ]);
+        $superAdmin->syncRoles('super_admin');
 
         $this->actingAs($admin)->get(route('staff.index'))
             ->assertOk()
@@ -95,5 +96,68 @@ class StaffManagementTest extends TestCase
         $this->actingAs($admin)->delete(route('staff.destroy', $superAdmin))->assertForbidden();
 
         $this->actingAs($superAdmin)->get(route('staff.edit', $superAdmin))->assertOk();
+    }
+
+    public function test_only_one_super_admin_account_is_allowed(): void
+    {
+        $this->seed();
+        $superAdmin = User::factory()->create([
+            'email' => 'only-super-admin@example.com',
+            'role' => 'super_admin',
+        ]);
+        $superAdmin->syncRoles('super_admin');
+
+        $this->actingAs($superAdmin)->post(route('staff.store'), [
+            'name' => 'Second Super Admin',
+            'father_name' => 'Admin Father',
+            'cnic' => '12345-1234567-9',
+            'email' => 'second-super-admin@example.com',
+            'phone' => '03001234567',
+            'address' => 'Admin address',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'role' => 'super_admin',
+            'status' => 1,
+        ])->assertSessionHasErrors('role');
+
+        $admin = User::where('email', 'admin@abdullahtown.pk')->firstOrFail();
+        $this->actingAs($superAdmin)->put(route('staff.update', $admin), [
+            'name' => $admin->name,
+            'father_name' => 'Admin Father',
+            'cnic' => '12345-1234567-8',
+            'email' => $admin->email,
+            'phone' => '03001234567',
+            'address' => 'Admin address',
+            'role' => 'super_admin',
+            'status' => 1,
+        ])->assertSessionHasErrors('role');
+
+        $this->assertSame(1, User::where('role', 'super_admin')->count());
+        $this->assertSame('admin', $admin->refresh()->role);
+    }
+
+    public function test_operational_roles_only_access_their_assigned_workflows(): void
+    {
+        $this->seed();
+
+        $booking = User::factory()->create(['role' => 'booking', 'email_verified_at' => now()]);
+        $booking->syncRoles('booking');
+        $this->assertTrue($booking->can('access management'));
+        $this->assertTrue($booking->can('manage bookings'));
+        $this->actingAs($booking)->get(route('bookings.index'))->assertOk();
+        $this->actingAs($booking)->get(route('payments.index'))->assertForbidden();
+        $this->actingAs($booking)->get(route('withdrawal-requests.index'))->assertForbidden();
+
+        $verification = User::factory()->create(['role' => 'verification', 'email_verified_at' => now()]);
+        $verification->syncRoles('verification');
+        $this->actingAs($verification)->get(route('payments.index'))->assertOk();
+        $this->actingAs($verification)->get(route('bookings.index'))->assertForbidden();
+        $this->actingAs($verification)->get(route('withdrawal-requests.index'))->assertForbidden();
+
+        $withdrawal = User::factory()->create(['role' => 'withdrawal', 'email_verified_at' => now()]);
+        $withdrawal->syncRoles('withdrawal');
+        $this->actingAs($withdrawal)->get(route('withdrawal-requests.index'))->assertOk();
+        $this->actingAs($withdrawal)->get(route('bookings.index'))->assertForbidden();
+        $this->actingAs($withdrawal)->get(route('payments.index'))->assertForbidden();
     }
 }

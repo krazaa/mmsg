@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Commission;
 use App\Models\CommissionPayout;
+use App\Models\User;
 use App\Models\WithdrawalRequest;
 use App\Models\WithdrawalSetting;
-use App\Models\User;
 use App\Notifications\WithdrawalPinResetNotification;
 use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;

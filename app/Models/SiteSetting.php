@@ -99,5 +99,4 @@ class SiteSetting extends Model
             FILTER_VALIDATE_BOOL,
         );
     }
-
 }

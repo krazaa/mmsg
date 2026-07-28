@@ -29,7 +29,7 @@ return new class extends Migration
 
             // pending, partial, paid, overdue, waived, cancelled
             $table->string('status', 30)->default('pending');
-            $table->timestamp('reminder_sent_at')->nullable()->after('status');
+            $table->timestamp('reminder_sent_at')->nullable();
             $table->timestamps();
 
             $table->unique(

@@ -237,7 +237,12 @@ async function compressPaymentProof(file) {
         throw new Error('PDF payment proofs must already be 300 KB or smaller.');
     }
 
-    const image = await createImageBitmap(file);
+    let image;
+    try {
+        image = await createImageBitmap(file);
+    } catch {
+        throw new Error('Your browser cannot compress this image format. Upload a file below 300 KB or convert it to JPG, PNG or WebP.');
+    }
     let scale = Math.min(1, 2000 / Math.max(image.width, image.height));
     let quality = 0.86;
     let blob;
@@ -280,6 +285,11 @@ document.addEventListener('submit', async (event) => {
     event.preventDefault();
     const button = form.querySelector('button[type="submit"], button:not([type])');
     const originalText = button?.textContent;
+    const restoreButton = () => {
+        if (!button) return;
+        button.disabled = false;
+        button.textContent = originalText;
+    };
 
     try {
         if (button) {
@@ -296,11 +306,22 @@ document.addEventListener('submit', async (event) => {
 
         form.dataset.proofReady = 'true';
         form.requestSubmit();
+
+        // If native validation prevents the second submission, do not leave
+        // the payment button permanently disabled.
+        window.setTimeout(() => {
+            if (document.visibilityState === 'visible') restoreButton();
+        }, 4000);
     } catch (error) {
-        alert(error.message);
-        if (button) {
-            button.disabled = false;
-            button.textContent = originalText;
-        }
+        alert(error.message || 'The payment proof could not be prepared. Please try again.');
+        restoreButton();
     }
+});
+
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form[data-compress-proof]').forEach((form) => {
+        delete form.dataset.proofReady;
+        const button = form.querySelector('button[type="submit"], button:not([type])');
+        if (button) button.disabled = false;
+    });
 });

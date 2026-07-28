@@ -26,11 +26,14 @@
         <select name="role" required class="mt-1 w-full rounded-md border-gray-300">
             <option value="staff" @selected(old('role', $staff->role ?? 'staff') === 'staff')>Staff</option>
             <option value="admin" @selected(old('role', $staff->role ?? 'staff') === 'admin')>Administrator</option>
-            @if(auth()->user()->role === 'super_admin' || ($staff->role ?? null) === 'super_admin')
+            <option value="booking" @selected(old('role', $staff->role ?? 'staff') === 'booking')>Booking</option>
+            <option value="verification" @selected(old('role', $staff->role ?? 'staff') === 'verification')>Verification</option>
+            <option value="withdrawal" @selected(old('role', $staff->role ?? 'staff') === 'withdrawal')>Withdrawal</option>
+            @if(auth()->user()->hasRole('super_admin') || ($staff->role ?? null) === 'super_admin')
                 <option value="super_admin" @selected(old('role', $staff->role ?? 'staff') === 'super_admin')>Super Admin</option>
             @endif
         </select>
-        <span class="mt-1 block text-xs font-normal text-gray-500">Super Admin has complete access. Administrators can manage staff accounts; staff cannot.</span>
+        <span class="mt-1 block text-xs font-normal text-gray-500">Booking, Verification and Withdrawal roles only access their assigned workflow.</span>
     </label>
     <label class="block text-sm font-medium text-gray-700">Phone
         <input name="phone" value="{{ old('phone', $staff->phone ?? '') }}" required autocomplete="tel" class="mt-1 w-full rounded-md border-gray-300">

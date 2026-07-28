@@ -35,7 +35,7 @@ class CustomerPaymentController extends Controller
             'amount' => ['nullable', 'required_if:payment_type,installment', 'numeric', 'gt:0'],
             'payment_method' => ['required', Rule::exists('payment_methods', 'code')->where(fn ($query) => $query->where('customer_portal', true)->where('status', true))],
             'transaction_reference' => ['nullable', 'string', 'max:100'],
-            'proof' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:300'],
+            'proof' => ['required', 'file', 'mimes:jpg,jpeg,jfif,png,webp,gif,bmp,heic,heif,pdf', 'max:300'],
         ]);
 
         $customer = $request->user()->customer;

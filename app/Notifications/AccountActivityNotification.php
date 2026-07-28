@@ -4,11 +4,18 @@ namespace App\Notifications;
 
 use App\Notifications\Channels\WhatsAppChannel;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class AccountActivityNotification extends Notification
+class AccountActivityNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 3;
+
+    public int $timeout = 30;
+
+    public array $backoff = [10, 30, 60];
 
     public function __construct(
         public string $title,

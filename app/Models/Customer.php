@@ -46,6 +46,11 @@ class Customer extends User
         return $this->hasOne(Booking::class, 'customer_id')->latestOfMany('booking_date');
     }
 
+    public function referral()
+    {
+        return $this->hasOne(Referral::class, 'user_id');
+    }
+
     public function referralAgent()
     {
         return $this->belongsTo(User::class, 'referral_agent_id');

@@ -13,7 +13,7 @@ use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionController extends Controller
 {
-    private const EDITABLE_ROLES = ['admin', 'staff'];
+    private const EDITABLE_ROLES = ['admin', 'staff', 'booking', 'verification', 'withdrawal'];
 
     public function edit(): View
     {

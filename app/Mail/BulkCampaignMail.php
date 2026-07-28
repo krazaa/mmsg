@@ -3,10 +3,10 @@
 namespace App\Mail;
 
 use App\Models\EmailCampaignRecipient;
+use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailable;
 
 class BulkCampaignMail extends Mailable
 {

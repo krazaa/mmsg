@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Mail\CustomerWelcomeMail;
 use App\Models\Customer;
 use App\Models\User;
+use App\Support\Permissions;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -59,7 +60,7 @@ class RegistrationTest extends TestCase
         ]);
         $registeredUser = User::findOrFail(auth()->id());
         $this->assertTrue($registeredUser->hasRole('customer'));
-        $this->assertTrue($registeredUser->hasAllPermissions(\App\Support\Permissions::customer()));
+        $this->assertTrue($registeredUser->hasAllPermissions(Permissions::customer()));
         $this->assertDatabaseHas('referrals', ['user_id' => auth()->id()]);
         Mail::assertSent(CustomerWelcomeMail::class, function (CustomerWelcomeMail $mail) {
             return $mail->hasTo('test@example.com')

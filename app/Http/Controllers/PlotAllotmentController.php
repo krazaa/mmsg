@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Models\Block;
+use App\Models\Booking;
 use App\Models\Plot;
 use App\Models\PlotAllotment;
 use App\Models\Project;

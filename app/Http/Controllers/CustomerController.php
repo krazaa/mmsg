@@ -23,19 +23,36 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        $customers = Customer::with(['referralAgent.customer', 'user.referral.sponsor'])->withCount(['bookings', 'payments'])
+        $baseQuery = Customer::query()
             ->where('referral_code', '!=', 'DIRECT-SALES')
+            ->when($request->input('type') === 'commission', fn ($query) => $query->whereHas('commissions'))
             ->when($request->filled('referral_code'), fn ($query) => $query->where('referral_code', 'like', '%'.$request->string('referral_code')->trim().'%'))
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = '%'.$request->string('search')->trim().'%';
-                $query->where(fn ($q) => $q->where('name', 'like', $search)->orWhere('file_no', 'like', $search)->orWhere('cnic', 'like', $search)->orWhere('phone', 'like', $search)->orWhere('referral_code', 'like', $search));
-            })->latest()->paginate(25)->withQueryString();
-        $customers->getCollection()->each(function ($customer) {
-            $customer->payable_commission = $customer->user
-                ? $customer->user->commissions()->where('status', 'earned')->sum('amount') : 0;
-        });
+                $query->where(fn ($q) => $q->where('name', 'like', $search)
+                    ->orWhere('file_no', 'like', $search)
+                    ->orWhere('cnic', 'like', $search)
+                    ->orWhere('phone', 'like', $search)
+                    ->orWhere('email', 'like', $search)
+                    ->orWhere('referral_code', 'like', $search));
+            });
 
-        return view('customers.index', compact('customers'));
+        $customers = (clone $baseQuery)
+            ->with(['referralAgent', 'referral.sponsor'])
+            ->withCount(['bookings', 'payments', 'commissions'])
+            ->withSum(['commissions as payable_commission' => fn ($query) => $query->where('status', 'earned')], 'amount')
+            ->latest()
+            ->paginate(25)
+            ->withQueryString();
+
+        $summary = [
+            'total' => Customer::where('referral_code', '!=', 'DIRECT-SALES')->count(),
+            'active' => Customer::where('referral_code', '!=', 'DIRECT-SALES')->where('status', true)->count(),
+            'booked' => Customer::where('referral_code', '!=', 'DIRECT-SALES')->whereHas('bookings')->count(),
+            'commission' => Customer::where('referral_code', '!=', 'DIRECT-SALES')->whereHas('commissions')->count(),
+        ];
+
+        return view('customers.index', compact('customers', 'summary'));
     }
 
     public function create()
@@ -178,5 +195,4 @@ class CustomerController extends Controller
         User::findOrFail($customer->id)->syncRoles($role);
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
-
 }

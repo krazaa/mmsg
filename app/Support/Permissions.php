@@ -26,6 +26,8 @@ final class Permissions
 
     public const MANAGE_COMMISSIONS = 'manage commissions';
 
+    public const MANAGE_WITHDRAWALS = 'manage withdrawals';
+
     public const MANAGE_NOTIFICATIONS = 'manage notifications';
 
     public const VIEW_ACTIVITY_LOG = 'view activity log';
@@ -62,7 +64,7 @@ final class Permissions
             self::MANAGE_PACKAGES, self::MANAGE_CUSTOMERS, self::MANAGE_STAFF,
             self::MANAGE_BOOKINGS, self::MANAGE_PAYMENTS,
             self::MANAGE_INSTALLMENTS, self::MANAGE_ALLOTMENTS, self::MANAGE_COMMISSIONS,
-            self::MANAGE_NOTIFICATIONS, self::VIEW_ACTIVITY_LOG, self::USE_CUSTOMER_PORTAL,
+            self::MANAGE_WITHDRAWALS, self::MANAGE_NOTIFICATIONS, self::VIEW_ACTIVITY_LOG, self::USE_CUSTOMER_PORTAL,
             ...self::customer(),
         ]));
     }

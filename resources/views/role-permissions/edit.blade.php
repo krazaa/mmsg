@@ -12,7 +12,13 @@
             @endif
 
             <div class="grid items-start gap-6 lg:grid-cols-2">
-                @foreach(['admin' => 'Administrator', 'staff' => 'Staff'] as $roleName => $roleLabel)
+                @foreach([
+                    'admin' => 'Administrator',
+                    'staff' => 'Staff',
+                    'booking' => 'Booking',
+                    'verification' => 'Verification',
+                    'withdrawal' => 'Withdrawal',
+                ] as $roleName => $roleLabel)
                     @php($assigned = $roles->get($roleName)?->permissions->pluck('name') ?? collect())
                     <form method="POST" action="{{ route('role-permissions.update', $roleName) }}" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
                         @csrf

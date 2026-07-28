@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\AuditsModelChanges;
 use App\Models\Concerns\TracksUserstamps;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
 
 class PaymentGatewaySetting extends Model
 {
@@ -21,9 +22,9 @@ class PaymentGatewaySetting extends Model
         ];
     }
 
-    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    public function getActivitylogOptions(): LogOptions
     {
-        return \Spatie\Activitylog\LogOptions::defaults()
+        return LogOptions::defaults()
             ->useLogName(class_basename($this))
             ->logAll()
             ->logExcept(['credentials'])

@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\Referral;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Models\WithdrawalRequest;
 use App\Models\WithdrawalSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -314,7 +315,7 @@ class CustomerPortalTest extends TestCase
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
         ])->assertSessionHasErrors('amount');
-        $withdrawal = \App\Models\WithdrawalRequest::firstOrFail();
+        $withdrawal = WithdrawalRequest::firstOrFail();
         $this->actingAs($admin)->patch(route('withdrawal-requests.review', $withdrawal), [
             'decision' => 'paid',
             'transaction_reference' => 'BANK-WDR-500',
