@@ -4,9 +4,11 @@
 <body style="margin:0;background:#f1f5f9;font-family:Arial,sans-serif;color:#1e293b">
     <div style="max-width:680px;margin:0 auto;padding:30px 15px">
         <div style="background:linear-gradient(135deg,#4338ca,#6d28d9);padding:24px 28px;border-radius:18px 18px 0 0;color:#fff">
-            <div style="margin-bottom:18px">@include('emails.partials.logo')</div>
-            <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.75">{{ config('app.name', 'Laravel') }}</div>
-            <h1 style="margin:8px 0 0;font-size:24px">{{ $recipient->campaign->subject }}</h1>
+            @include('emails.partials.header', [
+                'eyebrow' => 'Announcement',
+                'title' => $recipient->campaign->subject,
+                'mutedColor' => '#ddd6fe',
+            ])
         </div>
         <div style="background:#fff;padding:30px 28px;border-radius:0 0 18px 18px">
             <p style="margin-top:0">Dear {{ $recipient->name }},</p>

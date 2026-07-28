@@ -5,9 +5,11 @@
     <div style="max-width:620px;margin:0 auto;padding:32px 16px">
         <div style="overflow:hidden;border-radius:20px;background:#ffffff;box-shadow:0 10px 30px rgba(15,23,42,.08)">
             <div style="padding:32px;background:linear-gradient(135deg,#312e81,#6d28d9);color:#ffffff">
-                <div style="margin-bottom:20px">@include('emails.partials.logo')</div>
-                <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#c7d2fe">{{ config('app.name', 'Laravel') }}</div>
-                <h1 style="margin:12px 0 0;font-size:30px">Welcome, {{ $customer->name }}</h1>
+                @include('emails.partials.header', [
+                    'eyebrow' => 'Customer account',
+                    'title' => 'Welcome, '.$customer->name,
+                    'mutedColor' => '#ddd6fe',
+                ])
                 <p style="margin:10px 0 0;line-height:1.6;color:#e0e7ff">Your secure property account has been created successfully.</p>
             </div>
             <div style="padding:32px">

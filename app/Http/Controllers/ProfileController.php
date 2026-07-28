@@ -63,6 +63,18 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('success', 'Withdrawal PIN updated securely.');
     }
 
+    public function updateNotificationPreferences(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email_notifications_enabled' => ['required', 'boolean'],
+            'whatsapp_notifications_enabled' => ['required', 'boolean'],
+        ]);
+
+        $request->user()->update($data);
+
+        return Redirect::route('profile.edit')->with('success', 'Notification preferences updated.');
+    }
+
     /**
      * Delete the user's account.
      */

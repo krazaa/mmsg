@@ -5,8 +5,11 @@ namespace Tests\Feature;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\WithdrawalSetting;
+use App\Notifications\AccountActivityNotification;
+use App\Notifications\Channels\WhatsAppChannel;
 use App\Notifications\WithdrawalPinResetNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -23,7 +26,10 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->get('/profile');
 
-        $response->assertOk()->assertSee('Add a passkey');
+        $response->assertOk()
+            ->assertSee('Add a passkey')
+            ->assertSee('Portal notifications')
+            ->assertSee('Always active');
     }
 
     public function test_customer_profile_shows_referral_code_and_link_when_enabled(): void
@@ -79,6 +85,51 @@ class ProfileTest extends TestCase
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_each_user_can_update_email_and_whatsapp_notification_preferences(): void
+    {
+        $user = User::factory()->create([
+            'phone' => '03001234567',
+            'email_notifications_enabled' => true,
+            'whatsapp_notifications_enabled' => true,
+        ]);
+
+        $this->actingAs($user)->patch(route('profile.notifications.update'), [
+            'email_notifications_enabled' => '0',
+            'whatsapp_notifications_enabled' => '0',
+        ])->assertRedirect(route('profile.edit'))
+            ->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertFalse($user->email_notifications_enabled);
+        $this->assertFalse($user->whatsapp_notifications_enabled);
+
+        config()->set('services.whatsapp.enabled', true);
+        $notification = new AccountActivityNotification('Update', 'Account updated.', 'account', route('dashboard'));
+        $this->assertSame(['database'], $notification->via($user));
+
+        $user->update([
+            'email_notifications_enabled' => true,
+            'whatsapp_notifications_enabled' => true,
+        ]);
+        $this->assertSame(['database', 'mail', WhatsAppChannel::class], $notification->via($user->refresh()));
+    }
+
+    public function test_database_activity_notifications_are_stored_synchronously(): void
+    {
+        Config::set('queue.default', 'database');
+
+        $connections = (new AccountActivityNotification(
+            'Payment verified',
+            'Your payment has been credited.',
+            'payment',
+            route('dashboard'),
+        ))->viaConnections();
+
+        $this->assertSame('sync', $connections['database']);
+        $this->assertSame('database', $connections['mail']);
+        $this->assertSame('database', $connections[WhatsAppChannel::class]);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void

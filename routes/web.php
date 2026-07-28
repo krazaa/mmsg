@@ -144,6 +144,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/notification-preferences', [ProfileController::class, 'updateNotificationPreferences'])->name('profile.notifications.update');
     Route::patch('/profile/withdrawal-pin', [ProfileController::class, 'updateWithdrawalPin'])->name('profile.withdrawal-pin.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

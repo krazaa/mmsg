@@ -14,7 +14,7 @@ use Laravel\Passkeys\Contracts\PasskeyUser;
 use Laravel\Passkeys\PasskeyAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme', 'withdrawal_frequency', 'withdrawal_pin', 'withdrawal_pin_failed_attempts', 'withdrawal_pin_locked_until'])]
+#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme', 'withdrawal_frequency', 'withdrawal_pin', 'withdrawal_pin_failed_attempts', 'withdrawal_pin_locked_until', 'email_notifications_enabled', 'whatsapp_notifications_enabled'])]
 #[Hidden(['password', 'withdrawal_pin', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -34,6 +34,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'withdrawal_pin' => 'hashed',
             'withdrawal_pin_failed_attempts' => 'integer',
             'withdrawal_pin_locked_until' => 'datetime',
+            'email_notifications_enabled' => 'boolean',
+            'whatsapp_notifications_enabled' => 'boolean',
             'status' => 'boolean',
         ];
     }

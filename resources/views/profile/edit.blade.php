@@ -112,6 +112,7 @@
 
                 <div class="min-w-0 space-y-6">
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-7">@include('profile.partials.update-profile-information-form')</section>
+                    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-7">@include('profile.partials.update-notification-preferences-form')</section>
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-7">@include('profile.partials.update-password-form')</section>
                 </div>
             </div>
