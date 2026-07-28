@@ -1,7 +1,7 @@
 @include('emails.partials.status-message', [
     'eyebrow' => 'UPCOMING INSTALLMENT', 'title' => $dueLabel,
     'name' => $installment->booking->customer->name, 'color' => '#d97706',
-    'message' => 'This is a friendly reminder that an installment on your active '.config('app.name').' payment plan is approaching.',
+    'notificationMessage' => 'This is a friendly reminder that an installment on your active '.config('app.name').' payment plan is approaching.',
     'details' => [
         'Booking' => $installment->booking->booking_number,
         'Project' => $installment->booking->project->name,

@@ -89,6 +89,9 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertEquals(0, (float) $project->sold_area_marla);
         $this->assertCount(12, $booking->refresh()->installments);
         Mail::assertSent(BookingApprovedMail::class, fn (BookingApprovedMail $mail) => $mail->hasTo($customer->email));
+        $bookingEmailHtml = (new BookingApprovedMail($booking->fresh()->load(['customer', 'project', 'package'])))->render();
+        $this->assertStringContainsString('Your booking is approved', $bookingEmailHtml);
+        $this->assertStringContainsString('MMS Group', $bookingEmailHtml);
 
         $this->actingAs($customerUser)->get(route('dashboard'))
             ->assertOk()->assertSee('Pay your first payment')->assertSee('200,000.00');
@@ -154,6 +157,9 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertEquals(10, (float) $project->sold_area_marla);
         Mail::assertSent(PaymentVerifiedMail::class, fn (PaymentVerifiedMail $mail) => $mail->hasTo($customer->email));
         Mail::assertSent(PlanActivatedMail::class, fn (PlanActivatedMail $mail) => $mail->hasTo($customer->email));
+        $planEmailHtml = (new PlanActivatedMail($booking->fresh()->load(['customer', 'project', 'package'])))->render();
+        $this->assertStringContainsString('Your payment plan is now active', $planEmailHtml);
+        $this->assertStringContainsString('MMS Group', $planEmailHtml);
 
         $titles = $customerUser->notifications()->get()->pluck('data.title');
         $this->assertTrue($titles->contains('Booking request submitted'));

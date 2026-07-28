@@ -17,7 +17,7 @@
         </div>
         <div style="padding:30px">
             <p style="margin:0 0 10px;font-size:17px;font-weight:700">Dear {{ $name }},</p>
-            <p style="margin:0;line-height:1.7;color:#475569">{{ $message }}</p>
+            <p style="margin:0;line-height:1.7;color:#475569">{{ $notificationMessage }}</p>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
                 @foreach($details as $label => $value)
                     <tr>
