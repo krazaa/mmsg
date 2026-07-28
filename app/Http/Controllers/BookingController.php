@@ -8,7 +8,6 @@ use App\Mail\BookingApprovedMail;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Project;
-use App\Models\User;
 use App\Notifications\AccountActivityNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -29,7 +28,7 @@ class BookingController extends Controller
         $bookings = Booking::with('customer', 'package', 'agent')->where('project_id', $project->id)->latest()->limit(20)->get();
 
         return view('bookings.index', compact('project', 'projects', 'bookings') + [
-            'agents' => User::where('role', 'agent')->where('status', true)->orderBy('name')->get(),
+            'agents' => Customer::where('status', true)->orderBy('name')->get(),
             'customers' => Customer::where('status', true)->with(['referralAgent', 'latestBooking'])->orderBy('name')->get(),
         ]);
     }
@@ -58,7 +57,7 @@ class BookingController extends Controller
             'name' => ['required_without:customer_id', 'nullable', 'string', 'max:255'],
             'father_name' => ['nullable', 'string', 'max:255'], 'cnic' => ['required_without:customer_id', 'nullable', 'string', 'max:15', 'unique:users,cnic'],
             'phone' => ['required_without:customer_id', 'nullable', 'string', 'max:30'], 'email' => ['nullable', 'email', 'unique:users,email'], 'address' => ['nullable', 'string'],
-            'agent_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'agent')->where('status', true)], 'booking_date' => ['required', 'date'],
+            'agent_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'customer')->where('status', true)], 'booking_date' => ['required', 'date'],
             'payment_method' => ['required', 'in:cash,bank_transfer,cheque,card,easypaisa,jazzcash'],
             'transaction_reference' => ['nullable', 'string', 'max:100'],
         ]);
@@ -75,7 +74,7 @@ class BookingController extends Controller
 
     public function edit(Booking $booking)
     {
-        return view('bookings.edit', ['booking' => $booking->load('customer', 'project', 'package'), 'agents' => User::whereIn('role', ['agent', 'customer'])->where(fn ($query) => $query->where('status', true)->orWhere('id', $booking->agent_id))->orderBy('name')->get()]);
+        return view('bookings.edit', ['booking' => $booking->load('customer', 'project', 'package'), 'agents' => Customer::where(fn ($query) => $query->where('status', true)->orWhere('id', $booking->agent_id))->orderBy('name')->get()]);
     }
 
     public function manage(Booking $booking)
@@ -117,7 +116,7 @@ class BookingController extends Controller
             'name' => ['required', 'string', 'max:255'], 'father_name' => ['nullable', 'string', 'max:255'],
             'cnic' => ['nullable', 'string', 'max:15', Rule::unique('users')->ignore($booking->customer_id)],
             'phone' => ['required', 'string', 'max:30'], 'email' => ['nullable', 'email'], 'address' => ['nullable', 'string'],
-            'agent_id' => ['nullable', Rule::exists('users', 'id')->whereIn('role', ['agent', 'customer'])], 'booking_date' => ['required', 'date'],
+            'agent_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'customer')], 'booking_date' => ['required', 'date'],
             'status' => ['required', Rule::in(['pending', 'approved', 'active', 'completed', 'cancelled', 'defaulted'])],
         ]);
 

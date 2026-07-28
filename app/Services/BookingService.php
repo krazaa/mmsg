@@ -66,7 +66,7 @@ class BookingService implements BookingCreator, BookingPaymentRecorder
 
             $project->increment('sold_area_marla', (float) $package->size_marla);
             $payment = Payment::create([
-                'receipt_number' => 'BKG-1ST-PAY-'.now()->format('ymdHis').random_int(100, 999),
+                'receipt_number' => 'BKG-PAY-'.now()->format('ymdHis').random_int(100, 999),
                 'booking_id' => $booking->id, 'customer_id' => $customer->id,
                 'amount' => $package->booking_amount, 'payment_method' => $data['payment_method'],
                 'transaction_reference' => $data['transaction_reference'] ?? null,

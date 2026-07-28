@@ -10,6 +10,7 @@
 <div class="grid gap-5 sm:grid-cols-2" x-data="{
     months: {{ (int) old('months', $package->months ?? 36) }},
     booking: {{ (float) old('booking_amount', $package->booking_amount ?? 350000) }},
+    cashPrice: @js(old('cash_price', $package->cash_price ?? '')),
     monthly: {{ (float) old('monthly_amount', $package->monthly_amount ?? 50000) }},
     balloons: @js(array_values($initialBalloons)),
     addBalloon() { this.balloons.push({ month: '', amount: '' }) },
@@ -35,6 +36,18 @@
     </label>
     <label class="block text-sm font-medium text-gray-700">First payment (Rs)
         <input type="number" step="0.01" min="0" name="booking_amount" x-model.number="booking" value="{{ old('booking_amount', $package->booking_amount ?? 350000) }}" required class="mt-1 w-full rounded-md border-gray-300">
+    </label>
+    <label class="block text-sm font-medium text-gray-700">Cash price (Rs)
+        <input type="number" step="0.01" min="0.01" name="cash_price" x-model.number="cashPrice" value="{{ old('cash_price', $package->cash_price ?? '') }}" class="mt-1 w-full rounded-md border-gray-300" placeholder="Leave blank to disable cash plan">
+        <span class="mt-1 block text-xs font-normal text-gray-500">Optional. When entered, it must differ from the installment price.</span>
+    </label>
+    <label class="block text-sm font-medium text-gray-700">Available payment plans
+        <select name="payment_plan_options" required class="mt-1 w-full rounded-md border-gray-300">
+            <option value="both" @selected(old('payment_plan_options', $package->payment_plan_options ?? (($package->cash_price ?? null) === null ? 'installment' : 'both')) === 'both')>Cash & Installments</option>
+            <option value="cash" @selected(old('payment_plan_options', $package->payment_plan_options ?? '') === 'cash')>Cash Only</option>
+            <option value="installment" @selected(old('payment_plan_options', $package->payment_plan_options ?? (($package->cash_price ?? null) === null ? 'installment' : '')) === 'installment')>Installments Only</option>
+        </select>
+        <span class="mt-1 block text-xs font-normal text-gray-500">Choose which plans customers can select for this package.</span>
     </label>
     <label class="block text-sm font-medium text-gray-700">Monthly installment (Rs)
         <input type="number" step="0.01" min="0" name="monthly_amount" x-model.number="monthly" value="{{ old('monthly_amount', $package->monthly_amount ?? 50000) }}" required class="mt-1 w-full rounded-md border-gray-300">
@@ -67,10 +80,14 @@
             <p x-show="balloons.length === 0" class="rounded-md bg-gray-50 p-3 text-sm text-gray-500">No balloon payments. Use “Add payment” if this plan needs one.</p>
         </div>
     </div>
-    <label class="block rounded-lg bg-indigo-50 p-4 text-sm font-semibold text-indigo-900">Total price (calculated)
+    <label class="block rounded-lg bg-indigo-50 p-4 text-sm font-semibold text-indigo-900">Installment price (calculated)
         <div class="mt-2 text-2xl font-black" x-text="'Rs ' + total().toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})"></div>
         <span class="mt-1 block text-xs font-normal text-indigo-600">Updates automatically from the payment plan above.</span>
     </label>
+    <div class="rounded-lg bg-emerald-50 p-4 text-sm font-semibold text-emerald-900">Cash price
+        <div class="mt-2 text-2xl font-black" x-text="cashPrice ? 'Rs ' + Number(cashPrice).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'Not configured'"></div>
+        <span class="mt-1 block text-xs font-normal text-emerald-700" x-text="cashPrice ? 'Paid in full without an installment schedule.' : 'Customers will only see the installment plan.'"></span>
+    </div>
     <label class="flex items-center gap-2 self-end pb-3 text-sm font-medium text-gray-700">
         <input type="hidden" name="status" value="0"><input type="checkbox" name="status" value="1" @checked(old('status', $package->status ?? true)) class="rounded border-gray-300 text-indigo-600">Active and available for booking
     </label>

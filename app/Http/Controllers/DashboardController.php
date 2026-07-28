@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Commission;
-use App\Models\CommissionPayout;
 use App\Models\Customer;
 use App\Models\InstallmentSchedules;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Project;
 use App\Models\Referral;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\ReferralNetworkService;
 use Illuminate\Http\Request;
@@ -62,7 +62,9 @@ class DashboardController extends Controller
             ->selectRaw('COALESCE(SUM(paid_amount), 0) as paid')
             ->selectRaw('COALESCE(SUM(amount), 0) as lifetime')->first();
 
-        return view('customer-commissions', compact('customer', 'commissions', 'summary', 'projects'));
+        $showReferralCode = SiteSetting::showReferralCodesOnCustomerPortal();
+
+        return view('customer-commissions', compact('customer', 'commissions', 'summary', 'projects', 'showReferralCode'));
     }
 
     public function customerTeam(Request $request, Customer $customer): View
@@ -95,7 +97,9 @@ class DashboardController extends Controller
             ->groupBy('level')
             ->pluck('total', 'level');
 
-        return view('customer-team', compact('customer', 'directReferrals', 'referralSummary', 'levelCommissions', 'downline', 'downlineCounts', 'downlineTree'));
+        $showReferralCode = SiteSetting::showReferralCodesOnCustomerPortal();
+
+        return view('customer-team', compact('customer', 'directReferrals', 'referralSummary', 'levelCommissions', 'downline', 'downlineCounts', 'downlineTree', 'showReferralCode'));
     }
 
     public function customerPortal(Request $request, Customer $customer): View
@@ -168,25 +172,9 @@ class DashboardController extends Controller
             $notificationUser = User::findOrFail($request->user()->id);
             $notifications = $notificationUser->notifications()->latest()->limit(5)->get();
             $unreadNotificationCount = $notificationUser->unreadNotifications()->count();
+            $showReferralCode = SiteSetting::showReferralCodesOnCustomerPortal();
 
-            return view('customer-dashboard', compact('customer', 'bookings', 'paid', 'dueNow', 'paymentMethods', 'notifications', 'unreadNotificationCount'));
-        }
-
-        if ($request->user()->role === 'agent') {
-            $agent = $request->user();
-            $summary = Commission::where('beneficiary_id', $agent->id)
-                ->selectRaw("COALESCE(SUM(CASE WHEN status = 'earned' THEN amount - paid_amount ELSE 0 END), 0) as payable")
-                ->selectRaw('COALESCE(SUM(paid_amount), 0) as paid')
-                ->selectRaw("COALESCE(SUM(CASE WHEN status = 'reversed' THEN amount ELSE 0 END), 0) as reversed")
-                ->selectRaw('COALESCE(SUM(amount), 0) as lifetime')->first();
-            $payouts = CommissionPayout::where('agent_id', $agent->id)->latest('paid_at')->limit(25)->get();
-            $commissions = Commission::with(['payment', 'booking.customer', 'booking.project', 'booking.package'])
-                ->where('beneficiary_id', $agent->id)->whereHas('booking')->latest()->limit(50)->get();
-            $bookings = Booking::with(['customer', 'project', 'package'])
-                ->withSum(['payments as paid_total' => fn ($query) => $query->where('status', 'verified')], 'amount')
-                ->where('agent_id', $agent->id)->latest('booking_date')->limit(50)->get();
-
-            return view('agent-dashboard', compact('agent', 'summary', 'payouts', 'commissions', 'bookings'));
+            return view('customer-dashboard', compact('customer', 'bookings', 'paid', 'dueNow', 'paymentMethods', 'notifications', 'unreadNotificationCount', 'showReferralCode'));
         }
 
         $projects = Project::orderBy('name')->get();

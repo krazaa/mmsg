@@ -14,8 +14,8 @@ use Laravel\Passkeys\Contracts\PasskeyUser;
 use Laravel\Passkeys\PasskeyAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme', 'withdrawal_frequency', 'withdrawal_pin', 'withdrawal_pin_failed_attempts', 'withdrawal_pin_locked_until'])]
+#[Hidden(['password', 'withdrawal_pin', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
@@ -31,6 +31,9 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'withdrawal_pin' => 'hashed',
+            'withdrawal_pin_failed_attempts' => 'integer',
+            'withdrawal_pin_locked_until' => 'datetime',
             'status' => 'boolean',
         ];
     }
@@ -58,5 +61,10 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function withdrawalRequests()
     {
         return $this->hasMany(WithdrawalRequest::class, 'customer_id');
+    }
+
+    public function payoutMethods()
+    {
+        return $this->hasMany(CustomerPayoutMethod::class, 'customer_id');
     }
 }

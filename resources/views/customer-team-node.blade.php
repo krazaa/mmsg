@@ -26,7 +26,7 @@
                     <div class="flex items-start justify-between gap-2">
                         <div class="min-w-0">
                             <div class="truncate text-sm font-black text-white">{{ $user->name }}</div>
-                            <div class="truncate font-mono text-[9px] font-bold text-white/60">{{ $user->referral_code }}</div>
+                            @if($showReferralCode)<div class="truncate font-mono text-[9px] font-bold text-white/60">{{ $user->referral_code }}</div>@endif
                         </div>
                         <span class="shrink-0 rounded-full px-2 py-1 text-[10px] font-black ring-1 ring-inset {{ $levelStyles['badge'] }}">L{{ $node['level'] }}</span>
                     </div>
@@ -55,6 +55,8 @@
                             $bookingInstallments = $booking->installments->whereNotIn('status', ['waived', 'cancelled']);
                             $bookingPaid = $bookingInstallments->where('status', 'paid')->count();
                             $bookingPending = $bookingInstallments->whereIn('status', ['pending', 'partial', 'overdue'])->count();
+                            $bookingFullyPaid = (float) ($booking->verified_paid_total ?? 0) + 0.009 >= (float) $booking->total_price;
+                            $paidPlanLabel = $booking->payment_plan === 'cash' ? 'Paid Cash' : 'Paid Installments';
                         @endphp
                         <div class="group/booking rounded-xl border border-slate-100 bg-gradient-to-r from-slate-50 to-white p-2.5 transition hover:border-indigo-200 hover:shadow-sm">
                             <div class="flex items-start justify-between gap-2">
@@ -64,11 +66,17 @@
                                 </div>
                                 <span class="shrink-0 rounded-full px-2 py-0.5 text-[8px] font-bold ring-1 ring-inset {{ in_array($booking->status, ['active', 'completed']) ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 'bg-amber-50 text-amber-700 ring-amber-600/20' }}">{{ ucfirst($booking->status) }}</span>
                             </div>
-                            <div class="mt-1.5 flex gap-3 text-[8px] font-semibold">
-                                <span class="text-slate-500">{{ $bookingInstallments->count() }} total</span>
-                                <span class="text-emerald-600">{{ $bookingPaid }} paid</span>
-                                <span class="text-amber-600">{{ $bookingPending }} pending</span>
-                            </div>
+                            @if($bookingFullyPaid)
+                                <div class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-600/20"><span>✓</span>{{ $paidPlanLabel }}</div>
+                            @elseif($booking->payment_plan === 'cash')
+                                <div class="mt-1.5 flex gap-3 text-[8px] font-semibold"><span class="text-amber-600">Cash payment pending</span><span class="text-slate-500">Rs {{ number_format((float) ($booking->verified_paid_total ?? 0), 0) }} paid</span></div>
+                            @else
+                                <div class="mt-1.5 flex gap-3 text-[8px] font-semibold">
+                                    <span class="text-slate-500">{{ $bookingInstallments->count() }} total</span>
+                                    <span class="text-emerald-600">{{ $bookingPaid }} paid</span>
+                                    <span class="text-amber-600">{{ $bookingPending }} pending</span>
+                                </div>
+                            @endif
                         </div>
                     @empty
                         <div class="rounded-lg border border-dashed border-slate-200 px-2 py-3 text-center text-[9px] text-slate-400">No bookings</div>

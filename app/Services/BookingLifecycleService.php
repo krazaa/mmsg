@@ -50,7 +50,7 @@ class BookingLifecycleService implements BookingLifecycleManager
             $locked->customer->update(collect($data)->only(['name', 'father_name', 'cnic', 'phone', 'email', 'address'])->all());
             $locked->update(['agent_id' => $data['agent_id'] ?? null, 'booking_date' => $data['booking_date'], 'status' => $newStatus]);
 
-            if ($oldStatus === 'pending' && $newStatus === 'approved' && ! $locked->installments()->exists()) {
+            if ($oldStatus === 'pending' && $newStatus === 'approved' && $locked->payment_plan === 'installment' && ! $locked->installments()->exists()) {
                 $this->schedules->generate($locked->refresh());
             }
 

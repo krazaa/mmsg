@@ -5,11 +5,13 @@
             <div class="relative">
                 <div class="text-xs font-black uppercase tracking-[.2em] text-violet-200">My referral network</div>
                 <h3 class="mt-2 text-2xl font-black">Invite. Grow. Earn.</h3>
-                <p class="mt-2 text-sm leading-6 text-indigo-100">Share your registration link with new customers. Your referral code will be added automatically when they register.</p>
-                <div x-data="{ copied:false }" class="mt-6 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">Your referral code</div>
-                    <div class="mt-2 flex items-center justify-between gap-3"><div class="min-w-0"><b class="font-mono text-xl">{{ $customer->referral_code }}</b><a href="{{ route('register', ['ref' => $customer->referral_code]) }}" target="_blank" rel="noopener" class="mt-1 block truncate text-[10px] font-semibold text-indigo-100 underline decoration-indigo-300/50 underline-offset-2" title="{{ route('register', ['ref' => $customer->referral_code]) }}">{{ route('register', ['ref' => $customer->referral_code]) }}</a></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code])));copied=true;setTimeout(()=>copied=false,1500)" class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-700" x-text="copied?'Link copied ✓':'Copy referral link'">Copy referral link</button></div>
-                </div>
+                <p class="mt-2 text-sm leading-6 text-indigo-100">{{ $showReferralCode ? 'Share your registration link with new customers. Your referral code will be added automatically when they register.' : 'View your customer network and referral activity.' }}</p>
+                @if($showReferralCode)
+                    <div x-data="{ copied:false }" class="mt-6 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">Your referral code</div>
+                        <div class="mt-2 flex items-center justify-between gap-3"><div class="min-w-0"><b class="font-mono text-xl">{{ $customer->referral_code }}</b><a href="{{ route('register', ['ref' => $customer->referral_code]) }}" target="_blank" rel="noopener" class="mt-1 block truncate text-[10px] font-semibold text-indigo-100 underline decoration-indigo-300/50 underline-offset-2" title="{{ route('register', ['ref' => $customer->referral_code]) }}">{{ route('register', ['ref' => $customer->referral_code]) }}</a></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code])));copied=true;setTimeout(()=>copied=false,1500)" class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-700" x-text="copied?'Link copied ✓':'Copy referral link'">Copy referral link</button></div>
+                    </div>
+                @endif
                 <div class="mt-4 text-xs text-indigo-200">Sponsored by <b class="text-white">{{ $customer->referralAgent?->name ?? 'Direct Sales' }}</b></div>
             </div>
         </div>
@@ -47,7 +49,7 @@
                             <div class="min-w-0 flex-1">
                                 <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[8px] font-black uppercase tracking-[.14em] text-emerald-300"><span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>Team owner</div>
                                 <div class="mt-1 truncate text-sm font-black text-white">{{ $customer->name }}</div>
-                                <div class="mt-0.5 font-mono text-[9px] font-bold tracking-wider text-indigo-200">{{ $customer->referral_code }}</div>
+                                @if($showReferralCode)<div class="mt-0.5 font-mono text-[9px] font-bold tracking-wider text-indigo-200">{{ $customer->referral_code }}</div>@endif
                             </div>
                         </div>
                     </div>
@@ -62,9 +64,9 @@
                 </div>
                 @if($downlineTree)
                     <div class="h-5 w-px bg-indigo-300"></div>
-                    <div class="relative flex items-start justify-center gap-1 border-t border-indigo-300">@foreach($downlineTree as $node) @include('customer-team-node', ['node' => $node]) @endforeach</div>
+                    <div class="relative flex items-start justify-center gap-1 border-t border-indigo-300">@foreach($downlineTree as $node) @include('customer-team-node', ['node' => $node, 'showReferralCode' => $showReferralCode]) @endforeach</div>
                 @else
-                    <div class="mt-8 rounded-xl border border-dashed border-slate-300 bg-white px-8 py-6 text-sm text-slate-500">No team members yet. Share your referral code to grow your map.</div>
+                    <div class="mt-8 rounded-xl border border-dashed border-slate-300 bg-white px-8 py-6 text-sm text-slate-500">No team members yet.</div>
                 @endif
             </div>
         </div>

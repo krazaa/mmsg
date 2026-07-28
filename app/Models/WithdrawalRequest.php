@@ -16,6 +16,8 @@ class WithdrawalRequest extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'fee_amount' => 'decimal:2',
+            'net_amount' => 'decimal:2',
             'reviewed_at' => 'datetime',
         ];
     }

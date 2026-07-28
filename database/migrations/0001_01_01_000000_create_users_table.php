@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('referral_agent_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('referral_code', 30)->nullable()->unique();
             $table->string('name');
             $table->string('father_name')->nullable();
             $table->string('email')->unique();
             $table->string('role', 30)->default('staff')->index();
-            $table->string('referral_code', 30)->nullable()->unique();
             $table->string('phone', 30)->nullable();
             $table->string('cnic', 15)->nullable()->unique();
             $table->text('address')->nullable();
-            $table->foreignId('referral_agent_id')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('status')->default(true)->index();
             $table->string('theme', 10)->default('light');
             $table->timestamp('email_verified_at')->nullable();

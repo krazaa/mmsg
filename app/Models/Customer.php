@@ -17,7 +17,10 @@ class Customer extends User
             $customer->email ??= 'customer-'.Str::lower(Str::random(12)).'@mmsgroup.pk';
             $customer->password ??= Str::random(40);
             if (! $customer->referral_agent_id) {
-                $customer->referral_agent_id = User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
+                $customer->referral_agent_id = User::query()
+                    ->where('referral_code', 'DIRECT-SALES')
+                    ->orWhereIn('email', ['direct-sales@abdullahtown.pk', 'direct-sales@mmsgroup.pk'])
+                    ->value('id');
             }
             if (! $customer->referral_code) {
                 do {

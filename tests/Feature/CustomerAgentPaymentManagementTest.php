@@ -18,17 +18,14 @@ class CustomerAgentPaymentManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_customer_and_agent_can_be_created_from_management_pages(): void
+    public function test_customer_referrer_can_be_created_from_management_pages(): void
     {
         $admin = User::factory()->create();
-        $sponsor = User::factory()->create(['role' => 'agent']);
-        $this->actingAs($admin)->post(route('customers.store'), ['name' => 'Customer', 'file_no' => 'AT-0001', 'email' => 'customer@example.com', 'password' => 'password', 'cnic' => '11111-1111111-1', 'phone' => '0300', 'status' => 1])->assertRedirect(route('customers.index'));
-        $this->actingAs($admin)->post(route('agents.store'), ['name' => 'New Agent', 'email' => 'new-agent@example.com', 'phone' => '0311', 'password' => 'password', 'sponsor_id' => $sponsor->id, 'status' => 1])->assertRedirect(route('agents.index'));
-        $agent = User::where('email', 'new-agent@example.com')->firstOrFail();
-        $this->assertEquals('agent', $agent->role);
-        $this->assertStringStartsWith('AGT-', $agent->referral_code);
-        $this->assertEquals($sponsor->id, Referral::where('user_id', $agent->id)->value('sponsor_id'));
-        $customer = Customer::firstOrFail();
+        $sponsor = User::factory()->create(['role' => 'customer', 'referral_code' => 'REF-SPONSOR']);
+        $this->actingAs($admin)->post(route('customers.store'), ['name' => 'Customer', 'file_no' => 'AT-0001', 'email' => 'customer@example.com', 'password' => 'password', 'cnic' => '11111-1111111-1', 'phone' => '0300', 'referred_by_code' => 'REF-SPONSOR', 'status' => 1])->assertRedirect(route('customers.index'));
+        $customer = Customer::where('email', 'customer@example.com')->firstOrFail();
+        $this->assertSame('customer', $customer->role);
+        $this->assertEquals($sponsor->id, Referral::where('user_id', $customer->id)->value('sponsor_id'));
         $this->assertSame('AT-0001', $customer->file_no);
         $this->actingAs($admin)->get(route('customers.edit', $customer))->assertOk()->assertSee('Referred by referral code');
         $this->actingAs($admin)->get(route('customers.index', ['search' => 'AT-0001']))->assertOk()->assertSee('AT-0001');

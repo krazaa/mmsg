@@ -80,7 +80,10 @@ class RegisteredUserController extends Controller
 
         $sponsorId = $request->filled('referral_code')
             ? Customer::where('referral_code', $request->string('referral_code')->trim())->value('id')
-            : User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
+            : User::query()
+                ->where('referral_code', 'DIRECT-SALES')
+                ->orWhereIn('email', ['direct-sales@abdullahtown.pk', 'direct-sales@mmsgroup.pk'])
+                ->value('id');
 
         $user = DB::transaction(function () use ($request, $sponsorId) {
             foreach (Permissions::customer() as $permission) {

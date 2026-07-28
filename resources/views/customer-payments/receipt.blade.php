@@ -45,6 +45,13 @@
             </div>
         @endif
 
+        @if($payment->status !== 'pending' && filled($payment->verification_notes))
+            <div class="border-b px-7 py-4 sm:px-9 {{ $payment->status === 'verified' ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-rose-200 bg-rose-50 text-rose-900' }}">
+                <div class="text-xs font-black uppercase tracking-wider">Office review notes</div>
+                <div class="mt-1 whitespace-pre-line text-sm leading-6">{{ $payment->verification_notes }}</div>
+            </div>
+        @endif
+
         <section class="p-7 sm:p-9">
             <div class="grid gap-6 border-b border-slate-200 pb-7 sm:grid-cols-2">
                 <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">Received from</p><p class="mt-2 text-lg font-black">{{ $payment->customer->name }}</p><p class="mt-1 text-sm text-slate-500">{{ $payment->customer->phone }}</p></div>

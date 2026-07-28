@@ -16,8 +16,6 @@ final class Permissions
 
     public const MANAGE_STAFF = 'manage staff';
 
-    public const MANAGE_AGENTS = 'manage agents';
-
     public const MANAGE_BOOKINGS = 'manage bookings';
 
     public const MANAGE_PAYMENTS = 'manage payments';
@@ -33,8 +31,6 @@ final class Permissions
     public const VIEW_ACTIVITY_LOG = 'view activity log';
 
     public const USE_CUSTOMER_PORTAL = 'use customer portal';
-
-    public const USE_AGENT_PORTAL = 'use agent portal';
 
     public const CUSTOMER_BOOKINGS_CREATE = 'customer.bookings.create';
 
@@ -64,10 +60,10 @@ final class Permissions
         return array_values(array_unique([
             self::ACCESS_MANAGEMENT, self::VIEW_DASHBOARD, self::MANAGE_PROJECTS,
             self::MANAGE_PACKAGES, self::MANAGE_CUSTOMERS, self::MANAGE_STAFF,
-            self::MANAGE_AGENTS, self::MANAGE_BOOKINGS, self::MANAGE_PAYMENTS,
+            self::MANAGE_BOOKINGS, self::MANAGE_PAYMENTS,
             self::MANAGE_INSTALLMENTS, self::MANAGE_ALLOTMENTS, self::MANAGE_COMMISSIONS,
             self::MANAGE_NOTIFICATIONS, self::VIEW_ACTIVITY_LOG, self::USE_CUSTOMER_PORTAL,
-            self::USE_AGENT_PORTAL, ...self::customer(),
+            ...self::customer(),
         ]));
     }
 }

@@ -69,7 +69,7 @@ class CustomerPaymentController extends Controller
                 return Payment::create([
                     'receipt_number' => $locked
                         ? 'INSTL-'.now()->format('ymdHis').'-'.random_int(100, 999)
-                        : 'BKG-1ST-PAY-'.now()->format('ymdHis').random_int(100, 999),
+                        : 'BKG-PAY-'.now()->format('ymdHis').random_int(100, 999),
                     'booking_id' => $booking->id,
                     'customer_id' => $customer->id,
                     'installment_schedule_id' => $locked?->id,

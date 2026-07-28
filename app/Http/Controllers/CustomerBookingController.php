@@ -55,7 +55,10 @@ class CustomerBookingController extends Controller
     public function store(Request $request)
     {
         abort_unless($request->user()->role === 'customer' && $request->user()->customer, 403);
-        $data = $request->validate(['package_id' => ['required', 'exists:plot_packages,id']]);
+        $data = $request->validate([
+            'package_id' => ['required', 'exists:plot_packages,id'],
+            'payment_plan' => ['required', 'in:cash,installment'],
+        ]);
         $customer = $request->user()->customer;
 
         $booking = DB::transaction(function () use ($data, $customer) {
@@ -67,6 +70,16 @@ class CustomerBookingController extends Controller
             }
 
             $package = PlotPackage::where('status', true)->findOrFail($data['package_id']);
+            if ($data['payment_plan'] === 'cash' && ! $package->offersCash()) {
+                throw ValidationException::withMessages([
+                    'payment_plan' => 'Cash is not available for this package.',
+                ]);
+            }
+            if ($data['payment_plan'] === 'installment' && ! $package->offersInstallments()) {
+                throw ValidationException::withMessages([
+                    'payment_plan' => 'Installments are not available for this package.',
+                ]);
+            }
             $project = Project::where('status', true)->lockForUpdate()->findOrFail($package->project_id);
             if ($project->available_area_marla < (float) $package->size_marla) {
                 throw ValidationException::withMessages(['package_id' => 'This package is currently unavailable.']);
@@ -78,9 +91,10 @@ class CustomerBookingController extends Controller
                 'customer_id' => $customer->id,
                 'agent_id' => $customer->referral_agent_id,
                 'booking_date' => today(),
-                'total_price' => $package->total_price,
-                'booking_amount' => $package->booking_amount,
-                'financed_amount' => $package->total_price - (float) $package->booking_amount,
+                'payment_plan' => $data['payment_plan'],
+                'total_price' => $data['payment_plan'] === 'cash' ? $package->effective_cash_price : $package->total_price,
+                'booking_amount' => $data['payment_plan'] === 'cash' ? $package->effective_cash_price : $package->booking_amount,
+                'financed_amount' => $data['payment_plan'] === 'cash' ? 0 : $package->total_price - (float) $package->booking_amount,
                 'status' => 'pending',
             ]);
             $project->increment('reserved_area_marla', (float) $package->size_marla);

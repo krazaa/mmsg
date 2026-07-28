@@ -3,8 +3,9 @@
         ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => 'dashboard', 'permission' => 'view dashboard', 'icon' => '⌂'],
         ['label' => 'Bookings', 'route' => 'bookings.index', 'active' => 'bookings.*', 'permission' => 'manage bookings', 'icon' => '▤'],
         ['label' => 'Installments', 'route' => 'installments.index', 'active' => 'installments.*', 'permission' => 'manage installments', 'icon' => '◫'],
-        ['label' => 'Customers', 'route' => 'customers.index', 'active' => 'customers.*', 'permission' => 'manage customers', 'icon' => '♙'],
+        ['label' => 'Customers & referrals', 'route' => 'customers.index', 'active' => 'customers.*', 'permission' => 'manage customers', 'icon' => '♙'],
         ['label' => 'Staff', 'route' => 'staff.index', 'active' => 'staff.*', 'permission' => 'manage staff', 'icon' => '♟', 'hide_from_staff' => true],
+        ['label' => 'Roles & permissions', 'route' => 'role-permissions.edit', 'active' => 'role-permissions.*', 'permission' => 'manage staff', 'icon' => '⚿', 'super_admin_only' => true],
         ['label' => 'Payments', 'route' => 'payments.index', 'active' => 'payments.*', 'permission' => 'manage payments', 'icon' => '₨'],
         ['label' => 'Withdrawals', 'route' => 'withdrawal-requests.index', 'active' => 'withdrawal-requests.*', 'permission' => 'manage commissions', 'icon' => '↗'],
         ['label' => 'Alerts', 'route' => 'management.notifications.index', 'active' => 'management.notifications.*', 'permission' => 'manage notifications', 'icon' => '◉'],
@@ -17,6 +18,8 @@
         ['label' => 'Plot allotments & inventory', 'route' => 'allotments.index', 'active' => 'allotments.*', 'permission' => 'manage allotments', 'color' => 'bg-lime-400'],
         ['label' => 'Packages', 'route' => 'packages.index', 'active' => 'packages.*', 'permission' => 'manage packages', 'color' => 'bg-violet-400'],
         ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
+        ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-teal-400'],
+        ['label' => 'App settings', 'route' => 'app-settings.edit', 'active' => 'app-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-indigo-400'],
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
         ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
         ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],
@@ -47,7 +50,7 @@
     <nav class="admin-sidebar-nav flex-1 space-y-1 overflow-y-auto px-3 py-5">
         <div x-show="sidebarOpen || sidebarExpanded || sidebarHover" x-transition.opacity class="mb-3 whitespace-nowrap px-3 text-[9px] font-black uppercase tracking-[.2em] text-indigo-400">Workspace</div>
         @foreach($items as $item)
-            @if(!($item['hide_from_staff'] ?? false) || Auth::user()->role !== 'staff')
+            @if((!($item['hide_from_staff'] ?? false) || Auth::user()->role !== 'staff') && (!($item['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin'))
             @can($item['permission'])
                 <a href="{{ route($item['route']) }}" @click="sidebarOpen = false" :title="(sidebarExpanded || sidebarHover) ? '' : @js($item['label'])" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition {{ request()->routeIs($item['active']) ? 'bg-white text-indigo-950 shadow-lg shadow-black/20' : 'text-indigo-100/75 hover:bg-white/10 hover:text-white' }}">
                     <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-base {{ request()->routeIs($item['active']) ? 'bg-indigo-100 text-indigo-700' : 'bg-white/5 text-indigo-300 group-hover:bg-white/10' }}">{{ $item['icon'] }}</span>

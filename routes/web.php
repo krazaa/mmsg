@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\AgentCommissionPayoutController;
-use App\Http\Controllers\AgentController;
+use App\Http\Controllers\AppSettingsController;
+use App\Http\Controllers\CustomerCommissionPayoutController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\CommissionRuleController;
@@ -23,6 +23,8 @@ use App\Http\Controllers\PlotController;
 use App\Http\Controllers\PlotPackageController;
 use App\Http\Controllers\PlotPlanImportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\CustomerPayoutMethodController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SiteAppearanceController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WhatsAppSettingsController;
 use App\Models\Project;
 use App\Models\SiteSetting;
+use App\Support\DataVersion;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -52,6 +55,9 @@ Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'sh
 Route::post('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'store'])->name('email-unsubscribe.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'permission:view dashboard'])->name('dashboard');
+Route::get('/data-version', fn () => response()->json([
+    'version' => DataVersion::current(),
+]))->middleware('auth')->name('data-version');
 
 Route::middleware('auth')->group(function () {
     Route::patch('/theme', [ThemeController::class, 'update'])->name('theme.update');
@@ -60,7 +66,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/installments', [DashboardController::class, 'installments'])->name('customer.installments');
         Route::get('/customer/commissions', [DashboardController::class, 'commissions'])->name('customer.commissions');
         Route::get('/customer/withdrawals', [CustomerWithdrawalController::class, 'index'])->name('customer.withdrawals.index');
-        Route::post('/customer/withdrawals', [CustomerWithdrawalController::class, 'store'])->name('customer.withdrawals.store');
+        Route::post('/customer/withdrawals', [CustomerWithdrawalController::class, 'store'])->middleware('throttle:10,1')->name('customer.withdrawals.store');
+        Route::post('/customer/withdrawal-pin/recover', [CustomerWithdrawalController::class, 'recoverPin'])->name('customer.withdrawal-pin.recover');
+        Route::patch('/customer/withdrawal-frequency', [CustomerWithdrawalController::class, 'updateFrequency'])->name('customer.withdrawals.frequency');
+        Route::get('/customer/payout-methods', [CustomerPayoutMethodController::class, 'index'])->name('customer.payout-methods.index');
+        Route::post('/customer/payout-methods', [CustomerPayoutMethodController::class, 'store'])->name('customer.payout-methods.store');
+        Route::put('/customer/payout-methods/{payoutMethod}', [CustomerPayoutMethodController::class, 'update'])->name('customer.payout-methods.update');
+        Route::patch('/customer/payout-methods/{payoutMethod}/default', [CustomerPayoutMethodController::class, 'makeDefault'])->name('customer.payout-methods.default');
+        Route::delete('/customer/payout-methods/{payoutMethod}', [CustomerPayoutMethodController::class, 'destroy'])->name('customer.payout-methods.destroy');
         Route::get('/customer/notifications', [CustomerNotificationController::class, 'index'])->name('customer.notifications.index');
         Route::post('/customer/notifications/read-all', [CustomerNotificationController::class, 'readAll'])->name('customer.notifications.read-all');
         Route::post('/customer/notifications/{notification}/read', [CustomerNotificationController::class, 'read'])->name('customer.notifications.read');
@@ -70,13 +83,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/payments/{payment}/receipt', [CustomerPaymentController::class, 'receipt'])->middleware('permission:customer.payments.receipt')->name('customer.payments.receipt');
     });
     Route::middleware('management')->group(function () {
+        Route::get('/management/roles-permissions', [RolePermissionController::class, 'edit'])->middleware('role:super_admin')->name('role-permissions.edit');
+        Route::put('/management/roles-permissions/{role}', [RolePermissionController::class, 'update'])->middleware('role:super_admin')->name('role-permissions.update');
         Route::get('/management/activity-log', [ActivityLogController::class, 'index'])->middleware('permission:view activity log')->name('management.activity-log.index');
         Route::get('/withdrawal-requests', [CustomerWithdrawalController::class, 'managementIndex'])->middleware('permission:manage commissions')->name('withdrawal-requests.index');
+        Route::get('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'editSettings'])->middleware('permission:manage commissions')->name('withdrawal-settings.edit');
+        Route::put('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'updateSettings'])->middleware('permission:manage commissions')->name('withdrawal-settings.update');
         Route::patch('/withdrawal-requests/{withdrawalRequest}', [CustomerWithdrawalController::class, 'review'])->middleware('permission:manage commissions')->name('withdrawal-requests.review');
+        Route::patch('/withdrawal-pin-locks/{customer}', [CustomerWithdrawalController::class, 'unlockPin'])->middleware('permission:manage commissions')->name('withdrawal-pin-locks.destroy');
         Route::get('/management/notifications', [CustomerNotificationController::class, 'managementIndex'])->middleware('permission:manage notifications')->name('management.notifications.index');
         Route::get('/management/whatsapp', [WhatsAppSettingsController::class, 'index'])->middleware('permission:manage notifications')->name('management.whatsapp.index');
         Route::get('/management/site-appearance', [SiteAppearanceController::class, 'edit'])->middleware('role:super_admin|admin')->name('site-appearance.edit');
         Route::put('/management/site-appearance', [SiteAppearanceController::class, 'update'])->middleware('role:super_admin|admin')->name('site-appearance.update');
+        Route::get('/management/app-settings', [AppSettingsController::class, 'edit'])->middleware('role:super_admin|admin')->name('app-settings.edit');
+        Route::put('/management/app-settings', [AppSettingsController::class, 'update'])->middleware('role:super_admin|admin')->name('app-settings.update');
         Route::post('/management/whatsapp/test', [WhatsAppSettingsController::class, 'test'])->middleware('permission:manage notifications')->name('management.whatsapp.test');
         Route::post('/management/notifications/read-all', [CustomerNotificationController::class, 'managementReadAll'])->middleware('permission:manage notifications')->name('management.notifications.read-all');
         Route::post('/management/notifications/{notification}/read', [CustomerNotificationController::class, 'managementRead'])->middleware('permission:manage notifications')->name('management.notifications.read');
@@ -93,8 +113,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/customers/{customer}/commissions', [DashboardController::class, 'customerCommissions'])->middleware('permission:manage customers')->name('customers.commissions');
         Route::resource('customers', CustomerController::class)->middleware('permission:manage customers');
         Route::resource('staff', StaffController::class)->except('show')->parameters(['staff' => 'staff'])->middleware('permission:manage staff');
-        Route::resource('agents', AgentController::class)->parameters(['agents' => 'agent'])->middleware('permission:manage agents');
-        Route::post('/agents/{agent}/payouts', [AgentCommissionPayoutController::class, 'store'])->middleware('permission:manage commissions')->name('agents.payouts.store');
+        Route::post('/customers/{customer}/commission-payouts', [CustomerCommissionPayoutController::class, 'store'])->middleware('permission:manage commissions')->name('customers.commission-payouts.store');
         Route::get('/commission-rules', [CommissionRuleController::class, 'index'])->middleware('permission:manage commissions')->name('commission-rules.index');
         Route::put('/commission-rules/{package}', [CommissionRuleController::class, 'update'])->middleware('permission:manage commissions')->name('commission-rules.update');
         Route::resource('packages', PlotPackageController::class)->except('show')->parameters(['packages' => 'package'])->middleware('permission:manage packages');
@@ -125,6 +144,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/withdrawal-pin', [ProfileController::class, 'updateWithdrawalPin'])->name('profile.withdrawal-pin.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

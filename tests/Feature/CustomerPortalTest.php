@@ -10,13 +10,95 @@ use App\Models\Payment;
 use App\Models\PlotPackage;
 use App\Models\Project;
 use App\Models\Referral;
+use App\Models\SiteSetting;
 use App\Models\User;
+use App\Models\WithdrawalSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CustomerPortalTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_setting_can_hide_referral_codes_from_the_customer_portal(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'customer',
+            'email_verified_at' => now(),
+            'phone' => '0300',
+            'referral_code' => 'REF-HIDDEN-PORTAL',
+        ]);
+
+        SiteSetting::create([
+            'key' => 'customer_portal_show_referral_code',
+            'value' => '0',
+        ]);
+
+        $this->actingAs($user)->get(route('dashboard'))
+            ->assertOk()
+            ->assertDontSee('REF-HIDDEN-PORTAL')
+            ->assertDontSee('Copy referral link');
+
+        $this->actingAs($user)->get(route('customer.team'))
+            ->assertOk()
+            ->assertDontSee('REF-HIDDEN-PORTAL')
+            ->assertDontSee('Copy referral link');
+    }
+
+    public function test_team_tree_labels_fully_paid_cash_and_installment_bookings(): void
+    {
+        $owner = User::factory()->create(['role' => 'customer', 'email_verified_at' => now()]);
+        $cashCustomer = User::factory()->create(['name' => 'Cash Team Member', 'role' => 'customer']);
+        $installmentCustomer = User::factory()->create(['name' => 'Installment Team Member', 'role' => 'customer']);
+        Referral::create(['user_id' => $cashCustomer->id, 'sponsor_id' => $owner->id]);
+        Referral::create(['user_id' => $installmentCustomer->id, 'sponsor_id' => $owner->id]);
+        $project = Project::create([
+            'name' => 'Paid Plans',
+            'slug' => 'paid-plans',
+            'gross_area_marla' => 100,
+            'saleable_area_marla' => 100,
+            'status' => true,
+        ]);
+        $package = PlotPackage::create([
+            'project_id' => $project->id,
+            'name' => 'Paid Package',
+            'size_marla' => 5,
+            'cash_price' => 100000,
+            'booking_amount' => 50000,
+            'months' => 1,
+            'monthly_amount' => 100000,
+            'status' => true,
+        ]);
+
+        foreach ([[$cashCustomer, 'cash', 100000], [$installmentCustomer, 'installment', 150000]] as [$customer, $plan, $total]) {
+            $booking = Booking::create([
+                'booking_number' => 'PAID-'.strtoupper($plan),
+                'project_id' => $project->id,
+                'package_id' => $package->id,
+                'customer_id' => $customer->id,
+                'booking_date' => today(),
+                'payment_plan' => $plan,
+                'total_price' => $total,
+                'booking_amount' => $plan === 'cash' ? $total : 50000,
+                'financed_amount' => $plan === 'cash' ? 0 : 100000,
+                'status' => 'completed',
+            ]);
+            Payment::create([
+                'receipt_number' => 'RC-'.strtoupper($plan),
+                'booking_id' => $booking->id,
+                'customer_id' => $customer->id,
+                'amount' => $total,
+                'payment_method' => 'bank_transfer',
+                'payment_date' => today(),
+                'status' => 'verified',
+            ]);
+        }
+
+        $this->actingAs($owner)->get(route('customer.team'))
+            ->assertOk()
+            ->assertSee('Paid Cash')
+            ->assertSee('Paid Installments');
+    }
 
     public function test_customer_login_sees_only_their_property_installments_and_payments(): void
     {
@@ -30,6 +112,7 @@ class CustomerPortalTest extends TestCase
         InstallmentSchedules::create(['booking_id' => $booking->id, 'installment_number' => 2, 'due_date' => today()->addMonth(), 'regular_amount' => 77777, 'balloon_amount' => 0, 'total_due' => 77777]);
         Payment::create(['receipt_number' => 'RC-FIRST-PORTAL', 'booking_id' => $booking->id, 'customer_id' => $customer->id, 'amount' => 100000, 'payment_method' => 'cash', 'payment_date' => today(), 'status' => 'verified']);
         $payment = Payment::create(['receipt_number' => 'RC-PORTAL', 'booking_id' => $booking->id, 'customer_id' => $customer->id, 'installment_schedule_id' => $installment->id, 'amount' => 10000, 'payment_method' => 'cash', 'transaction_reference' => 'BANK-PORTAL', 'payment_date' => today(), 'status' => 'verified', 'verified_at' => now()]);
+        $payment->update(['verification_notes' => 'Payment proof checked and approved by the office.']);
         Commission::create(['payment_id' => $payment->id, 'booking_id' => $booking->id, 'beneficiary_id' => $customer->id, 'level' => 1, 'percentage' => 5, 'amount' => 500, 'status' => 'earned']);
         $levelOne = User::factory()->create(['name' => 'Level One Member', 'role' => 'customer', 'phone' => '0303', 'referral_code' => 'REF-LEVEL-1']);
         $levelTwo = User::factory()->create(['name' => 'Level Two Member', 'role' => 'customer', 'phone' => '0304', 'referral_code' => 'REF-LEVEL-2']);
@@ -48,6 +131,8 @@ class CustomerPortalTest extends TestCase
             ->assertSee('Pay installment')
             ->assertSee('The exact remaining balance is required.')
             ->assertSee('Payment history')
+            ->assertSee('Review notes')
+            ->assertSee('Payment proof checked and approved by the office.')
             ->assertSee('REF-PORTAL')
             ->assertSee('href="'.route('dashboard').'#payments"', false)
             ->assertSee(route('customer.payments.receipt', $payment))
@@ -55,6 +140,11 @@ class CustomerPortalTest extends TestCase
             ->assertSee('25,000.00')
             ->assertDontSee('77,777.00')
             ->assertDontSee('Manage projects');
+
+        $this->actingAs($user)->get(route('customer.payments.receipt', $payment))
+            ->assertOk()
+            ->assertSee('Office review notes')
+            ->assertSee('Payment proof checked and approved by the office.');
 
         $this->actingAs($user)->get(route('customer.installments'))
             ->assertOk()
@@ -68,7 +158,6 @@ class CustomerPortalTest extends TestCase
 
         $this->actingAs($user)->get(route('customer.team'))
             ->assertOk()
-            ->assertSee('My team')
             ->assertSee('My referral network')
             ->assertSee('Your referral network across three levels')
             ->assertSee('Level One Member')
@@ -97,13 +186,62 @@ class CustomerPortalTest extends TestCase
             ->assertSee('No commission transactions yet.')
             ->assertDontSee('RC-PORTAL');
 
+        $this->actingAs($user)->patch(route('customer.withdrawals.frequency'), [
+            'withdrawal_frequency' => 'monthly',
+        ])->assertRedirect()->assertSessionHas('success');
+        $this->assertSame('monthly', $user->refresh()->withdrawal_frequency);
+        $this->actingAs($user)->get(route('profile.edit'))
+            ->assertOk()
+            ->assertSee('Withdrawal frequency')
+            ->assertSee('Save withdrawal frequency')
+            ->assertSee('Withdrawal PIN')
+            ->assertSee('Set withdrawal PIN')
+            ->assertDontSee('Send me a new PIN');
+        $this->actingAs($user)->patch(route('profile.withdrawal-pin.update'), [
+            'current_password' => 'password',
+            'withdrawal_pin' => '2468',
+            'withdrawal_pin_confirmation' => '2468',
+        ])->assertRedirect(route('profile.edit'))->assertSessionHas('success');
+
         $this->actingAs($user)->get(route('customer.withdrawals.index'))
             ->assertOk()
             ->assertSee('Payable commission')
             ->assertSee('500.00')
+            ->assertSee('Monthly limit')
+            ->assertDontSee('Save withdrawal frequency')
+            ->assertSee('Enter the PIN you created in Profile & Security.', false)
+            ->assertDontSee('Send me a new PIN')
             ->assertSee('Withdrawal history');
+        $this->actingAs($user)->get(route('profile.edit'))
+            ->assertOk()
+            ->assertSee('Send me a new PIN')
+            ->assertSee('Send a new temporary PIN?')
+            ->assertSee('Your current PIN will stop working.');
         $this->actingAs($user)->post(route('customer.withdrawals.store'), [
             'amount' => 500,
+            'withdrawal_pin' => '9999',
+            'payment_method' => 'bank_transfer',
+            'account_title' => 'Portal Customer',
+            'account_number' => 'PK00TEST123',
+        ])->assertSessionHasErrors('withdrawal_pin');
+        $this->assertSame(1, $user->refresh()->withdrawal_pin_failed_attempts);
+        WithdrawalSetting::where('frequency', 'monthly')->firstOrFail()->update(['maximum_amount' => 300]);
+        $this->actingAs($user)->post(route('customer.withdrawals.store'), [
+            'amount' => 500,
+            'withdrawal_pin' => '2468',
+            'payment_method' => 'bank_transfer',
+            'account_title' => 'Portal Customer',
+            'account_number' => 'PK00TEST123',
+        ])->assertSessionHasErrors('amount');
+        WithdrawalSetting::where('frequency', 'monthly')->firstOrFail()->update(['maximum_amount' => 0]);
+        WithdrawalSetting::query()->update([
+            'fee_enabled' => true,
+            'fee_type' => 'percentage',
+            'fee_value' => 2,
+        ]);
+        $this->actingAs($user)->post(route('customer.withdrawals.store'), [
+            'amount' => 500,
+            'withdrawal_pin' => '2468',
             'payment_method' => 'bank_transfer',
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
@@ -112,16 +250,66 @@ class CustomerPortalTest extends TestCase
             'customer_id' => $user->id,
             'amount' => 500,
             'status' => 'pending',
+            'fee_amount' => 10,
+            'net_amount' => 490,
         ]);
+        $this->assertSame(0, $user->refresh()->withdrawal_pin_failed_attempts);
         $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+        $this->actingAs($admin)->put(route('withdrawal-settings.update'), [
+            'policies' => [
+                'daily' => ['request_limit' => 1, 'minimum_amount' => 100, 'maximum_amount' => 500],
+                'weekly' => ['request_limit' => 2, 'minimum_amount' => 200, 'maximum_amount' => 1000],
+                'monthly' => ['request_limit' => 3, 'minimum_amount' => 300, 'maximum_amount' => 1500],
+            ],
+        ])->assertRedirect()->assertSessionHas('success');
+        $this->actingAs($admin)->put(route('app-settings.update'), [
+            'fee_enabled' => 1,
+            'fee_type' => 'fixed',
+            'fee_value' => 25,
+            'pin_recovery_enabled' => 1,
+            'customer_portal_show_referral_code' => 1,
+        ])->assertRedirect()->assertSessionHas('success');
+        $this->assertSame([
+            'frequency' => 'daily',
+            'policies' => [
+                'daily' => ['request_limit' => 1, 'minimum_amount' => 100.0, 'maximum_amount' => 500.0],
+                'weekly' => ['request_limit' => 2, 'minimum_amount' => 200.0, 'maximum_amount' => 1000.0],
+                'monthly' => ['request_limit' => 3, 'minimum_amount' => 300.0, 'maximum_amount' => 1500.0],
+            ],
+            'fee' => ['enabled' => true, 'type' => 'fixed', 'value' => 25.0],
+            'pin_recovery_enabled' => true,
+        ], WithdrawalSetting::settings());
+        $this->actingAs($admin)->get(route('withdrawal-settings.edit'))
+            ->assertOk()
+            ->assertSee('Withdrawal settings')
+            ->assertSee('Daily limits')
+            ->assertSee('Weekly limits')
+            ->assertSee('Monthly limits')
+            ->assertDontSee('Withdrawal fee')
+            ->assertDontSee('Customer PIN recovery')
+            ->assertSee('Save withdrawal settings');
+        $this->actingAs($admin)->get(route('app-settings.edit'))
+            ->assertOk()
+            ->assertSee('App settings')
+            ->assertSee('Withdrawal fee')
+            ->assertSee('Customer PIN recovery')
+            ->assertSee('Enable for customers')
+            ->assertSee('Customer portal')
+            ->assertSee('Show referral code')
+            ->assertSee('Save app settings');
         $this->actingAs($admin)->get(route('withdrawal-requests.index'))
             ->assertOk()
             ->assertSee('Withdrawal requests')
+            ->assertDontSee('Save withdrawal settings')
             ->assertSee('Portal Customer')
             ->assertSee('500.00')
-            ->assertSee('Review & pay', false);
+            ->assertSee('Review & pay', false)
+            ->assertSee('Templates')
+            ->assertSee('Withdrawal paid successfully to the selected account.')
+            ->assertSee('Payout account details are incorrect.');
         $this->actingAs($user)->post(route('customer.withdrawals.store'), [
             'amount' => 200,
+            'withdrawal_pin' => '2468',
             'payment_method' => 'bank_transfer',
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
@@ -133,9 +321,46 @@ class CustomerPortalTest extends TestCase
             'review_notes' => 'Transferred to customer account.',
         ])->assertRedirect();
         $this->assertSame('approved', $withdrawal->refresh()->status);
+        $this->actingAs($user)->get(route('customer.withdrawals.index'))
+            ->assertOk()
+            ->assertSee('Reviewed at')
+            ->assertSee($withdrawal->reviewed_at->format('d M Y'));
+        $wrongPinRequest = [
+            'amount' => 100,
+            'withdrawal_pin' => '9999',
+            'payment_method' => 'bank_transfer',
+            'account_title' => 'Portal Customer',
+            'account_number' => 'PK00TEST123',
+        ];
+        foreach (range(1, 4) as $attempt) {
+            $this->actingAs($user)->post(route('customer.withdrawals.store'), $wrongPinRequest)
+                ->assertSessionHasErrors('withdrawal_pin');
+        }
+        $user->refresh();
+        $this->assertSame(4, $user->withdrawal_pin_failed_attempts);
+        $this->assertTrue($user->withdrawal_pin_locked_until->isFuture());
+        $this->actingAs($user)->get(route('customer.withdrawals.index'))
+            ->assertOk()
+            ->assertSee('Withdrawals temporarily locked')
+            ->assertSee($user->withdrawal_pin_locked_until->format('d M Y, h:i A'));
+        $this->actingAs($user)->post(route('customer.withdrawals.store'), array_merge($wrongPinRequest, ['withdrawal_pin' => '2468']))
+            ->assertSessionHasErrors('withdrawal_pin');
+        $this->actingAs($admin)->get(route('withdrawal-requests.index'))
+            ->assertOk()
+            ->assertSee('Withdrawals temporarily locked')
+            ->assertSee('Remove temporary lock')
+            ->assertSee($user->name)
+            ->assertSee('Referral: '.$user->referral_code);
+        $this->actingAs($admin)->patch(route('withdrawal-pin-locks.destroy', $user))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+        $this->assertSame(0, $user->refresh()->withdrawal_pin_failed_attempts);
+        $this->assertNull($user->withdrawal_pin_locked_until);
         $this->assertDatabaseHas('commission_payouts', [
             'agent_id' => $user->id,
             'amount' => 500,
+            'fee_amount' => 10,
+            'net_amount' => 490,
             'transaction_reference' => 'BANK-WDR-500',
         ]);
         $this->assertDatabaseHas('commissions', [

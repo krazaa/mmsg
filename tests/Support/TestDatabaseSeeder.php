@@ -15,11 +15,11 @@ class TestDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $system = User::factory()->create(['email' => 'direct-sales@abdullahtown.pk', 'name' => 'Direct Sales', 'role' => 'agent', 'referral_code' => 'DIRECT-SALES']);
+        $system = User::factory()->create(['email' => 'direct-sales@abdullahtown.pk', 'name' => 'Direct Sales', 'role' => 'customer', 'referral_code' => 'DIRECT-SALES']);
         $admin = User::factory()->create(['email' => 'admin@abdullahtown.pk', 'name' => 'Abdullah Town Admin', 'role' => 'admin']);
-        $level3 = User::factory()->create(['email' => 'director@abdullahtown.pk', 'name' => 'Sales Director', 'role' => 'agent', 'referral_code' => 'AGT-DIRECTOR']);
-        $level2 = User::factory()->create(['email' => 'manager@abdullahtown.pk', 'name' => 'Sales Manager', 'role' => 'agent', 'referral_code' => 'AGT-MANAGER']);
-        $level1 = User::factory()->create(['email' => 'agent@abdullahtown.pk', 'name' => 'Sales Agent', 'role' => 'agent', 'referral_code' => 'AGT-AGENT']);
+        $level3 = User::factory()->create(['email' => 'director@abdullahtown.pk', 'name' => 'Sales Director', 'role' => 'customer', 'referral_code' => 'AGT-DIRECTOR']);
+        $level2 = User::factory()->create(['email' => 'manager@abdullahtown.pk', 'name' => 'Sales Manager', 'role' => 'customer', 'referral_code' => 'AGT-MANAGER']);
+        $level1 = User::factory()->create(['email' => 'agent@abdullahtown.pk', 'name' => 'Sales Agent', 'role' => 'customer', 'referral_code' => 'AGT-AGENT']);
 
         $project = Project::create([
             'name' => 'Abdullah Town', 'slug' => 'abdullah-town', 'location' => 'Abbottabad',

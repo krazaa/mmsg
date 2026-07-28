@@ -62,7 +62,7 @@
                     <label class="block">
                         <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Sort by</span>
                         <select name="sort" onchange="this.form.submit()" class="mt-2 w-full rounded-xl border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                            @foreach(['size'=>'Plot size','name'=>'Package name','total'=>'Total price','booking_amount'=>'First payment','monthly_amount'=>'Monthly installment','bookings'=>'Booking count','status'=>'Status'] as $value=>$label)<option value="{{ $value }}" @selected($sort===$value)>{{ $label }}</option>@endforeach
+                            @foreach(['size'=>'Plot size','name'=>'Package name','total'=>'Installment price','booking_amount'=>'First payment','monthly_amount'=>'Monthly installment','bookings'=>'Booking count','status'=>'Status'] as $value=>$label)<option value="{{ $value }}" @selected($sort===$value)>{{ $label }}</option>@endforeach
                         </select>
                     </label>
                     <div class="flex items-end">
@@ -76,7 +76,7 @@
 
             <div class="flex items-center justify-between gap-4">
                 <p class="text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold text-gray-900 dark:text-white">{{ $packages->count() }}</span> {{ Str::plural('package', $packages->count()) }} found</p>
-                <p class="hidden text-xs text-gray-400 sm:block">Sorted by {{ ['size'=>'plot size','name'=>'package name','total'=>'total price','booking_amount'=>'first payment','monthly_amount'=>'monthly installment','bookings'=>'booking count','status'=>'status'][$sort] }}</p>
+                <p class="hidden text-xs text-gray-400 sm:block">Sorted by {{ ['size'=>'plot size','name'=>'package name','total'=>'installment price','booking_amount'=>'first payment','monthly_amount'=>'monthly installment','bookings'=>'booking count','status'=>'status'][$sort] }}</p>
             </div>
 
             <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Packages">
@@ -94,15 +94,33 @@
                                         </span>
                                     </div>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ number_format($package->size_marla, 2) }} marla · {{ $package->months }} months</p>
+                                    @php
+                                        $planLabel = match ($package->payment_plan_options) {
+                                            'cash' => 'Cash Only',
+                                            'installment' => 'Installments Only',
+                                            default => 'Cash & Installments',
+                                        };
+                                    @endphp
+                                    <span class="mt-2 inline-flex rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-wide {{ $package->payment_plan_options === 'cash' ? 'bg-emerald-100 text-emerald-700' : ($package->payment_plan_options === 'installment' ? 'bg-indigo-100 text-indigo-700' : 'bg-violet-100 text-violet-700') }}">{{ $planLabel }}</span>
                                 </div>
                                 <div class="rounded-xl bg-indigo-50 px-3 py-2 text-right dark:bg-indigo-950/60">
                                     <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">Bookings</p>
                                     <p class="text-lg font-bold leading-tight text-indigo-700 dark:text-indigo-300">{{ $package->bookings_count }}</p>
                                 </div>
                             </div>
-                            <div class="mt-5">
-                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Total price</p>
-                                <p class="mt-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Rs {{ number_format($package->total_price) }}</p>
+                            <div class="mt-5 grid grid-cols-2 gap-3">
+                                <div class="rounded-xl border border-emerald-100 bg-emerald-50/70 p-3 dark:border-emerald-900 dark:bg-emerald-950/30">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Cash price</p>
+                                    @if($package->cash_price !== null)
+                                        <p class="mt-1 text-lg font-bold tracking-tight text-emerald-950 dark:text-emerald-200">Rs {{ number_format($package->cash_price) }}</p>
+                                    @else
+                                        <p class="mt-1 text-sm font-bold text-amber-700 dark:text-amber-300">Not configured</p>
+                                    @endif
+                                </div>
+                                <div class="rounded-xl border border-indigo-100 bg-indigo-50/70 p-3 dark:border-indigo-900 dark:bg-indigo-950/30">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Installment price</p>
+                                    <p class="mt-1 text-lg font-bold tracking-tight text-indigo-950 dark:text-indigo-200">Rs {{ number_format($package->total_price) }}</p>
+                                </div>
                             </div>
                             @php
                                 $upfrontShare = $package->total_price > 0 ? min(100, ($package->booking_amount / $package->total_price) * 100) : 0;

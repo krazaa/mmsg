@@ -29,17 +29,24 @@ class ProfileUpdateRequest extends FormRequest
             $emailRules[] = Rule::in([$this->user()->email]);
         }
 
+        $phoneRules = ['nullable', 'string', 'max:30'];
+        $cnicRules = [
+            'nullable',
+            'string',
+            'max:15',
+            Rule::unique(User::class)->ignore($this->user()->id),
+        ];
+        if ($this->user()->role === 'customer') {
+            $phoneRules[] = Rule::in([$this->user()->phone]);
+            $cnicRules[] = Rule::in([$this->user()->cnic]);
+        }
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => $emailRules,
             'father_name' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'cnic' => [
-                'nullable',
-                'string',
-                'max:15',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
+            'phone' => $phoneRules,
+            'cnic' => $cnicRules,
             'address' => ['nullable', 'string', 'max:1000'],
         ];
     }

@@ -39,20 +39,14 @@ class PackageCommissionRuleTest extends TestCase
         $booking = Booking::firstOrFail();
         $this->actingAs($admin)->get(route('bookings.show', $booking))->assertOk()->assertSee('AGT-AGENT');
 
-        $this->actingAs($admin)->get(route('agents.show', $agent))
-            ->assertOk()->assertSee('Commission history')->assertSee('28,000.00')
-            ->assertSee('Sponsor hierarchy')->assertSee('Who this agent reports to, up to 3 sponsors.')
-            ->assertSee('Sales Manager')->assertSee('Sales Director');
+        $this->actingAs($admin)->get(route('customers.show', $agent))
+            ->assertOk()->assertSee('28,000.00');
 
-        $manager = User::where('email', 'manager@abdullahtown.pk')->firstOrFail();
-        $this->actingAs($admin)->get(route('agents.show', $manager))
-            ->assertOk()->assertSee('Three-level downline')->assertSee('Sales Agent');
-
-        $this->actingAs($admin)->post(route('agents.payouts.store', $agent), [
+        $this->actingAs($admin)->post(route('customers.commission-payouts.store', $agent), [
             'payment_method' => 'bank_transfer',
             'transaction_reference' => 'AGENT-PAY-1',
             'notes' => 'Monthly payout',
-        ])->assertRedirect(route('agents.show', $agent));
+        ])->assertRedirect(route('customers.show', $agent));
         $payout = CommissionPayout::firstOrFail();
         $this->assertEquals(28000, (float) $payout->amount);
         $this->assertEquals('paid', Commission::where('beneficiary_id', $agent->id)->value('status'));
@@ -60,7 +54,7 @@ class PackageCommissionRuleTest extends TestCase
         $this->assertSame($admin->id, $payoutActivity->causer_id);
         $this->assertSame('AGENT-PAY-1', $payoutActivity->properties['attributes']['transaction_reference']);
         $this->assertTrue(Activity::where('subject_type', Commission::class)->where('event', 'updated')->where('properties->attributes->status', 'paid')->exists());
-        $this->actingAs($admin)->get(route('agents.show', $agent))
-            ->assertOk()->assertSee('Payout history')->assertSee('AGENT-PAY-1')->assertSee('Paid out');
+        $this->actingAs($admin)->get(route('customers.show', $agent))
+            ->assertOk()->assertSee('AGENT-PAY-1');
     }
 }

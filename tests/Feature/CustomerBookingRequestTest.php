@@ -39,11 +39,14 @@ class CustomerBookingRequestTest extends TestCase
         PlotPackage::create(['project_id' => $fullProject->id, 'name' => 'Sold Out Plan', 'size_marla' => 5, 'booking_amount' => 100000, 'months' => 12, 'monthly_amount' => 10000, 'month_12_balloon' => 0, 'month_24_balloon' => 0, 'month_36_balloon' => 0, 'status' => true]);
 
         $this->actingAs($customerUser)->get(route('customer.bookings.create'))
-            ->assertOk()->assertSee('Book a plot')->assertSee('Request 10 Marla')
+            ->assertOk()->assertSee('Book a plot')
+            ->assertSee('Selected installment plan')
+            ->assertSee('Continue with Installments')
+            ->assertDontSee('Choose a payment plan below')
             ->assertSee('You can make the first payment after your booking is approved by the office.')
             ->assertSee('Your current amount due')->assertSee('0.00')
             ->assertDontSee('Sold Out Project')->assertDontSee('0.00 marla available');
-        $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id])
+        $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id, 'payment_plan' => 'installment'])
             ->assertRedirect(route('dashboard'))->assertSessionHas('success');
 
         $booking = Booking::firstOrFail();
@@ -59,7 +62,7 @@ class CustomerBookingRequestTest extends TestCase
             ->assertOk()
             ->assertSee('is awaiting office approval')
             ->assertSee('Approval pending');
-        $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id])
+        $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id, 'payment_plan' => 'installment'])
             ->assertSessionHasErrors('package_id');
         $this->assertDatabaseCount('bookings', 1);
         $this->assertEquals(10, (float) $project->refresh()->reserved_area_marla);
@@ -99,7 +102,7 @@ class CustomerBookingRequestTest extends TestCase
         $firstPayment = Payment::whereNull('installment_schedule_id')->firstOrFail();
         $this->assertEquals('pending', $firstPayment->status);
         $this->assertEquals(200000, (float) $firstPayment->amount);
-        $this->assertStringStartsWith('BKG-1ST-PAY-', $firstPayment->receipt_number);
+        $this->assertStringStartsWith('BKG-PAY-', $firstPayment->receipt_number);
         Storage::disk('local')->assertExists($firstPayment->proof_path);
         $this->assertTrue($admin->notifications()->get()->pluck('data.title')->contains('Customer payment needs verification'));
         $this->actingAs($admin)->get(route('management.notifications.index'))
@@ -107,14 +110,44 @@ class CustomerBookingRequestTest extends TestCase
             ->assertSee('Customer payment needs verification')
             ->assertSee('Plot Buyer')
             ->assertSee($firstPayment->receipt_number);
+        $this->actingAs($admin)->get(route('payments.edit', $firstPayment))
+            ->assertOk()
+            ->assertSee('Customer file number')
+            ->assertSee('name="file_no"', false);
 
         $this->actingAs($admin)->put(route('payments.update', $firstPayment), [
             'payment_method' => 'online_transfer',
             'transaction_reference' => 'FIRST-123',
             'status' => 'verified',
+        ])->assertSessionHasErrors('file_no');
+
+        User::factory()->create(['file_no' => 'AT-USED-001']);
+        $this->actingAs($admin)->put(route('payments.update', $firstPayment), [
+            'payment_method' => 'online_transfer',
+            'transaction_reference' => 'FIRST-123',
+            'status' => 'verified',
+            'file_no' => ' at-used-001 ',
+        ])->assertSessionHasErrors('file_no');
+        $this->assertSame('pending', $firstPayment->refresh()->status);
+
+        $customerUser->update(['file_no' => 'AT-EXISTING-001']);
+        $this->actingAs($admin)->put(route('payments.update', $firstPayment), [
+            'payment_method' => 'online_transfer',
+            'transaction_reference' => 'FIRST-123',
+            'status' => 'verified',
+            'file_no' => 'AT-EXISTING-001',
+        ])->assertSessionHasErrors('file_no');
+        $this->assertSame('pending', $firstPayment->refresh()->status);
+
+        $this->actingAs($admin)->put(route('payments.update', $firstPayment), [
+            'payment_method' => 'online_transfer',
+            'transaction_reference' => 'FIRST-123',
+            'status' => 'verified',
+            'file_no' => 'AT-MANUAL-001',
         ])->assertRedirect(route('payments.index'));
         $this->assertEquals('verified', $firstPayment->refresh()->status);
         $this->assertEquals('active', $booking->refresh()->status);
+        $this->assertSame('AT-MANUAL-001', $customerUser->refresh()->file_no);
         $this->assertEquals($referrer->id, $booking->agent_id);
         $this->assertEquals(10000, (float) Commission::where('payment_id', $firstPayment->id)->value('amount'));
         $this->assertEquals(0, (float) $project->refresh()->reserved_area_marla);
@@ -134,5 +167,115 @@ class CustomerBookingRequestTest extends TestCase
             ->assertSee('Payment verified');
         $this->actingAs($customerUser)->post(route('customer.notifications.read-all'))->assertRedirect();
         $this->assertSame(0, $customerUser->unreadNotifications()->count());
+    }
+
+    public function test_customer_can_choose_cash_rate_without_installment_schedule(): void
+    {
+        Mail::fake();
+        $customer = User::factory()->create([
+            'role' => 'customer',
+            'email_verified_at' => now(),
+            'phone' => '03001234567',
+            'cnic' => '33333-3333333-3',
+        ]);
+        $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+        $project = Project::create([
+            'name' => 'Cash Project',
+            'slug' => 'cash-project',
+            'location' => 'Abbottabad',
+            'gross_area_marla' => 100,
+            'saleable_area_marla' => 100,
+            'status' => true,
+        ]);
+        $package = PlotPackage::create([
+            'project_id' => $project->id,
+            'name' => 'Cash 5 Marla',
+            'size_marla' => 5,
+            'cash_price' => 900000,
+            'booking_amount' => 100000,
+            'months' => 12,
+            'monthly_amount' => 75000,
+            'status' => true,
+        ]);
+
+        $this->actingAs($customer)->get(route('customer.bookings.create'))
+            ->assertOk()
+            ->assertSee('Selected cash plan')
+            ->assertSee('Selected installment plan')
+            ->assertSee('Choose payment plan')
+            ->assertSee('Installments are selected by default')
+            ->assertSee('Continue with Cash')
+            ->assertSee('Continue with Installments')
+            ->assertSee('Confirm cash selection')
+            ->assertSee('Confirm installment selection')
+            ->assertSee('Submit cash booking request?')
+            ->assertSee('Submit installment booking request?')
+            ->assertSee('Full cash payment')
+            ->assertSee('One full payment after office approval.')
+            ->assertSee('No cash payment is charged now')
+            ->assertSee('Your full cash payment becomes available only after approval.')
+            ->assertSee('No installments');
+
+        $this->actingAs($customer)->post(route('customer.bookings.store'), [
+            'package_id' => $package->id,
+            'payment_plan' => 'cash',
+        ])->assertRedirect(route('dashboard'));
+
+        $booking = Booking::firstOrFail();
+        $this->assertSame('cash', $booking->payment_plan);
+        $this->assertSame(900000.0, (float) $booking->total_price);
+        $this->assertSame(900000.0, (float) $booking->booking_amount);
+        $this->assertSame(0.0, (float) $booking->financed_amount);
+
+        $this->actingAs($admin)->put(route('bookings.update', $booking), [
+            'name' => $customer->name,
+            'cnic' => $customer->cnic,
+            'phone' => $customer->phone,
+            'booking_date' => $booking->booking_date->toDateString(),
+            'status' => 'approved',
+        ])->assertRedirect(route('bookings.show', $booking));
+
+        $this->assertCount(0, $booking->refresh()->installments);
+    }
+
+    public function test_cash_only_package_is_preselected_and_rejects_installments(): void
+    {
+        $customer = User::factory()->create(['role' => 'customer', 'email_verified_at' => now()]);
+        $project = Project::create([
+            'name' => 'Cash Only Project',
+            'slug' => 'cash-only-project',
+            'gross_area_marla' => 100,
+            'saleable_area_marla' => 100,
+            'status' => true,
+        ]);
+        $package = PlotPackage::create([
+            'project_id' => $project->id,
+            'name' => 'Cash Only Package',
+            'size_marla' => 5,
+            'cash_price' => 800000,
+            'payment_plan_options' => 'cash',
+            'booking_amount' => 100000,
+            'months' => 12,
+            'monthly_amount' => 75000,
+            'status' => true,
+        ]);
+
+        $this->actingAs($customer)->get(route('customer.bookings.create'))
+            ->assertOk()
+            ->assertSee('Cash Only')
+            ->assertSee('Installments not available')
+            ->assertDontSee('Choose a payment plan below');
+
+        $this->actingAs($customer)->post(route('customer.bookings.store'), [
+            'package_id' => $package->id,
+            'payment_plan' => 'installment',
+        ])->assertSessionHasErrors('payment_plan');
+
+        $this->actingAs($customer)->post(route('customer.bookings.store'), [
+            'package_id' => $package->id,
+            'payment_plan' => 'cash',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertSame('cash', Booking::firstOrFail()->payment_plan);
     }
 }

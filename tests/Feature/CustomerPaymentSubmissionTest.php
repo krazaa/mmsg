@@ -88,7 +88,7 @@ class CustomerPaymentSubmissionTest extends TestCase
         $project = Project::create(['name' => 'Test', 'slug' => 'payment-test', 'location' => 'Test', 'gross_area_marla' => 1000, 'saleable_area_marla' => 1000]);
         $package = PlotPackage::create(['project_id' => $project->id, 'name' => 'Plan', 'size_marla' => 5, 'booking_amount' => 100000, 'months' => 12, 'monthly_amount' => 25000, 'month_12_balloon' => 0, 'month_24_balloon' => 0, 'month_36_balloon' => 0]);
         CommissionRule::create(['package_id' => $package->id, 'level' => 1, 'percentage' => 5, 'status' => true]);
-        $agent = User::factory()->create(['role' => 'agent', 'status' => true]);
+        $agent = User::factory()->create(['role' => 'customer', 'status' => true]);
         $customerUser->update(['role' => 'customer', 'name' => 'Customer', 'cnic' => '11111-1111111-1', 'phone' => '0300', 'referral_code' => 'REF-PAY']);
         $customer = Customer::findOrFail($customerUser->id);
         $booking = Booking::create(['booking_number' => 'BOOK-PAY', 'project_id' => $project->id, 'package_id' => $package->id, 'customer_id' => $customer->id, 'agent_id' => $agent->id, 'booking_date' => today(), 'total_price' => 400000, 'booking_amount' => 100000, 'financed_amount' => 300000, 'status' => 'active']);

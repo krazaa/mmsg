@@ -14,6 +14,8 @@ use App\Services\BookingLifecycleService;
 use App\Services\BookingService;
 use App\Services\CommissionService;
 use App\Services\InstallmentScheduleService;
+use App\Support\DataVersion;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passkeys\Contracts\PasskeyUser;
@@ -41,6 +43,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen([
+            'eloquent.created: *',
+            'eloquent.updated: *',
+            'eloquent.deleted: *',
+            'eloquent.restored: *',
+        ], fn (): mixed => DataVersion::touch());
+
         Passkeys::authorizeLoginUsing(
             fn ($request, PasskeyUser $user, Passkey $passkey): bool => $user instanceof User
                 && $user->status

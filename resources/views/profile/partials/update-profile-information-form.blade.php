@@ -30,12 +30,12 @@
             </div>
             <div>
                 <x-input-label for="phone" :value="__('Contact number')" />
-                <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
+                <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full {{ $user->role === 'customer' ? 'cursor-not-allowed bg-slate-100 text-slate-500 dark:bg-slate-800' : '' }}" :value="old('phone', $user->phone)" autocomplete="tel" :readonly="$user->role === 'customer'" />
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
             </div>
             <div>
                 <x-input-label for="cnic" :value="__('CNIC')" />
-                <x-text-input id="cnic" name="cnic" type="text" maxlength="15" placeholder="00000-0000000-0" class="mt-1 block w-full" :value="old('cnic', $user->cnic)" />
+                <x-text-input id="cnic" name="cnic" type="text" maxlength="15" placeholder="00000-0000000-0" class="mt-1 block w-full {{ $user->role === 'customer' ? 'cursor-not-allowed bg-slate-100 text-slate-500 dark:bg-slate-800' : '' }}" :value="old('cnic', $user->cnic)" :readonly="$user->role === 'customer'" />
                 <x-input-error class="mt-2" :messages="$errors->get('cnic')" />
             </div>
             <div class="sm:col-span-2">
@@ -43,7 +43,7 @@
                 <x-text-input id="email" name="email" type="email" class="mt-1 block w-full {{ $user->role === 'customer' ? 'cursor-not-allowed bg-slate-100 text-slate-500 dark:bg-slate-800' : '' }}" :value="old('email', $user->email)" required autocomplete="username" :readonly="$user->role === 'customer'" />
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
                 @if($user->role === 'customer')
-                    <p class="mt-1.5 flex items-center gap-1 text-xs font-semibold text-slate-400"><span>🔒</span> Contact the office to change your registered email address.</p>
+                    <p class="mt-1.5 flex items-center gap-1 text-xs font-semibold text-slate-400"><span>🔒</span> Contact management to change your registered email, phone number, or CNIC.</p>
                 @endif
 
                 @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())

@@ -1,74 +1,142 @@
 
 
 import Alpine from 'alpinejs';
-import { Passkeys } from '@laravel/passkeys';
-import $ from 'jquery';
-import attachSelect2 from 'select2';
 
 window.Alpine = Alpine;
-window.$ = window.jQuery = $;
-attachSelect2(window, $);
 
 Alpine.start();
 
-document.querySelectorAll('[data-allotment-selects]').forEach((form) => {
-    const project = $(form).find('[data-project-select]');
-    const booking = $(form).find('[data-booking-select]');
-    const plot = $(form).find('[data-plot-select]');
-    project.select2({
-        width: '100%',
-        placeholder: 'Search project',
-        allowClear: true,
-    });
-    booking.select2({
-        width: '100%',
-        placeholder: 'Search active booking',
-        allowClear: true,
-        matcher: (params, data) => {
-            if (!data.id) return data;
-            if (data.element?.dataset.project !== String(project.val() || '')) return null;
-            if (!params.term || data.text.toLowerCase().includes(params.term.toLowerCase())) return data;
-            return null;
-        },
-    });
-    plot.select2({
-        width: '100%',
-        placeholder: 'Search matching plot',
-        allowClear: true,
-        matcher: (params, data) => {
-            if (!data.id) return data;
-            if (data.element?.dataset.booking !== String(booking.val() || '')) return null;
-            if (!params.term || data.text.toLowerCase().includes(params.term.toLowerCase())) return data;
-            return null;
-        },
-    });
+const dataVersionMeta = document.querySelector('meta[name="data-version"]');
+const dataVersionUrl = document.querySelector('meta[name="data-version-url"]')?.content;
 
-    const filterBookings = () => {
-        const projectId = String(project.val() || '');
-        booking.val(null).prop('disabled', !projectId).trigger('change');
+if (dataVersionMeta && dataVersionUrl) {
+    let currentDataVersion = Number(dataVersionMeta.content);
+    let formIsDirty = false;
+    let polling = false;
+
+    const showRefreshButton = () => {
+        if (document.querySelector('[data-new-data-refresh]')) return;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.newDataRefresh = 'true';
+        button.className = 'fixed bottom-5 right-5 z-[200] rounded-xl bg-indigo-600 px-4 py-3 text-sm font-black text-white shadow-2xl hover:bg-indigo-700';
+        button.textContent = 'New data available — refresh';
+        button.addEventListener('click', () => window.location.reload());
+        document.body.appendChild(button);
     };
 
-    const filterPlots = () => {
-        const bookingId = String(booking.val() || '');
-        plot.val(null).prop('disabled', !bookingId).trigger('change');
+    document.addEventListener('input', (event) => {
+        if (event.target.closest('form')) formIsDirty = true;
+    });
+    document.addEventListener('change', (event) => {
+        if (event.target.closest('form')) formIsDirty = true;
+    });
+    document.addEventListener('submit', () => {
+        formIsDirty = false;
+    });
+
+    const pollForChanges = async () => {
+        if (polling || document.visibilityState !== 'visible') return;
+        polling = true;
+
+        try {
+            const response = await fetch(dataVersionUrl, {
+                headers: { Accept: 'application/json' },
+                cache: 'no-store',
+            });
+            if (!response.ok) return;
+
+            const { version } = await response.json();
+            if (Number(version) <= currentDataVersion) return;
+            currentDataVersion = Number(version);
+
+            const editing = formIsDirty
+                || document.activeElement?.matches('input, textarea, select, [contenteditable="true"]');
+            if (editing) {
+                showRefreshButton();
+            } else {
+                window.location.reload();
+            }
+        } catch {
+            // A temporary network failure should not interrupt the current page.
+        } finally {
+            polling = false;
+        }
     };
 
-    project.on('change', filterBookings);
-    booking.on('change', filterPlots);
-    filterBookings();
-    filterPlots();
-});
-
-const bookingFilterSelect = $('[data-booking-filter-select]').select2({
-    width: '100%',
-    placeholder: 'Search booking or customer',
-    allowClear: false,
-});
-bookingFilterSelect.on('select2:open', () => {
-    window.setTimeout(() => {
-        document.querySelector('.select2-container--open .select2-search__field')?.focus();
+    // A one-minute interval keeps shared-hosting traffic light while still
+    // surfacing database changes without requiring WebSockets.
+    window.setInterval(pollForChanges, 60000);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') pollForChanges();
     });
-});
+}
+
+if (document.querySelector('[data-allotment-selects], [data-booking-filter-select]')) {
+    Promise.all([import('jquery'), import('select2')]).then(([jquery, select2]) => {
+        const $ = jquery.default;
+        window.$ = window.jQuery = $;
+        select2.default(window, $);
+
+        document.querySelectorAll('[data-allotment-selects]').forEach((form) => {
+            const project = $(form).find('[data-project-select]');
+            const booking = $(form).find('[data-booking-select]');
+            const plot = $(form).find('[data-plot-select]');
+            project.select2({ width: '100%', placeholder: 'Search project', allowClear: true });
+            booking.select2({
+                width: '100%',
+                placeholder: 'Search active booking',
+                allowClear: true,
+                matcher: (params, data) => {
+                    if (!data.id) return data;
+                    if (data.element?.dataset.project !== String(project.val() || '')) return null;
+                    if (!params.term || data.text.toLowerCase().includes(params.term.toLowerCase())) return data;
+                    return null;
+                },
+            });
+            plot.select2({
+                width: '100%',
+                placeholder: 'Search matching plot',
+                allowClear: true,
+                matcher: (params, data) => {
+                    if (!data.id) return data;
+                    if (data.element?.dataset.booking !== String(booking.val() || '')) return null;
+                    if (!params.term || data.text.toLowerCase().includes(params.term.toLowerCase())) return data;
+                    return null;
+                },
+            });
+
+            const filterBookings = () => {
+                const projectId = String(project.val() || '');
+                booking.val(null).prop('disabled', !projectId).trigger('change');
+            };
+            const filterPlots = () => {
+                const bookingId = String(booking.val() || '');
+                plot.val(null).prop('disabled', !bookingId).trigger('change');
+            };
+
+            project.on('change', filterBookings);
+            booking.on('change', filterPlots);
+            filterBookings();
+            filterPlots();
+        });
+
+        const bookingFilter = document.querySelector('[data-booking-filter-select]');
+        if (bookingFilter) {
+            const bookingFilterSelect = $(bookingFilter).select2({
+                width: '100%',
+                placeholder: 'Search booking or customer',
+                allowClear: false,
+            });
+            bookingFilterSelect.on('select2:open', () => {
+                window.setTimeout(() => {
+                    document.querySelector('.select2-container--open .select2-search__field')?.focus();
+                });
+            });
+        }
+    });
+}
 
 function showPasskeyMessage(element, message, isError = false) {
     if (!element) return;
@@ -78,7 +146,12 @@ function showPasskeyMessage(element, message, isError = false) {
     element.hidden = false;
 }
 
-document.querySelectorAll('[data-passkey-login]').forEach((button) => {
+const passkeyLoginButtons = document.querySelectorAll('[data-passkey-login]');
+const passkeyRegisterForms = document.querySelectorAll('[data-passkey-register]');
+
+if (passkeyLoginButtons.length || passkeyRegisterForms.length) {
+    import('@laravel/passkeys').then(({ Passkeys }) => {
+passkeyLoginButtons.forEach((button) => {
     const message = document.querySelector(button.dataset.messageTarget);
 
     if (!Passkeys.isSupported()) {
@@ -108,7 +181,7 @@ document.querySelectorAll('[data-passkey-login]').forEach((button) => {
     });
 });
 
-document.querySelectorAll('[data-passkey-register]').forEach((form) => {
+passkeyRegisterForms.forEach((form) => {
     const button = form.querySelector('button[type="submit"]');
     const input = form.querySelector('input[name="passkey_name"]');
     const message = form.querySelector('[data-passkey-message]');
@@ -149,6 +222,8 @@ document.querySelectorAll('[data-passkey-register]').forEach((form) => {
         }
     });
 });
+    });
+}
 
 const MAX_PROOF_BYTES = 300 * 1024;
 

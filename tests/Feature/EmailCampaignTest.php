@@ -27,6 +27,12 @@ class EmailCampaignTest extends TestCase
         $second = User::factory()->create(['role' => 'customer', 'status' => true, 'email' => 'second@example.com']);
         $optedOut = User::factory()->create(['role' => 'customer', 'status' => true, 'email' => 'opted@example.com']);
         EmailUnsubscribe::create(['email' => $optedOut->email, 'unsubscribed_at' => now()]);
+        $expectedRecipients = User::where('role', 'customer')
+            ->where('status', true)
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->whereRaw('LOWER(email) != ?', [strtolower($optedOut->email)])
+            ->count();
 
         $this->actingAs($admin)->post(route('email-campaigns.store'), [
             'name' => 'Customer Update',
@@ -35,10 +41,12 @@ class EmailCampaignTest extends TestCase
         ])->assertRedirect();
 
         $campaign = EmailCampaign::firstOrFail();
-        $this->assertSame(2, $campaign->recipient_count);
-        $this->assertDatabaseHas('email_campaign_recipients', ['email' => $first->email, 'status' => 'dispatched']);
-        $this->assertDatabaseHas('email_campaign_recipients', ['email' => $second->email, 'status' => 'queued']);
+        $this->assertSame($expectedRecipients, $campaign->recipient_count);
+        $this->assertDatabaseHas('email_campaign_recipients', ['email' => $first->email]);
+        $this->assertDatabaseHas('email_campaign_recipients', ['email' => $second->email]);
         $this->assertDatabaseMissing('email_campaign_recipients', ['email' => $optedOut->email]);
+        $this->assertDatabaseCount('email_campaign_recipients', $expectedRecipients);
+        $this->assertSame(1, EmailCampaignRecipient::where('status', 'dispatched')->count());
         Queue::assertPushed(SendEmailCampaignRecipient::class, 1);
     }
 

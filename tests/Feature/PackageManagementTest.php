@@ -21,6 +21,7 @@ class PackageManagementTest extends TestCase
         ]);
         $data = [
             'project_id' => $project->id, 'name' => '8 Marla', 'size_marla' => 8,
+            'cash_price' => 1750000,
             'booking_amount' => 350000, 'months' => 24, 'monthly_amount' => 50000,
             'balloons' => [
                 ['month' => 12, 'amount' => 150000],
@@ -39,7 +40,14 @@ class PackageManagementTest extends TestCase
             ['month' => 24, 'amount' => 250000.0],
         ], $package->balloonPayments());
         $this->actingAs($user)->get(route('packages.edit', $package))
-            ->assertOk()->assertSee('Total price (calculated)')->assertSee('Add payment')->assertSee('Remove');
+            ->assertOk()->assertSee('Installment price (calculated)')->assertSee('Cash price')->assertSee('Add payment')->assertSee('Remove');
+        $this->actingAs($user)->get(route('packages.index', ['project' => $project->id]))
+            ->assertOk()
+            ->assertSee('Cash price')
+            ->assertSee('Installment price')
+            ->assertSee('Cash &amp; Installments', false)
+            ->assertSee('1,750,000')
+            ->assertSee('1,950,000');
 
         $data['monthly_amount'] = 60000;
         $this->actingAs($user)->put(route('packages.update', $package), $data)
@@ -56,6 +64,7 @@ class PackageManagementTest extends TestCase
         ]);
         $data = [
             'project_id' => $project->id, 'name' => 'Plan', 'size_marla' => 5,
+            'cash_price' => 300,
             'booking_amount' => 100, 'months' => 18, 'monthly_amount' => 10, 'status' => 1,
         ];
 
@@ -71,6 +80,54 @@ class PackageManagementTest extends TestCase
         ])->assertSessionHasErrors('balloons.1.month');
     }
 
+    public function test_cash_price_must_differ_from_installment_price(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::create([
+            'name' => 'Different Rates',
+            'slug' => 'different-rates',
+            'gross_area_marla' => 100,
+            'saleable_area_marla' => 100,
+            'status' => true,
+        ]);
+
+        $this->actingAs($user)->post(route('packages.store'), [
+            'project_id' => $project->id,
+            'name' => 'Equal Price Plan',
+            'size_marla' => 5,
+            'cash_price' => 1300,
+            'booking_amount' => 100,
+            'months' => 12,
+            'monthly_amount' => 100,
+            'status' => 1,
+        ])->assertSessionHasErrors('cash_price');
+    }
+
+    public function test_cash_price_can_be_left_blank(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::create([
+            'name' => 'Installment Only',
+            'slug' => 'installment-only',
+            'gross_area_marla' => 100,
+            'saleable_area_marla' => 100,
+            'status' => true,
+        ]);
+
+        $this->actingAs($user)->post(route('packages.store'), [
+            'project_id' => $project->id,
+            'name' => 'Installment Only Plan',
+            'size_marla' => 5,
+            'cash_price' => '',
+            'booking_amount' => 100,
+            'months' => 12,
+            'monthly_amount' => 100,
+            'status' => 1,
+        ])->assertRedirect(route('packages.index', ['project' => $project->id]));
+
+        $this->assertNull(PlotPackage::where('name', 'Installment Only Plan')->firstOrFail()->cash_price);
+    }
+
     public function test_duplicate_package_name_in_same_project_is_rejected(): void
     {
         $this->seed();
@@ -79,6 +136,7 @@ class PackageManagementTest extends TestCase
 
         $this->actingAs($user)->post(route('packages.store'), [
             'project_id' => $project->id, 'name' => '5 Marla', 'size_marla' => 5,
+            'cash_price' => 100,
             'booking_amount' => 1, 'months' => 36, 'monthly_amount' => 1, 'month_12_balloon' => 1,
             'month_24_balloon' => 1, 'month_36_balloon' => 1, 'status' => 1,
         ])->assertSessionHasErrors('name');

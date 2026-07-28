@@ -24,7 +24,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $customers = Customer::with(['referralAgent.customer', 'user.referral.sponsor'])->withCount(['bookings', 'payments'])
-            ->when($request->string('type')->toString() === 'agent', fn ($query) => $query->whereNotNull('referral_agent_id'))
+            ->where('referral_code', '!=', 'DIRECT-SALES')
             ->when($request->filled('referral_code'), fn ($query) => $query->where('referral_code', 'like', '%'.$request->string('referral_code')->trim().'%'))
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = '%'.$request->string('search')->trim().'%';
@@ -40,7 +40,7 @@ class CustomerController extends Controller
 
     public function create()
     {
-        return view('customers.create', ['agents' => $this->agents()]);
+        return view('customers.create');
     }
 
     public function show(Request $request, Customer $customer)
@@ -96,11 +96,14 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        return view('customers.edit', ['customer' => $customer, 'agents' => $this->agents($customer->referral_agent_id)]);
+        abort_if($customer->referral_code === 'DIRECT-SALES', 404);
+
+        return view('customers.edit', compact('customer'));
     }
 
     public function update(Request $request, Customer $customer)
     {
+        abort_if($customer->referral_code === 'DIRECT-SALES', 404);
         $data = $this->validated($request, $customer);
         $referrerId = $this->referrerId($data['referred_by_code'] ?? null);
         if ($referrerId === $customer->id) {
@@ -122,6 +125,7 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        abort_if($customer->referral_code === 'DIRECT-SALES', 404);
         if ($customer->bookings()->exists() || $customer->payments()->exists()) {
             return back()->withErrors(['customer' => 'Customers with bookings or payments cannot be deleted. Deactivate them instead.']);
         }
@@ -142,10 +146,15 @@ class CustomerController extends Controller
         ]);
     }
 
-    private function referrerId(?string $code): int
+    private function referrerId(?string $code): ?int
     {
         if (! $code) {
-            return (int) User::where('email', 'direct-sales@mmsgroup.pk')->value('id');
+            return User::query()
+                ->where('referral_code', 'DIRECT-SALES')
+                ->orWhere('email', [
+                    'direct-sales@mmsgroup.pk',
+                ])
+                ->value('id');
         }
 
         $referrer = Customer::where('referral_code', $code)->firstOrFail();
@@ -170,8 +179,4 @@ class CustomerController extends Controller
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    private function agents(?int $include = null)
-    {
-        return User::where('role', 'agent')->where(fn ($query) => $query->where('status', true)->when($include, fn ($q) => $q->orWhere('id', $include)))->orderBy('name')->get();
-    }
 }

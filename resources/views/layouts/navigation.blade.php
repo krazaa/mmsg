@@ -33,10 +33,6 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if(Auth::user()->role === 'agent')
-                    <x-nav-link :href="route('dashboard').'#commissions'" :active="false">{{ __('My commissions') }}</x-nav-link>
-                    <x-nav-link :href="route('dashboard').'#sales'" :active="false">{{ __('My sales') }}</x-nav-link>
-                    @else
                     <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
                         {{ __('Projects') }}
                     </x-nav-link>
@@ -65,7 +61,6 @@
                     <x-nav-link :href="route('management.whatsapp.index')" :active="request()->routeIs('management.whatsapp.*')">{{ __('WhatsApp') }}</x-nav-link>
                     @if(Auth::user()->role !== 'staff')
                         <x-nav-link :href="route('management.activity-log.index')" :active="request()->routeIs('management.activity-log.*')">{{ __('Audit log') }}</x-nav-link>
-                    @endif
                     @endif
                     @endif
                 </div>
@@ -108,10 +103,18 @@
                             <x-dropdown-link :href="route('allotments.index')">
                                 {{ __('Plot allotments & inventory') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('app-settings.edit')">
+                                {{ __('App settings') }}
+                            </x-dropdown-link>
                         @endif
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        @if(Auth::user()->role === 'customer')
+                            <x-dropdown-link :href="route('customer.payout-methods.index')">
+                                {{ __('Payout Methods') }}
+                            </x-dropdown-link>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -166,9 +169,6 @@
             <x-responsive-nav-link :href="route('customer.commissions')" :active="request()->routeIs('customer.commissions')">{{ __('Commissions') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customer.withdrawals.index')" :active="request()->routeIs('customer.withdrawals.*')">{{ __('Withdraw commission') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customer.notifications.index')" :active="request()->routeIs('customer.notifications.*')">{{ __('Notifications') }} @if(Auth::user()->unreadNotifications()->count())<span class="ms-1 rounded-full bg-rose-500 px-2 py-0.5 text-xs font-black text-white">{{ Auth::user()->unreadNotifications()->count() }}</span>@endif</x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'agent')
-            <x-responsive-nav-link :href="route('dashboard').'#commissions'" :active="false">{{ __('My commissions') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard').'#sales'" :active="false">{{ __('My sales') }}</x-responsive-nav-link>
             @else
             <x-responsive-nav-link :href="route('sales.create')" :active="request()->routeIs('sales.*')">{{ __('New Booking') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
@@ -220,10 +220,18 @@
                     <x-responsive-nav-link :href="route('allotments.index')" :active="request()->routeIs('allotments.*') || request()->routeIs('inventory.*')">
                         {{ __('Plot allotments & inventory') }}
                     </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('app-settings.edit')" :active="request()->routeIs('app-settings.*')">
+                        {{ __('App settings') }}
+                    </x-responsive-nav-link>
                 @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+                @if(Auth::user()->role === 'customer')
+                    <x-responsive-nav-link :href="route('customer.payout-methods.index')" :active="request()->routeIs('customer.payout-methods.*')">
+                        {{ __('Payout Methods') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

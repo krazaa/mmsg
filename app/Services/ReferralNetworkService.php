@@ -53,6 +53,7 @@ class ReferralNetworkService
             ->with([
                 'bookings' => fn ($query) => $query
                     ->with(['project:id,name', 'package:id,name', 'installments:id,booking_id,status'])
+                    ->withSum(['payments as verified_paid_total' => fn ($payments) => $payments->where('status', 'verified')], 'amount')
                     ->latest('booking_date'),
             ])
             ->withCount('bookings')

@@ -29,9 +29,8 @@ class UserFactory extends Factory
             $permissions = in_array($roleName, ['super_admin', 'admin'], true)
                 ? Permissions::all()
                 : match ($roleName) {
-                    'staff' => array_values(array_diff(Permissions::all(), [Permissions::MANAGE_STAFF, Permissions::USE_AGENT_PORTAL, ...Permissions::customer()])),
+                    'staff' => array_values(array_diff(Permissions::all(), [Permissions::MANAGE_STAFF, ...Permissions::customer()])),
                     'customer' => Permissions::customer(),
-                    'agent' => [Permissions::VIEW_DASHBOARD, Permissions::USE_AGENT_PORTAL],
                     default => [],
                 };
             foreach ($permissions as $permission) {

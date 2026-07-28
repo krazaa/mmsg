@@ -14,7 +14,7 @@ class CommissionPayout extends Model
 
     protected function casts(): array
     {
-        return ['amount' => 'decimal:2', 'paid_at' => 'datetime'];
+        return ['amount' => 'decimal:2', 'fee_amount' => 'decimal:2', 'net_amount' => 'decimal:2', 'paid_at' => 'datetime'];
     }
 
     public function agent()

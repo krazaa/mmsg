@@ -14,7 +14,7 @@ class PlotPackage extends Model
 
     protected function casts(): array
     {
-        return ['size_marla' => 'decimal:2', 'booking_amount' => 'decimal:2', 'monthly_amount' => 'decimal:2', 'month_12_balloon' => 'decimal:2', 'month_24_balloon' => 'decimal:2', 'month_36_balloon' => 'decimal:2', 'balloon_payments' => 'array', 'status' => 'boolean'];
+        return ['size_marla' => 'decimal:2', 'cash_price' => 'decimal:2', 'booking_amount' => 'decimal:2', 'monthly_amount' => 'decimal:2', 'month_12_balloon' => 'decimal:2', 'month_24_balloon' => 'decimal:2', 'month_36_balloon' => 'decimal:2', 'balloon_payments' => 'array', 'status' => 'boolean'];
     }
 
     public function project()
@@ -37,6 +37,21 @@ class PlotPackage extends Model
         return (float) $this->booking_amount
             + ($this->months * (float) $this->monthly_amount)
             + collect($this->balloonPayments())->sum('amount');
+    }
+
+    public function getEffectiveCashPriceAttribute(): float
+    {
+        return $this->cash_price !== null ? (float) $this->cash_price : $this->total_price;
+    }
+
+    public function offersCash(): bool
+    {
+        return in_array($this->payment_plan_options, ['cash', 'both'], true) && $this->cash_price !== null;
+    }
+
+    public function offersInstallments(): bool
+    {
+        return in_array($this->payment_plan_options, ['installment', 'both'], true);
     }
 
     public function balloonPayments(): array

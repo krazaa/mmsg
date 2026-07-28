@@ -81,6 +81,7 @@ class BookingFlowTest extends TestCase
         $this->seed();
         $admin = User::where('email', 'admin@abdullahtown.pk')->firstOrFail();
         $customer = Customer::create(['name' => 'Existing Customer', 'cnic' => '55555-5555555-5', 'phone' => '0300', 'status' => true]);
+        $customerCount = Customer::count();
         $package = PlotPackage::where('name', '5 Marla')->firstOrFail();
 
         $this->actingAs($admin)->get(route('sales.create'))->assertOk()
@@ -91,7 +92,7 @@ class BookingFlowTest extends TestCase
             'booking_date' => '2026-07-20', 'payment_method' => 'cash',
         ])->assertRedirect();
 
-        $this->assertSame(1, Customer::count());
+        $this->assertSame($customerCount, Customer::count());
         $this->assertEquals($customer->id, Booking::firstOrFail()->customer_id);
     }
 

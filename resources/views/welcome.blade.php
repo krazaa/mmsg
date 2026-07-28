@@ -6,8 +6,6 @@
     <meta name="description" content="MMS Group property booking, installment, inventory and customer portal.">
     <title>MMS Group · Property made simple</title>
     <link rel="icon" href="{{ asset('logo.svg') }}" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-grid { background-image: linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 34px 34px; }
@@ -91,7 +89,7 @@
                         <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border p-2.5" style="border-color:{{ $pageAppearance['welcome_hero_image_border_color'] }};background:linear-gradient(135deg,{{ $pageAppearance['welcome_hero_image_gradient_start_color'] }},{{ $pageAppearance['welcome_hero_image_gradient_end_color'] }})">
                             <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
                                 @if($heroImage)
-                                    <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover">
+                                    <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover" fetchpriority="high" decoding="async">
                                 @else
                                     <div class="h-full w-full bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"></div>
                                 @endif
@@ -110,7 +108,7 @@
                         </div>
                         @if($heroSecondProject && $heroSecondImage)
                             <div class="float-card absolute -bottom-3 -right-2 w-44 overflow-hidden rounded-2xl border border-white/20 bg-slate-900 p-2 shadow-2xl backdrop-blur sm:-right-6 sm:w-52">
-                                <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover">
+                                <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover" loading="lazy" decoding="async">
                                 <div class="flex items-center justify-between gap-2 px-2 pb-1 pt-2"><div><b class="block truncate text-xs text-white">{{ $heroSecondProject->name }}</b><span class="text-[10px] text-slate-400">{{ $heroSecondProject->location }}</span></div><span class="text-indigo-300">↗</span></div>
                             </div>
                         @endif
@@ -149,7 +147,7 @@
                             <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.06] shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300/30" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">
                                     @if($projectImage)
-                                        <img src="{{ $projectImage }}" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy">
+                                        <img src="{{ $projectImage }}" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" decoding="async">
                                     @else
                                         <div class="grid h-full place-items-center bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"><span class="text-7xl font-black text-white/15">{{ $initials }}</span></div>
                                     @endif
@@ -160,7 +158,7 @@
                                     </div>
                                     @if($blueprintImage)
                                         <button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="absolute bottom-5 right-5 w-32 overflow-hidden rounded-xl border border-white/25 bg-slate-950/80 p-1.5 text-left shadow-xl backdrop-blur transition hover:-translate-y-1 sm:w-40" aria-label="View {{ $project->name }} masterplan">
-                                            <img src="{{ $blueprintImage }}" alt="" class="aspect-[16/10] w-full rounded-lg object-cover">
+                                            <img src="{{ $blueprintImage }}" alt="" class="aspect-[16/10] w-full rounded-lg object-cover" loading="lazy" decoding="async">
                                             <span class="mt-1.5 block px-1 text-[10px] font-black uppercase tracking-widest text-white">View blueprint ↗</span>
                                         </button>
                                     @endif
@@ -182,7 +180,7 @@
                                             <div><p class="text-[10px] font-black uppercase tracking-widest text-indigo-300">Project blueprint</p><h4 class="mt-1 text-xl font-black">{{ $project->name }} masterplan</h4></div>
                                             <button type="button" onclick="this.closest('dialog').close()" class="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-xl hover:bg-white/10" aria-label="Close blueprint">×</button>
                                         </div>
-                                        <img src="{{ $blueprintImage }}" alt="{{ $project->name }} conceptual masterplan blueprint" class="block max-h-[78vh] w-full object-contain">
+                                        <img src="{{ $blueprintImage }}" alt="{{ $project->name }} conceptual masterplan blueprint" class="block max-h-[78vh] w-full object-contain" loading="lazy" decoding="async">
                                         <p class="px-5 py-3 text-xs text-slate-500">Conceptual project visualization for presentation purposes.</p>
                                     </dialog>
                                 @endif

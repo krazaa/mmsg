@@ -3,10 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSetting extends Model
 {
     protected $guarded = [];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => Cache::forget('site_settings.values'));
+        static::deleted(fn () => Cache::forget('site_settings.values'));
+    }
 
     public static function welcomeDefaults(): array
     {
@@ -77,6 +84,20 @@ class SiteSetting extends Model
 
     public static function valueFor(string $key, mixed $default = null): mixed
     {
-        return static::query()->where('key', $key)->value('value') ?? $default;
+        $values = Cache::rememberForever(
+            'site_settings.values',
+            fn () => static::query()->pluck('value', 'key')->all(),
+        );
+
+        return $values[$key] ?? $default;
     }
+
+    public static function showReferralCodesOnCustomerPortal(): bool
+    {
+        return filter_var(
+            static::valueFor('customer_portal_show_referral_code', '1'),
+            FILTER_VALIDATE_BOOL,
+        );
+    }
+
 }

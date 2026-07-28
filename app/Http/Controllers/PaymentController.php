@@ -10,11 +10,13 @@ use App\Models\Booking;
 use App\Models\Commission;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\User;
 use App\Notifications\AccountActivityNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -58,7 +60,29 @@ class PaymentController extends Controller
 
     public function update(Request $request, Payment $payment, CommissionDistributor $commissions)
     {
-        $data = $request->validate(['payment_method' => ['required', Rule::in(['cash', 'bank_transfer', 'cheque', 'card', 'easypaisa', 'jazzcash', 'online_transfer', 'direct_deposit', 'crypto'])], 'transaction_reference' => ['nullable', 'string', 'max:100'], 'status' => ['required', Rule::in(['pending', 'verified', 'reversed'])], 'verification_notes' => ['nullable', 'string', 'max:1000']]);
+        if ($request->has('file_no')) {
+            $request->merge(['file_no' => Str::upper(trim($request->string('file_no')->toString()))]);
+        }
+
+        $requiresFileNumber = $payment->status === 'pending'
+            && $request->string('status')->toString() === 'verified'
+            && $payment->installment_schedule_id === null;
+
+        $data = $request->validate([
+            'payment_method' => ['required', Rule::in(['cash', 'bank_transfer', 'cheque', 'card', 'easypaisa', 'jazzcash', 'online_transfer', 'direct_deposit', 'crypto'])],
+            'transaction_reference' => ['nullable', 'string', 'max:100'],
+            'status' => ['required', Rule::in(['pending', 'verified', 'reversed'])],
+            'file_no' => [
+                Rule::requiredIf($requiresFileNumber),
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('users', 'file_no'),
+            ],
+            'verification_notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+        $fileNumber = $data['file_no'] ?? null;
+        unset($data['file_no']);
         if ($payment->status === 'reversed' && $data['status'] === 'verified') {
             throw ValidationException::withMessages(['status' => 'A reversed receipt cannot be re-verified. Record a new payment instead.']);
         }
@@ -68,7 +92,7 @@ class PaymentController extends Controller
         $becameVerified = false;
         $becameActive = false;
         $becameReversed = false;
-        DB::transaction(function () use ($payment, $data, $commissions, &$becameVerified, &$becameActive, &$becameReversed) {
+        DB::transaction(function () use ($payment, $data, $fileNumber, $commissions, &$becameVerified, &$becameActive, &$becameReversed) {
             $locked = Payment::lockForUpdate()->findOrFail($payment->id);
             if ($locked->status === 'pending' && $data['status'] === 'verified') {
                 $becameVerified = true;
@@ -84,6 +108,14 @@ class PaymentController extends Controller
                     }
                     $paid = (float) $installment->paid_amount + (float) $locked->amount;
                     $installment->update(['paid_amount' => $paid, 'status' => $paid >= (float) $installment->total_due ? 'paid' : 'partial']);
+                }
+                if (! $installment) {
+                    if (User::whereRaw('UPPER(TRIM(file_no)) = ?', [$fileNumber])->lockForUpdate()->exists()) {
+                        throw ValidationException::withMessages([
+                            'file_no' => 'This customer file number already exists. Enter a new unused file number.',
+                        ]);
+                    }
+                    $booking->customer->update(['file_no' => $fileNumber]);
                 }
                 if (! $installment && $booking->status === 'approved') {
                     $project = Project::lockForUpdate()->findOrFail($booking->project_id);

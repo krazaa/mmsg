@@ -56,6 +56,6 @@ class SiteAppearanceController extends Controller
             );
         }
 
-        return back()->with('success', 'Welcome page background color updated.');
+        return back()->with('success', 'Site settings updated.');
     }
 }

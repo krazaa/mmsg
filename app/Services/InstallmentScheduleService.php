@@ -11,6 +11,10 @@ class InstallmentScheduleService implements InstallmentScheduleGenerator
 {
     public function generate(Booking $booking): void
     {
+        if ($booking->payment_plan === 'cash') {
+            return;
+        }
+
         $package = $booking->package;
         $balloonPayments = collect($package->balloonPayments())->pluck('amount', 'month');
 
