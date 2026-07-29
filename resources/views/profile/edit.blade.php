@@ -9,6 +9,9 @@
                 @php
                     $initials = collect(preg_split('/\s+/', trim($user->name)))->filter()->take(2)->map(fn($part) => strtoupper(substr($part, 0, 1)))->join('');
                     $withdrawalFrequency = $user->withdrawal_frequency ?: \App\Models\WithdrawalSetting::settings()['frequency'];
+                    $withdrawalPolicy = \App\Models\WithdrawalSetting::policy($withdrawalFrequency);
+                    $withdrawalDays = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'];
+                    $withdrawalDay = $withdrawalDays[$withdrawalPolicy['withdrawal_day'] ?? 0] ?? 'Any day';
                 @endphp
                 <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="relative bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 px-6 py-7 text-white sm:px-8">
@@ -61,9 +64,15 @@
 
                         <section class="overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                             <div class="border-b border-emerald-100 bg-emerald-50/70 px-5 py-4 dark:border-slate-800 dark:bg-emerald-950/20"><h3 class="font-black text-slate-900 dark:text-white">Withdrawal frequency</h3><p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Current policy set by the office.</p></div>
-                            <div class="flex items-center justify-between gap-4 p-5">
-                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Current frequency</div>
-                                <span class="shrink-0 rounded-full bg-emerald-100 px-4 py-2 text-xs font-black uppercase tracking-wider text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{{ ucfirst($withdrawalFrequency) }}</span>
+                            <div class="grid gap-3 p-5 sm:grid-cols-2">
+                                <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Frequency</div>
+                                    <span class="shrink-0 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{{ ucfirst($withdrawalFrequency) }}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
+                                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Withdrawal day</div>
+                                    <span class="shrink-0 rounded-full bg-indigo-100 px-3 py-1.5 text-xs font-black tracking-wider text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">{{ $withdrawalDay }}</span>
+                                </div>
                             </div>
                         </section>
 

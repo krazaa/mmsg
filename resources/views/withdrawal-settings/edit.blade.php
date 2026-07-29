@@ -42,6 +42,14 @@
                                 <div class="mb-4 flex items-center justify-between"><h4 class="font-black text-slate-950 dark:text-white">{{ $label }} limits</h4><span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-black uppercase text-indigo-600 dark:bg-indigo-950 dark:text-indigo-300">{{ $frequency }}</span></div>
                                 <div class="space-y-4">
                                     <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Requests allowed<input type="number" name="policies[{{ $frequency }}][request_limit]" value="{{ old("policies.$frequency.request_limit", $policy['request_limit']) }}" min="1" max="100" required class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
+                                    <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Withdrawal day
+                                        <select name="policies[{{ $frequency }}][withdrawal_day]" class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                                            <option value="">Any day</option>
+                                            @foreach([1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'] as $day => $dayName)
+                                                <option value="{{ $day }}" @selected((string) old("policies.$frequency.withdrawal_day", $policy['withdrawal_day']) === (string) $day)>{{ $dayName }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
                                     <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Minimum amount<input type="number" name="policies[{{ $frequency }}][minimum_amount]" value="{{ old("policies.$frequency.minimum_amount", $policy['minimum_amount']) }}" min="1" step="0.01" required class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
                                     <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Maximum amount<input type="number" name="policies[{{ $frequency }}][maximum_amount]" value="{{ old("policies.$frequency.maximum_amount", $policy['maximum_amount']) }}" min="0" step="0.01" required class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white"><span class="mt-1 block text-[10px] font-normal normal-case text-slate-400">Use 0 for unlimited.</span></label>
                                 </div>

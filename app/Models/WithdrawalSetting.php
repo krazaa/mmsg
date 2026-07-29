@@ -12,6 +12,7 @@ class WithdrawalSetting extends Model
     {
         return [
             'request_limit' => 'integer',
+            'withdrawal_day' => 'integer',
             'is_default' => 'boolean',
             'minimum_amount' => 'decimal:2',
             'maximum_amount' => 'decimal:2',
@@ -30,6 +31,7 @@ class WithdrawalSetting extends Model
 
             return [$frequency => [
                 'request_limit' => (int) ($setting?->request_limit ?? 1),
+                'withdrawal_day' => $setting?->withdrawal_day !== null ? (int) $setting->withdrawal_day : null,
                 'minimum_amount' => (float) ($setting?->minimum_amount ?? 1),
                 'maximum_amount' => (float) ($setting?->maximum_amount ?? 0),
             ]];

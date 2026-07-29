@@ -2,33 +2,33 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AppSettingsController;
-use App\Http\Controllers\CustomerCommissionPayoutController;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BlockController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CommissionRuleController;
 use App\Http\Controllers\CustomerBookingController;
+use App\Http\Controllers\CustomerCommissionPayoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerNotificationController;
 use App\Http\Controllers\CustomerPaymentController;
+use App\Http\Controllers\CustomerPayoutMethodController;
 use App\Http\Controllers\CustomerWithdrawalController;
-use App\Http\Controllers\ManagementAuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailUnsubscribeController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstallmentSchedulesController;
+use App\Http\Controllers\ManagementAuthController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentGatewaySettingController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlotAllotmentController;
 use App\Http\Controllers\PlotController;
 use App\Http\Controllers\PlotPackageController;
 use App\Http\Controllers\PlotPlanImportController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RolePermissionController;
-use App\Http\Controllers\CustomerPayoutMethodController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\StaffController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SiteAppearanceController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WhatsAppSettingsController;
 use App\Models\Project;
@@ -53,8 +53,15 @@ Route::get('/', function () {
     $heroStatValueColor = SiteSetting::valueFor('welcome_hero_stat_value_color', '#ffffff');
     $heroStatLabelColor = SiteSetting::valueFor('welcome_hero_stat_label_color', '#94a3b8');
     $pageAppearance = SiteSetting::welcomeAppearance();
+    $socialLinks = [
+        'Facebook' => SiteSetting::valueFor('welcome_social_facebook_url', ''),
+        'Instagram' => SiteSetting::valueFor('welcome_social_instagram_url', ''),
+        'YouTube' => SiteSetting::valueFor('welcome_social_youtube_url', ''),
+        'LinkedIn' => SiteSetting::valueFor('welcome_social_linkedin_url', ''),
+        'X' => SiteSetting::valueFor('welcome_social_x_url', ''),
+    ];
 
-    return view('welcome', compact('projects', 'offerPackage', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance'));
+    return view('welcome', compact('projects', 'offerPackage', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance', 'socialLinks'));
 })->name('home');
 
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');

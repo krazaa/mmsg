@@ -43,7 +43,7 @@ class SiteSetting extends Model
             'welcome_projects_text_color' => '#ffffff',
             'welcome_projects_heading_color' => '#ffffff',
             'welcome_projects_heading_font_size' => '48',
-            'welcome_projects_card_heading_color' => '#ffffff',
+            'welcome_projects_card_heading_color' => '#020617',
             'welcome_projects_card_heading_font_size' => '30',
             'welcome_projects_stat_background_color' => '#111827',
             'welcome_projects_stat_value_color' => '#ffffff',

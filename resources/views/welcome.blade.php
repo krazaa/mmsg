@@ -9,6 +9,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-grid { background-image: linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 34px 34px; }
+        .property-pattern {
+            background-image:
+                radial-gradient(circle at 2px 2px, rgba(56,189,248,.22) 2px, transparent 2.5px),
+                repeating-linear-gradient(115deg, transparent 0 38px, rgba(129,140,248,.11) 39px 40px, transparent 41px 96px),
+                repeating-linear-gradient(25deg, transparent 0 58px, rgba(99,102,241,.08) 59px 60px, transparent 61px 122px);
+            background-position: 0 0, 0 0, 0 0;
+            background-size: 48px 48px, 170px 120px, 210px 150px;
+        }
         .glass-ring { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 30px 80px rgba(2,6,23,.35); }
         [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: var(--reveal-delay, 0ms); }
         [data-reveal][data-effect="left"] { transform: translateX(-28px); }
@@ -30,11 +38,16 @@
             .hero-copy { animation: hero-in .8s cubic-bezier(.2,.7,.2,1) both; }
             .hero-visual { animation: hero-visual-in 1s .12s cubic-bezier(.2,.7,.2,1) both; }
             .ambient-glow { animation: glow-drift 9s ease-in-out infinite alternate; }
+            .property-pattern { animation: property-pattern-drift 28s linear infinite; }
             @keyframes float { 50% { transform: translateY(-9px); } }
             @keyframes pulse-dot { 50% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } }
             @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
             @keyframes hero-visual-in { from { opacity: 0; transform: translateX(28px) scale(.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
             @keyframes glow-drift { from { transform: translate3d(-2%,0,0) scale(.96); } to { transform: translate3d(2%,3%,0) scale(1.04); } }
+            @keyframes property-pattern-drift {
+                from { background-position: 0 0, 0 0, 0 0; }
+                to { background-position: 48px 48px, 170px 120px, -210px 150px; }
+            }
         }
         @media (prefers-reduced-motion:reduce) {
             [data-reveal] { opacity: 1; transform: none; transition: none; }
@@ -64,7 +77,7 @@
         </header>
 
         <main>
-            <section class="hero-grid relative" style="background-color: {{ $heroGridBackgroundColor }}">
+            <section class="hero-grid relative" style="background-color: {{ $heroGridBackgroundColor }};background-image:linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px);background-size:34px 34px,34px 34px">
                 <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start lg:px-8 lg:py-12">
                     <div class="hero-copy relative z-10">
                         <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold shadow-lg" style="background-color:{{ $pageAppearance['welcome_hero_badge_background_color'] }};color:{{ $pageAppearance['welcome_hero_badge_text_color'] }};border-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"><span class="pulse-dot h-2 w-2 rounded-full" style="background-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"></span> One secure property account</div>
@@ -151,15 +164,15 @@
                 </div>
             </section>
 
-            <section class="relative border-y border-white/10 bg-white/[.035]">
-                <div class="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-white/10 px-5 sm:grid-cols-4 sm:divide-y-0 lg:px-8">
+            <section class="relative border-y border-slate-800 bg-slate-950">
+                <div class="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-slate-800 px-5 sm:grid-cols-4 sm:divide-y-0 lg:px-8">
                     @foreach([['✓','Verified receipts'],['⌂','Organized inventory'],['↗','Live payment status'],['◇','Secure account access']] as $item)
-                        <div class="flex items-center justify-center gap-2 px-3 py-5 text-center text-xs font-bold text-slate-300 sm:text-sm" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 80 }}ms"><span class="text-indigo-300">{{ $item[0] }}</span>{{ $item[1] }}</div>
+                        <div class="flex items-center justify-center gap-2 px-3 py-5 text-center text-xs font-bold text-slate-300 sm:text-sm" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 80 }}ms"><span class="text-white">{{ $item[0] }}</span>{{ $item[1] }}</div>
                     @endforeach
                 </div>
             </section>
 
-            <section id="projects" class="relative border-y border-white/10 py-10 sm:py-12 lg:py-16" style="background-color: {{ $pageAppearance['welcome_projects_background_color'] }};color:{{ $pageAppearance['welcome_projects_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
+            <section id="projects" class="property-pattern relative border-y border-white/10 py-10 sm:py-12 lg:py-16" style="background-color: {{ $pageAppearance['welcome_projects_background_color'] }};color:{{ $pageAppearance['welcome_projects_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
                 <div class="pointer-events-none absolute inset-0" style="background-image:radial-gradient(circle at 50% 0%,color-mix(in srgb, {{ $pageAppearance['welcome_projects_blur_color'] }} 24%, transparent),transparent 42%)"></div>
                 <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" data-reveal data-effect="left">
@@ -178,7 +191,7 @@
                                 $projectImage = $project->image_url;
                                 $blueprintImage = $project->blueprint_url;
                             @endphp
-                            <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.06] shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300/30" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
+                            <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">
                                     @if($projectImage)
                                         <img src="{{ $projectImage }}" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" decoding="async">
@@ -200,11 +213,11 @@
                                 <div class="p-7">
                                     <p class="text-xs font-bold uppercase tracking-[.18em]" style="color:{{ $pageAppearance['welcome_projects_location_color'] }}">{{ $project->location }}</p>
                                     <h3 class="mt-2 font-black tracking-tight" style="color:{{ $pageAppearance['welcome_projects_card_heading_color'] }};font-size:{{ $pageAppearance['welcome_projects_card_heading_font_size'] }}px">{{ $project->name }}</h3>
-                                    <p class="mt-3 max-w-lg leading-7 text-slate-400">{{ $project->description ?: number_format($project->gross_area_marla / 20, 0).' kanal planned development with secure digital booking and payment records.' }}</p>
-                                    <div class="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5">
+                                    <p class="mt-3 max-w-lg leading-7 text-slate-600">{{ $project->description ?: number_format($project->gross_area_marla / 20, 0).' kanal planned development with secure digital booking and payment records.' }}</p>
+                                    <div class="mt-6 flex flex-wrap gap-2 border-t border-slate-200 pt-5">
                                         <span class="rounded-lg px-3 py-2 font-bold" style="background-color:{{ $pageAppearance['welcome_projects_stat_background_color'] }};color:{{ $pageAppearance['welcome_projects_stat_label_color'] }};font-size:{{ $pageAppearance['welcome_projects_stat_font_size'] }}px"><b style="color:{{ $pageAppearance['welcome_projects_stat_value_color'] }}">{{ number_format($project->gross_area_marla / 20) }}</b> kanal total</span>
                                         <span class="rounded-lg px-3 py-2 font-bold" style="background-color:{{ $pageAppearance['welcome_projects_stat_background_color'] }};color:{{ $pageAppearance['welcome_projects_stat_label_color'] }};font-size:{{ $pageAppearance['welcome_projects_stat_font_size'] }}px"><b style="color:{{ $pageAppearance['welcome_projects_stat_value_color'] }}">{{ number_format($project->saleable_area_marla / 20) }}</b> kanal saleable</span>
-                                        @if($blueprintImage)<button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="rounded-lg px-3 py-2 font-black" style="background-color:{{ $pageAppearance['welcome_projects_button_background_color'] }};color:{{ $pageAppearance['welcome_projects_button_text_color'] }};font-size:{{ $pageAppearance['welcome_projects_button_font_size'] }}px">Explore masterplan →</button>@endif
+                                        @if($blueprintImage)<button type="button" onclick="document.getElementById('blueprint-{{ $project->id }}').showModal()" class="rounded-lg px-3 py-2 font-black" style="background-color:{{ $pageAppearance['welcome_projects_button_background_color'] }};color:{{ $pageAppearance['welcome_projects_button_text_color'] }};font-size:{{ $pageAppearance['welcome_projects_button_font_size'] }}px">Masterplan →</button>@endif
                                     </div>
                                 </div>
 
@@ -234,7 +247,7 @@
                             <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl xl:whitespace-nowrap">One platform. Every property milestone.</h2>
                             <p class="mt-4 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">Clear records for customers and complete operational control for the MMS Group team.</p>
                         </div>
-                        <span class="w-fit shrink-0 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-xs font-black uppercase tracking-wider text-indigo-700">Built for clarity</span>
+                        <span class="w-fit shrink-0 rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-sm">Built for clarity</span>
                     </div>
                     <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach([
@@ -270,7 +283,48 @@
         </main>
 
         <footer class="border-t border-white/10" style="background-color:{{ $pageAppearance['welcome_footer_background_color'] }};color:{{ $pageAppearance['welcome_footer_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
-            <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between lg:px-8" data-reveal><div class="flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200">MMS Group</b></div><p>Property records, payments and allotments in one secure platform.</p><p>© {{ date('Y') }} MMS Group</p></div>
+            <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center lg:px-8" data-reveal>
+                <div class="order-1 flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200"></b></div>
+                <p class="order-3 sm:ml-auto">Property records, payments and allotments in one secure platform.</p>
+                <p class="order-4">© {{ date('Y') }} MMS Group</p>
+                @if(collect($socialLinks)->filter()->isNotEmpty())
+                    <nav class="order-2 flex flex-wrap gap-2" aria-label="Social media">
+                        @foreach($socialLinks as $platform => $url)
+                            @if(filled($url))
+                                @php
+                                    $socialColor = match($platform) {
+                                        'Facebook' => 'border-[#1877f2] bg-[#1877f2] hover:bg-[#0f67da]',
+                                        'Instagram' => 'border-fuchsia-500 bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400',
+                                        'YouTube' => 'border-[#ff0000] bg-[#ff0000] hover:bg-[#d90000]',
+                                        'LinkedIn' => 'border-[#0a66c2] bg-[#0a66c2] hover:bg-[#084f96]',
+                                        default => 'border-slate-700 bg-black hover:bg-slate-900',
+                                    };
+                                @endphp
+                                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="grid h-9 w-9 place-items-center rounded-full border text-white shadow-sm transition hover:-translate-y-0.5 hover:scale-105 {{ $socialColor }}" aria-label="{{ $platform }}" title="{{ $platform }}">
+                                    <span class="grid place-items-center text-white" aria-hidden="true">
+                                        @switch($platform)
+                                            @case('Facebook')
+                                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-current"><path d="M13.7 22v-8h2.7l.4-3.1h-3.1V9c0-.9.3-1.5 1.6-1.5H17V4.7c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.5V14h2.8v8h3.4Z"/></svg>
+                                                @break
+                                            @case('Instagram')
+                                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none stroke-current" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="fill-current stroke-none"/></svg>
+                                                @break
+                                            @case('YouTube')
+                                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-current"><path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2 12a31 31 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22 12a31 31 0 0 0-.4-4.8ZM10 15.3V8.7l5.7 3.3-5.7 3.3Z"/></svg>
+                                                @break
+                                            @case('LinkedIn')
+                                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-current"><path d="M6.5 8.4H3.2V21h3.3V8.4ZM4.9 3A1.9 1.9 0 1 0 5 6.8 1.9 1.9 0 0 0 4.9 3ZM21 13.8c0-3.8-2-5.6-4.7-5.6a4.1 4.1 0 0 0-3.7 2v-1.8H9.3V21h3.3v-6.2c0-1.6.3-3.2 2.3-3.2s2.1 1.8 2.1 3.3V21h3.3l.7-7.2Z"/></svg>
+                                                @break
+                                            @default
+                                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none stroke-current" stroke-width="2.2"><path d="m5 4 14 16M19 4 5 20"/></svg>
+                                        @endswitch
+                                    </span>
+                                </a>
+                            @endif
+                        @endforeach
+                    </nav>
+                @endif
+            </div>
         </footer>
     </div>
     <script>

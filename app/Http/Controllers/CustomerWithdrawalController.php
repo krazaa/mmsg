@@ -102,6 +102,8 @@ class CustomerWithdrawalController extends Controller
         $settings = WithdrawalSetting::settings();
         $frequency = $this->customerFrequency($request, $settings);
         $policy = WithdrawalSetting::policy($frequency);
+        $withdrawalDayAllowed = $this->withdrawalDayAllowed($frequency, $policy);
+        $withdrawalDayLabel = $this->withdrawalDayLabel($frequency, $policy);
         $periodStart = $this->periodStart($frequency);
         $requestsThisPeriod = WithdrawalRequest::where('customer_id', $request->user()->id)
             ->where('status', '!=', 'rejected')
@@ -119,7 +121,7 @@ class CustomerWithdrawalController extends Controller
         return view('customer-withdrawals.index', compact(
             'payable', 'lifetime', 'pending', 'withdrawn', 'available', 'withdrawals',
             'settings', 'frequency', 'policy', 'remainingRequests', 'maximumRequestAmount', 'payoutMethods', 'fee',
-            'pinLockedUntil'
+            'pinLockedUntil', 'withdrawalDayAllowed', 'withdrawalDayLabel'
         ));
     }
 
@@ -202,6 +204,11 @@ class CustomerWithdrawalController extends Controller
         $settings = WithdrawalSetting::settings();
         $frequency = $this->customerFrequency($request, $settings);
         $policy = WithdrawalSetting::policy($frequency);
+        if (! $this->withdrawalDayAllowed($frequency, $policy)) {
+            throw ValidationException::withMessages([
+                'amount' => 'Withdrawal submissions are closed today. Requests must be submitted before '.str_replace('every ', '', $this->withdrawalDayLabel($frequency, $policy)).'.',
+            ]);
+        }
 
         $withdrawal = DB::transaction(function () use ($request, $data, $policy, $frequency) {
             $requestsThisPeriod = WithdrawalRequest::where('customer_id', $request->user()->id)
@@ -303,6 +310,7 @@ class CustomerWithdrawalController extends Controller
             'frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly'])],
             'policies' => ['required', 'array'],
             'policies.*.request_limit' => ['required', 'integer', 'min:1', 'max:100'],
+            'policies.*.withdrawal_day' => ['nullable', 'integer', 'min:1', 'max:7'],
             'policies.*.minimum_amount' => ['required', 'numeric', 'min:1'],
             'policies.*.maximum_amount' => ['required', 'numeric', 'min:0'],
         ]);
@@ -429,6 +437,26 @@ class CustomerWithdrawalController extends Controller
             'monthly' => now()->startOfMonth(),
             default => now()->startOfDay(),
         };
+    }
+
+    private function withdrawalDayAllowed(string $frequency, array $policy): bool
+    {
+        $day = $policy['withdrawal_day'] ?? null;
+        if ($day === null) {
+            return true;
+        }
+
+        return now()->isoWeekday() !== (int) $day;
+    }
+
+    private function withdrawalDayLabel(string $frequency, array $policy): string
+    {
+        $day = $policy['withdrawal_day'] ?? null;
+        if ($day === null) {
+            return 'on any day';
+        }
+
+        return 'every '.now()->startOfWeek()->addDays((int) $day - 1)->format('l');
     }
 
     private function customerFrequency(Request $request, array $settings): string

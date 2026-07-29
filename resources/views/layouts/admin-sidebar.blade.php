@@ -24,7 +24,7 @@
         ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
         ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],
         ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400', 'super_admin_only' => true],
-        ['label' => 'Site appearance', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
+        ['label' => 'Welcome page theme', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
     ];
     $settingsActive = collect($settingsItems)->contains(fn ($item) => request()->routeIs($item['active']));
 @endphp
