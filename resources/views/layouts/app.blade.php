@@ -15,7 +15,13 @@
     </head>
     <body class="font-sans antialiased">
         @if(auth()->user()?->role && auth()->user()->role !== 'customer')
-            <div x-data="{ sidebarOpen: false, sidebarHover: false, sidebarExpanded: false, toggleSidebar(){ this.sidebarExpanded = !this.sidebarExpanded } }" class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <div
+                x-data="{ sidebarOpen: false, sidebarHover: false, sidebarExpanded: false, toggleSidebar(){ this.sidebarExpanded = !this.sidebarExpanded } }"
+                x-effect="document.documentElement.classList.toggle('overflow-hidden', sidebarOpen); document.body.classList.toggle('overflow-hidden', sidebarOpen)"
+                @keydown.escape.window="sidebarOpen = false"
+                @resize.window="if (window.innerWidth >= 1024) sidebarOpen = false"
+                class="min-h-screen bg-gray-100 dark:bg-gray-900"
+            >
                 @include('layouts.admin-sidebar')
                 <div :class="sidebarExpanded ? 'lg:pl-64' : 'lg:pl-20'" class="min-h-screen transition-[padding] duration-300">
                     <div class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white/90 px-4 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-800/90 sm:px-6">

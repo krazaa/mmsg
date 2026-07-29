@@ -44,8 +44,8 @@
                         <div class="mt-6 flex flex-wrap gap-2">
                             @unless($portalPreview ?? false)
                                 <a href="{{ route('customer.bookings.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-indigo-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-indigo-50"><span class="text-lg leading-none">＋</span> Book a plot</a>
-                                <a href="{{ route('customer.team') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">My team</a>
-                                <a href="{{ route('profile.edit') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">My profile</a>
+                                <a href="{{ route('customer.team') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">Team</a>
+                                <a href="{{ route('profile.edit') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">Profile</a>
                             @endunless
                         </div>
                     </div>

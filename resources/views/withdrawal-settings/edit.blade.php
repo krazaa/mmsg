@@ -24,7 +24,17 @@
                     <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-300">These limits are enforced when customers submit requests from their commission wallet.</p>
                 </div>
                 <div class="space-y-5 p-6">
-                    <p class="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-xs leading-5 text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-300">Customers select Daily, Weekly, or Monthly from their profile. Configure the limits for each option below.</p>
+                    <div class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+                        <label class="block text-xs font-black uppercase tracking-wide text-indigo-800 dark:text-indigo-200">
+                            Frequency for all customers
+                            <select name="frequency" required class="mt-2 w-full rounded-xl border-indigo-200 bg-white py-3 text-sm font-bold normal-case text-slate-900 dark:border-indigo-800 dark:bg-slate-900 dark:text-white">
+                                @foreach(['daily' => 'Daily', 'weekly' => 'Weekly', 'monthly' => 'Monthly'] as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('frequency', $settings['frequency']) === $value)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <p class="mt-2 text-[11px] leading-5 text-indigo-700 dark:text-indigo-300">Weekly is the default. Saving a different policy immediately changes the withdrawal frequency for every customer.</p>
+                    </div>
                     <div class="grid gap-4 lg:grid-cols-3">
                         @foreach(['daily' => 'Daily', 'weekly' => 'Weekly', 'monthly' => 'Monthly'] as $frequency => $label)
                             @php($policy = $settings['policies'][$frequency])

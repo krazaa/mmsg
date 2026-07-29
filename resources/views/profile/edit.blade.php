@@ -13,31 +13,31 @@
                 <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="relative bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 px-6 py-7 text-white sm:px-8">
                         <div class="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(129,140,248,.28),transparent_65%)]"></div>
-                        <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-                            <div class="grid h-20 w-20 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 text-2xl font-black shadow-xl backdrop-blur">{{ $initials ?: 'CU' }}</div>
+                        <div class="relative grid grid-cols-[64px_minmax(0,1fr)] items-start gap-4 lg:grid-cols-[80px_minmax(0,1fr)_auto] lg:items-center lg:gap-5">
+                            <div class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 text-xl font-black shadow-xl backdrop-blur lg:h-20 lg:w-20 lg:text-2xl">{{ $initials ?: 'CU' }}</div>
                             <div class="min-w-0 flex-1">
-                                <p class="mb-2 text-[10px] font-black uppercase tracking-[.2em] text-indigo-300">My account · Profile & security</p>
-                                <div class="flex flex-wrap items-center gap-3"><h1 class="truncate text-2xl font-black tracking-tight sm:text-3xl">{{ $user->name }}</h1><span class="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider {{ $user->status ? 'bg-emerald-400/15 text-emerald-200 ring-1 ring-emerald-300/25' : 'bg-rose-400/15 text-rose-200 ring-1 ring-rose-300/25' }}">{{ $user->status ? 'Active account' : 'Inactive account' }}</span></div>
-                                <p class="mt-1 truncate text-sm text-indigo-200">{{ $user->email }}</p>
-                                <p class="mt-2 text-xs text-indigo-200/80">Manage your personal details, preferences and account security.</p>
-                                @if($showReferralCode && $user->referral_code)
-                                    @php($referralLink = route('register', ['ref' => $user->referral_code]))
-                                    <div class="mt-4 max-w-xl rounded-xl border border-white/10 bg-white/[.07] p-3" x-data="{ copied: false }">
-                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                            <div class="min-w-0">
-                                                <div class="text-[9px] font-black uppercase tracking-wider text-indigo-300">Your referral code</div>
-                                                <div class="mt-1 font-mono text-lg font-black tracking-wider">{{ $user->referral_code }}</div>
-                                                <a href="{{ $referralLink }}" target="_blank" rel="noopener" class="mt-1 block truncate text-xs text-indigo-200 underline decoration-indigo-300/50 underline-offset-2" title="{{ $referralLink }}">{{ $referralLink }}</a>
-                                            </div>
-                                            <button type="button" @click="navigator.clipboard.writeText(@js($referralLink)); copied = true; setTimeout(() => copied = false, 1500)" class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-800 transition hover:bg-indigo-50" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button>
-                                        </div>
-                                    </div>
-                                @endif
+                                <p class="mb-1.5 text-[8px] font-black uppercase tracking-[.14em] text-indigo-300 sm:text-[10px] sm:tracking-[.2em]">My account · Profile & security</p>
+                                <div class="flex flex-wrap items-center gap-2 sm:gap-3"><h1 class="min-w-0 truncate text-xl font-black tracking-tight sm:text-3xl">{{ $user->name }}</h1><span class="shrink-0 rounded-full px-2 py-1 text-[8px] font-black uppercase tracking-wider sm:px-2.5 sm:text-[10px] {{ $user->status ? 'bg-emerald-400/15 text-emerald-200 ring-1 ring-emerald-300/25' : 'bg-rose-400/15 text-rose-200 ring-1 ring-rose-300/25' }}">{{ $user->status ? 'Active account' : 'Inactive account' }}</span></div>
+                                <p class="mt-1 truncate text-xs text-indigo-200 sm:text-sm">{{ $user->email }}</p>
+                                <p class="mt-2 text-[10px] leading-4 text-indigo-200/80 sm:text-xs">Manage your personal details, preferences and account security.</p>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 sm:w-auto">
+                            <div class="col-span-2 row-start-3 grid grid-cols-2 gap-2 lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:w-auto">
                                 <div class="rounded-xl border border-white/10 bg-white/[.07] px-4 py-3"><div class="text-[9px] font-black uppercase tracking-wider text-indigo-300">File number</div><div class="mt-1 font-mono text-sm font-black">{{ $user->file_no ?: 'Not assigned' }}</div></div>
                                 <div class="rounded-xl border border-white/10 bg-white/[.07] px-4 py-3"><div class="text-[9px] font-black uppercase tracking-wider text-indigo-300">Member since</div><div class="mt-1 text-sm font-black">{{ $user->created_at->format('M Y') }}</div></div>
                             </div>
+                            @if($showReferralCode && $user->referral_code)
+                                @php($referralLink = route('register', ['ref' => $user->referral_code]))
+                                <div class="col-span-2 row-start-2 rounded-xl border border-white/10 bg-white/[.07] p-3 lg:col-start-2 lg:row-start-2 lg:max-w-xl" x-data="{ copied: false }">
+                                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                        <div class="min-w-0">
+                                            <div class="text-[9px] font-black uppercase tracking-wider text-indigo-300">Your referral code</div>
+                                            <div class="mt-1 whitespace-nowrap font-mono text-lg font-black tracking-wider">{{ $user->referral_code }}</div>
+                                            <a href="{{ $referralLink }}" target="_blank" rel="noopener" class="mt-1 block truncate text-xs text-indigo-200 underline decoration-indigo-300/50 underline-offset-2" title="{{ $referralLink }}">{{ $referralLink }}</a>
+                                        </div>
+                                        <button type="button" @click="navigator.clipboard.writeText(@js($referralLink)); copied = true; setTimeout(() => copied = false, 1500)" class="w-full shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-800 transition hover:bg-indigo-50 sm:w-auto" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </section>
@@ -60,24 +60,26 @@
                         </section>
 
                         <section class="overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                            <div class="border-b border-emerald-100 bg-emerald-50/70 px-5 py-4 dark:border-slate-800 dark:bg-emerald-950/20"><h3 class="font-black text-slate-900 dark:text-white">Withdrawal frequency</h3><p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Choose when your allowance resets.</p></div>
-                            <form method="POST" action="{{ route('customer.withdrawals.frequency') }}" class="space-y-3 p-5">@csrf @method('PATCH')
-                                <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Frequency<select name="withdrawal_frequency" required class="mt-2 w-full rounded-xl border-slate-300 py-3 text-sm normal-case dark:border-slate-700 dark:bg-slate-800 dark:text-white">@foreach(['daily'=>'Daily','weekly'=>'Weekly','monthly'=>'Monthly'] as $value=>$label)<option value="{{ $value }}" @selected($withdrawalFrequency === $value)>{{ $label }}</option>@endforeach</select></label>
-                                <x-input-error :messages="$errors->get('withdrawal_frequency')" />
-                                <button class="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-black text-white transition hover:bg-emerald-700">Save withdrawal frequency</button>
-                            </form>
+                            <div class="border-b border-emerald-100 bg-emerald-50/70 px-5 py-4 dark:border-slate-800 dark:bg-emerald-950/20"><h3 class="font-black text-slate-900 dark:text-white">Withdrawal frequency</h3><p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Current policy set by the office.</p></div>
+                            <div class="flex items-center justify-between gap-4 p-5">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Current frequency</div>
+                                <span class="shrink-0 rounded-full bg-emerald-100 px-4 py-2 text-xs font-black uppercase tracking-wider text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{{ ucfirst($withdrawalFrequency) }}</span>
+                            </div>
                         </section>
 
                         <section x-data="{ recoverConfirm: false }" class="overflow-hidden rounded-2xl border border-indigo-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                            <div class="border-b border-indigo-100 bg-indigo-50/70 px-5 py-4 dark:border-slate-800 dark:bg-indigo-950/20">
-                                <div class="flex items-center justify-between gap-3"><div><h3 class="font-black text-slate-900 dark:text-white">Withdrawal PIN</h3><p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Required for every withdrawal request.</p></div><span class="rounded-full px-2.5 py-1 text-[9px] font-black uppercase {{ filled($user->withdrawal_pin) ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">{{ filled($user->withdrawal_pin) ? 'Protected' : 'Not set' }}</span></div>
+                            <div class="border-b border-indigo-100 bg-indigo-50/70 px-4 py-3.5 dark:border-slate-800 dark:bg-indigo-950/20 sm:px-5 sm:py-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0"><h3 class="text-base font-black text-slate-900 dark:text-white">Withdrawal PIN</h3><p class="mt-0.5 text-[11px] leading-4 text-slate-500 dark:text-slate-400 sm:text-xs">Required for every withdrawal request.</p></div>
+                                    <span class="shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[9px] font-black uppercase {{ filled($user->withdrawal_pin) ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">{{ filled($user->withdrawal_pin) ? 'Protected' : 'Not set' }}</span>
+                                </div>
                             </div>
-                            <form method="POST" action="{{ route('profile.withdrawal-pin.update') }}" class="space-y-3 p-5">@csrf @method('PATCH')
-                                <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Account password<input type="password" name="current_password" required autocomplete="current-password" class="mt-1.5 w-full rounded-xl border-slate-300 text-sm normal-case dark:border-slate-700 dark:bg-slate-800 dark:text-white"></label>
+                            <form method="POST" action="{{ route('profile.withdrawal-pin.update') }}" class="space-y-3 p-4 sm:p-5">@csrf @method('PATCH')
+                                <label class="block text-[11px] font-black uppercase tracking-wide text-slate-500 sm:text-xs">Account password<input type="password" name="current_password" required autocomplete="current-password" class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-700 dark:bg-slate-800 dark:text-white"></label>
                                 <x-input-error :messages="$errors->get('current_password')" />
-                                <label class="block text-xs font-black uppercase tracking-wide text-slate-500">New withdrawal PIN<input type="password" name="withdrawal_pin" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border-slate-300 font-mono text-lg tracking-[.35em] dark:border-slate-700 dark:bg-slate-800 dark:text-white" placeholder="••••"></label>
+                                <label class="block text-[11px] font-black uppercase tracking-wide text-slate-500 sm:text-xs">New withdrawal PIN<input type="password" name="withdrawal_pin" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 font-mono text-base tracking-[.35em] dark:border-slate-700 dark:bg-slate-800 dark:text-white sm:text-lg" placeholder="••••"></label>
                                 <x-input-error :messages="$errors->get('withdrawal_pin')" />
-                                <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Confirm PIN<input type="password" name="withdrawal_pin_confirmation" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border-slate-300 font-mono text-lg tracking-[.35em] dark:border-slate-700 dark:bg-slate-800 dark:text-white" placeholder="••••"></label>
+                                <label class="block text-[11px] font-black uppercase tracking-wide text-slate-500 sm:text-xs">Confirm PIN<input type="password" name="withdrawal_pin_confirmation" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 font-mono text-base tracking-[.35em] dark:border-slate-700 dark:bg-slate-800 dark:text-white sm:text-lg" placeholder="••••"></label>
                                 <p class="rounded-lg bg-slate-50 p-2.5 text-[10px] leading-4 text-slate-500 dark:bg-slate-800">Use 4–6 digits. Your PIN is encrypted and cannot be viewed by staff.</p>
                                 <button class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-black text-white transition hover:bg-indigo-700">{{ filled($user->withdrawal_pin) ? 'Change withdrawal PIN' : 'Set withdrawal PIN' }}</button>
                             </form>

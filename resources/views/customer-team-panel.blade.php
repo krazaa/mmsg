@@ -1,6 +1,6 @@
 <section class="overflow-hidden rounded-3xl border border-violet-100 bg-white shadow-xl shadow-violet-100/50">
     <div class="grid lg:grid-cols-[.8fr_1.2fr]">
-        <div class="relative overflow-hidden bg-gradient-to-br from-violet-700 via-indigo-700 to-indigo-950 p-6 text-white sm:p-8">
+        <div class="relative overflow-hidden p-6 text-white sm:p-8" style="background:linear-gradient(135deg,#020617 0%,#172554 52%,#3730a3 100%)">
             <div class="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-fuchsia-400/20 blur-2xl"></div>
             <div class="relative">
                 <div class="text-xs font-black uppercase tracking-[.2em] text-violet-200">My referral network</div>
@@ -9,7 +9,13 @@
                 @if($showReferralCode)
                     <div x-data="{ copied:false }" class="mt-6 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
                         <div class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">Your referral code</div>
-                        <div class="mt-2 flex items-center justify-between gap-3"><div class="min-w-0"><b class="font-mono text-xl">{{ $customer->referral_code }}</b><a href="{{ route('register', ['ref' => $customer->referral_code]) }}" target="_blank" rel="noopener" class="mt-1 block truncate text-[10px] font-semibold text-indigo-100 underline decoration-indigo-300/50 underline-offset-2" title="{{ route('register', ['ref' => $customer->referral_code]) }}">{{ route('register', ['ref' => $customer->referral_code]) }}</a></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code])));copied=true;setTimeout(()=>copied=false,1500)" class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-700" x-text="copied?'Link copied ✓':'Copy referral link'">Copy referral link</button></div>
+                        <div class="mt-2 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div class="min-w-0">
+                                <b class="block whitespace-nowrap font-mono text-lg sm:text-xl">{{ $customer->referral_code }}</b>
+                                <a href="{{ route('register', ['ref' => $customer->referral_code]) }}" target="_blank" rel="noopener" class="mt-1 block truncate text-[10px] font-semibold text-indigo-100 underline decoration-indigo-300/50 underline-offset-2" title="{{ route('register', ['ref' => $customer->referral_code]) }}">{{ route('register', ['ref' => $customer->referral_code]) }}</a>
+                            </div>
+                            <button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code])));copied=true;setTimeout(()=>copied=false,1500)" class="w-full shrink-0 rounded-lg bg-white px-3 py-2.5 text-xs font-black text-indigo-700 sm:w-auto" x-text="copied?'Link copied ✓':'Copy referral link'">Copy referral link</button>
+                        </div>
                     </div>
                 @endif
                 <div class="mt-4 text-xs text-indigo-200">Sponsored by <b class="text-white">{{ $customer->referralAgent?->name ?? 'Direct Sales' }}</b></div>

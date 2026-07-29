@@ -247,18 +247,6 @@ class CustomerWithdrawalController extends Controller
         return redirect()->route('customer.withdrawals.index')->with('success', 'Withdrawal request '.$withdrawal->request_number.' submitted successfully.');
     }
 
-    public function updateFrequency(Request $request): RedirectResponse
-    {
-        abort_unless($request->user()->role === 'customer', 403);
-
-        $data = $request->validate([
-            'withdrawal_frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly'])],
-        ]);
-        $request->user()->update($data);
-
-        return back()->with('success', 'Withdrawal frequency updated.');
-    }
-
     public function recoverPin(Request $request): RedirectResponse
     {
         abort_unless($request->user()->role === 'customer', 403);
@@ -312,6 +300,7 @@ class CustomerWithdrawalController extends Controller
     public function updateSettings(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly'])],
             'policies' => ['required', 'array'],
             'policies.*.request_limit' => ['required', 'integer', 'min:1', 'max:100'],
             'policies.*.minimum_amount' => ['required', 'numeric', 'min:1'],
@@ -329,14 +318,22 @@ class CustomerWithdrawalController extends Controller
             }
         }
 
-        foreach (['daily', 'weekly', 'monthly'] as $frequency) {
-            WithdrawalSetting::updateOrCreate(
-                ['frequency' => $frequency],
-                $data['policies'][$frequency],
-            );
-        }
+        DB::transaction(function () use ($data): void {
+            foreach (['daily', 'weekly', 'monthly'] as $frequency) {
+                WithdrawalSetting::updateOrCreate(
+                    ['frequency' => $frequency],
+                    $data['policies'][$frequency] + [
+                        'is_default' => $frequency === $data['frequency'],
+                    ],
+                );
+            }
 
-        return back()->with('success', 'Withdrawal settings updated.');
+            User::query()
+                ->where('role', 'customer')
+                ->update(['withdrawal_frequency' => $data['frequency']]);
+        });
+
+        return back()->with('success', ucfirst($data['frequency']).' withdrawal policy applied to all customers.');
     }
 
     public function editSettings(): View

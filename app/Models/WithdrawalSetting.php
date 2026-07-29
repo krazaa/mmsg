@@ -12,6 +12,7 @@ class WithdrawalSetting extends Model
     {
         return [
             'request_limit' => 'integer',
+            'is_default' => 'boolean',
             'minimum_amount' => 'decimal:2',
             'maximum_amount' => 'decimal:2',
             'fee_enabled' => 'boolean',
@@ -38,7 +39,7 @@ class WithdrawalSetting extends Model
     public static function settings(): array
     {
         return [
-            'frequency' => 'daily',
+            'frequency' => static::query()->where('is_default', true)->value('frequency') ?: 'weekly',
             'policies' => static::policies(),
             'fee' => static::fee(),
             'pin_recovery_enabled' => static::pinRecoveryEnabled(),

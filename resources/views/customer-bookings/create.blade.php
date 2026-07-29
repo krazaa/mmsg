@@ -44,13 +44,37 @@
                                         <span class="block text-xs font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">Choose payment plan</span>
                                         <span class="mt-1 block text-[10px] font-medium normal-case tracking-normal text-slate-500 dark:text-slate-400">{{ $singlePlan ? 'This is the only payment plan available for this package.' : 'Installments are selected by default. Choose Cash to compare plans.' }}</span>
                                     </legend>
-                                    @if($offersCash)<label class="min-h-[76px] cursor-pointer rounded-xl border p-3 transition" :class="paymentPlan === 'cash' ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100 dark:bg-emerald-950/30' : 'border-slate-200 dark:border-slate-700'"><input type="radio" name="payment_plan" value="cash" x-model="paymentPlan" @checked($initialPlan === 'cash') class="text-emerald-600"><span class="ml-1 text-sm font-black text-slate-900 dark:text-white">{{ $singlePlan ? 'Cash Only' : 'Cash' }}</span><span x-show="paymentPlan === 'cash'" x-cloak class="ml-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[8px] font-black uppercase text-white">Selected</span><span class="mt-1 block text-[10px] text-slate-500">Pay full cash rate{{ $singlePlan ? ' · Installments not available' : '' }}</span></label>@endif
-                                    @if($offersInstallments)<label class="min-h-[76px] cursor-pointer rounded-xl border p-3 transition" :class="paymentPlan === 'installment' ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-100 dark:bg-indigo-950/30' : 'border-slate-200 dark:border-slate-700'"><input type="radio" name="payment_plan" value="installment" x-model="paymentPlan" @checked($initialPlan === 'installment') class="text-indigo-600"><span class="ml-1 text-sm font-black text-slate-900 dark:text-white">{{ $singlePlan ? 'Installments Only' : 'Installments' }}</span><span x-show="paymentPlan === 'installment'" x-cloak class="ml-1 rounded-full bg-indigo-600 px-2 py-0.5 text-[8px] font-black uppercase text-white">Selected</span><span class="mt-1 block text-[10px] text-slate-500">{{ $package->months }} monthly payments{{ $singlePlan ? ' · Cash not available' : '' }}</span></label>@endif
+                                    @if($offersCash)
+                                        <label class="min-h-[92px] cursor-pointer overflow-hidden rounded-xl border p-3 transition" :class="paymentPlan === 'cash' ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100 dark:bg-emerald-950/30' : 'border-slate-200 dark:border-slate-700'">
+                                            <span class="flex min-h-5 items-start justify-between gap-2">
+                                                <input type="radio" name="payment_plan" value="cash" x-model="paymentPlan" @checked($initialPlan === 'cash') class="mt-0.5 shrink-0 text-emerald-600">
+                                                <span x-show="paymentPlan === 'cash'" x-cloak class="shrink-0 rounded-full bg-emerald-600 px-2 py-0.5 text-[8px] font-black uppercase text-white">Selected</span>
+                                            </span>
+                                            <span class="mt-1 block text-sm font-black text-slate-900 dark:text-white">{{ $singlePlan ? 'Cash Only' : 'Cash' }}</span>
+                                            <span class="mt-1 block text-[10px] text-slate-500">Pay full cash rate{{ $singlePlan ? ' · Installments not available' : '' }}</span>
+                                        </label>
+                                    @endif
+                                    @if($offersInstallments)
+                                        <label class="min-h-[92px] cursor-pointer overflow-hidden rounded-xl border p-3 transition" :class="paymentPlan === 'installment' ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-100 dark:bg-indigo-950/30' : 'border-slate-200 dark:border-slate-700'">
+                                            <span class="flex min-h-5 items-start justify-between gap-2">
+                                                <input type="radio" name="payment_plan" value="installment" x-model="paymentPlan" @checked($initialPlan === 'installment') class="mt-0.5 shrink-0 text-indigo-600">
+                                                <span x-show="paymentPlan === 'installment'" x-cloak class="shrink-0 rounded-full bg-indigo-600 px-2 py-0.5 text-[8px] font-black uppercase text-white">Selected</span>
+                                            </span>
+                                            <span class="mt-1 block text-sm font-black text-slate-900 dark:text-white">{{ $singlePlan ? 'Installments Only' : 'Installments' }}</span>
+                                            <span class="mt-1 block text-[10px] text-slate-500">{{ $package->months }} monthly payments{{ $singlePlan ? ' · Cash not available' : '' }}</span>
+                                        </label>
+                                    @endif
                                 </fieldset>
 
                                 <div x-show="paymentPlan" x-cloak class="mb-4 overflow-hidden rounded-2xl border" :class="paymentPlan === 'cash' ? 'border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/30' : 'border-indigo-200 bg-indigo-50/70 dark:border-indigo-900 dark:bg-indigo-950/30'">
                                     <div x-show="paymentPlan === 'cash'" x-cloak class="p-4">
-                                        <div class="flex items-start justify-between gap-3"><div><div class="text-[10px] font-black uppercase tracking-wider text-emerald-600">Selected cash plan</div><div class="mt-1 text-2xl font-black text-emerald-950 dark:text-emerald-100" x-text="money(cashPrice)"></div></div>@if($offersInstallments && $package->total_price > (float) $package->cash_price)<span class="rounded-full bg-emerald-600 px-2.5 py-1 text-[9px] font-black text-white">Save Rs {{ number_format($package->total_price - (float) $package->cash_price) }}</span>@endif</div>
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="pt-1 text-[10px] font-black uppercase tracking-wider text-emerald-600">Selected cash plan</div>
+                                            @if($offersInstallments && $package->total_price > (float) $package->cash_price)
+                                                <span class="shrink-0 rounded-full bg-emerald-600 px-3 py-1.5 text-[9px] font-black leading-tight text-white">Save Rs {{ number_format($package->total_price - (float) $package->cash_price) }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="mt-2 whitespace-nowrap text-2xl font-black tracking-tight text-emerald-950 dark:text-emerald-100" x-text="money(cashPrice)"></div>
                                         <div class="mt-3 grid grid-cols-2 gap-2 text-xs"><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Payment due</span><b class="mt-1 block text-emerald-800 dark:text-emerald-200">Full amount</b></div><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Schedule</span><b class="mt-1 block text-emerald-800 dark:text-emerald-200">No installments</b></div></div>
                                     </div>
                                     <div x-show="paymentPlan === 'installment'" class="p-4">

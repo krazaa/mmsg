@@ -68,7 +68,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/withdrawals', [CustomerWithdrawalController::class, 'index'])->name('customer.withdrawals.index');
         Route::post('/customer/withdrawals', [CustomerWithdrawalController::class, 'store'])->middleware('throttle:10,1')->name('customer.withdrawals.store');
         Route::post('/customer/withdrawal-pin/recover', [CustomerWithdrawalController::class, 'recoverPin'])->name('customer.withdrawal-pin.recover');
-        Route::patch('/customer/withdrawal-frequency', [CustomerWithdrawalController::class, 'updateFrequency'])->name('customer.withdrawals.frequency');
         Route::get('/customer/payout-methods', [CustomerPayoutMethodController::class, 'index'])->name('customer.payout-methods.index');
         Route::post('/customer/payout-methods', [CustomerPayoutMethodController::class, 'store'])->name('customer.payout-methods.store');
         Route::put('/customer/payout-methods/{payoutMethod}', [CustomerPayoutMethodController::class, 'update'])->name('customer.payout-methods.update');

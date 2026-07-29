@@ -187,14 +187,14 @@ class CustomerPortalTest extends TestCase
             ->assertSee('No commission transactions yet.')
             ->assertDontSee('RC-PORTAL');
 
-        $this->actingAs($user)->patch(route('customer.withdrawals.frequency'), [
-            'withdrawal_frequency' => 'monthly',
-        ])->assertRedirect()->assertSessionHas('success');
-        $this->assertSame('monthly', $user->refresh()->withdrawal_frequency);
+        $this->assertSame('weekly', $user->refresh()->withdrawal_frequency);
         $this->actingAs($user)->get(route('profile.edit'))
             ->assertOk()
             ->assertSee('Withdrawal frequency')
-            ->assertSee('Save withdrawal frequency')
+            ->assertSee('Current policy set by the office.')
+            ->assertDontSee('Only the office can change your request reset period.')
+            ->assertSee('Weekly')
+            ->assertDontSee('Save withdrawal frequency')
             ->assertSee('Withdrawal PIN')
             ->assertSee('Set withdrawal PIN')
             ->assertDontSee('Send me a new PIN');
@@ -208,7 +208,7 @@ class CustomerPortalTest extends TestCase
             ->assertOk()
             ->assertSee('Payable commission')
             ->assertSee('500.00')
-            ->assertSee('Monthly limit')
+            ->assertSee('Weekly limit')
             ->assertDontSee('Save withdrawal frequency')
             ->assertSee('Enter the PIN you created in Profile & Security.', false)
             ->assertDontSee('Send me a new PIN')
@@ -226,7 +226,7 @@ class CustomerPortalTest extends TestCase
             'account_number' => 'PK00TEST123',
         ])->assertSessionHasErrors('withdrawal_pin');
         $this->assertSame(1, $user->refresh()->withdrawal_pin_failed_attempts);
-        WithdrawalSetting::where('frequency', 'monthly')->firstOrFail()->update(['maximum_amount' => 300]);
+        WithdrawalSetting::where('frequency', 'weekly')->firstOrFail()->update(['maximum_amount' => 300]);
         $this->actingAs($user)->post(route('customer.withdrawals.store'), [
             'amount' => 500,
             'withdrawal_pin' => '2468',
@@ -234,7 +234,7 @@ class CustomerPortalTest extends TestCase
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
         ])->assertSessionHasErrors('amount');
-        WithdrawalSetting::where('frequency', 'monthly')->firstOrFail()->update(['maximum_amount' => 0]);
+        WithdrawalSetting::where('frequency', 'weekly')->firstOrFail()->update(['maximum_amount' => 0]);
         WithdrawalSetting::query()->update([
             'fee_enabled' => true,
             'fee_type' => 'percentage',
@@ -256,13 +256,17 @@ class CustomerPortalTest extends TestCase
         ]);
         $this->assertSame(0, $user->refresh()->withdrawal_pin_failed_attempts);
         $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+        $anotherCustomer = User::factory()->create(['role' => 'customer', 'withdrawal_frequency' => 'weekly']);
         $this->actingAs($admin)->put(route('withdrawal-settings.update'), [
+            'frequency' => 'monthly',
             'policies' => [
                 'daily' => ['request_limit' => 1, 'minimum_amount' => 100, 'maximum_amount' => 500],
                 'weekly' => ['request_limit' => 2, 'minimum_amount' => 200, 'maximum_amount' => 1000],
                 'monthly' => ['request_limit' => 3, 'minimum_amount' => 300, 'maximum_amount' => 1500],
             ],
         ])->assertRedirect()->assertSessionHas('success');
+        $this->assertSame('monthly', $user->refresh()->withdrawal_frequency);
+        $this->assertSame('monthly', $anotherCustomer->refresh()->withdrawal_frequency);
         $this->actingAs($admin)->put(route('app-settings.update'), [
             'fee_enabled' => 1,
             'fee_type' => 'fixed',
@@ -271,7 +275,7 @@ class CustomerPortalTest extends TestCase
             'customer_portal_show_referral_code' => 1,
         ])->assertRedirect()->assertSessionHas('success');
         $this->assertSame([
-            'frequency' => 'daily',
+            'frequency' => 'monthly',
             'policies' => [
                 'daily' => ['request_limit' => 1, 'minimum_amount' => 100.0, 'maximum_amount' => 500.0],
                 'weekly' => ['request_limit' => 2, 'minimum_amount' => 200.0, 'maximum_amount' => 1000.0],

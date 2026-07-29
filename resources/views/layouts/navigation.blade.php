@@ -1,4 +1,10 @@
-<nav x-data="{ open: false }" class="{{ Auth::user()->role === 'customer' ? 'sticky top-0 z-50 border-b border-indigo-100/80 bg-white/90 shadow-lg shadow-indigo-100/40 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/90' : 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700' }}">
+<nav
+    x-data="{ open: false }"
+    x-effect="document.documentElement.classList.toggle('overflow-hidden', open); document.body.classList.toggle('overflow-hidden', open)"
+    @keydown.escape.window="open = false"
+    @resize.window="if (window.innerWidth >= 640) open = false"
+    class="{{ Auth::user()->role === 'customer' ? 'sticky top-0 z-50 border-b border-indigo-100/80 bg-white/90 shadow-lg shadow-indigo-100/40 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/90' : 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700' }}"
+>
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -149,7 +155,7 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden {{ Auth::user()->role === 'customer' ? 'border-t border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white dark:border-slate-700 dark:from-slate-900 dark:to-slate-950' : '' }} sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain {{ Auth::user()->role === 'customer' ? 'border-t border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white dark:border-slate-700 dark:from-slate-900 dark:to-slate-950' : '' }} sm:hidden">
         @if(Auth::user()->role === 'customer')
             <div class="mx-4 mt-4 rounded-2xl bg-gradient-to-r from-indigo-700 to-violet-700 p-4 text-white shadow-lg">
                 <div class="text-[9px] font-black uppercase tracking-[.18em] text-indigo-200">Signed in as</div>

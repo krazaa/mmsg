@@ -14,12 +14,16 @@ use Laravel\Passkeys\Contracts\PasskeyUser;
 use Laravel\Passkeys\PasskeyAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme', 'withdrawal_frequency', 'withdrawal_pin', 'withdrawal_pin_failed_attempts', 'withdrawal_pin_locked_until', 'email_notifications_enabled', 'whatsapp_notifications_enabled'])]
+#[Fillable(['name', 'father_name', 'email', 'password', 'role', 'referral_code', 'file_no', 'phone', 'cnic', 'address', 'referral_agent_id', 'status', 'theme', 'withdrawal_pin', 'withdrawal_pin_failed_attempts', 'withdrawal_pin_locked_until', 'email_notifications_enabled', 'whatsapp_notifications_enabled'])]
 #[Hidden(['password', 'withdrawal_pin', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use AuditsModelChanges, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable;
+
+    protected $attributes = [
+        'withdrawal_frequency' => 'weekly',
+    ];
 
     /**
      * Get the attributes that should be cast.
