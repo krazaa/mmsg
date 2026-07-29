@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerNotificationController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\CustomerWithdrawalController;
+use App\Http\Controllers\ManagementAuthController;
 use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailUnsubscribeController;
 use App\Http\Controllers\DashboardController;
@@ -53,6 +54,8 @@ Route::get('/', function () {
 
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');
 Route::post('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'store'])->name('email-unsubscribe.store');
+Route::get('/management/login', [ManagementAuthController::class, 'create'])->name('management.login');
+Route::post('/management/login', [ManagementAuthController::class, 'store'])->middleware('throttle:6,1')->name('management.login.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'permission:view dashboard'])->name('dashboard');
 Route::get('/data-version', fn () => response()->json([
@@ -96,6 +99,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/management/site-appearance', [SiteAppearanceController::class, 'update'])->middleware('role:super_admin|admin')->name('site-appearance.update');
         Route::get('/management/app-settings', [AppSettingsController::class, 'edit'])->middleware('role:super_admin|admin')->name('app-settings.edit');
         Route::put('/management/app-settings', [AppSettingsController::class, 'update'])->middleware('role:super_admin|admin')->name('app-settings.update');
+        Route::get('/management/app-settings/maintenance-preview', [AppSettingsController::class, 'maintenancePreview'])->middleware('role:super_admin|admin')->name('app-settings.maintenance-preview');
         Route::post('/management/whatsapp/test', [WhatsAppSettingsController::class, 'test'])->middleware('permission:manage notifications')->name('management.whatsapp.test');
         Route::post('/management/notifications/read-all', [CustomerNotificationController::class, 'managementReadAll'])->middleware('permission:manage notifications')->name('management.notifications.read-all');
         Route::post('/management/notifications/{notification}/read', [CustomerNotificationController::class, 'managementRead'])->middleware('permission:manage notifications')->name('management.notifications.read');

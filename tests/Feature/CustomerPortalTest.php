@@ -151,6 +151,7 @@ class CustomerPortalTest extends TestCase
             ->assertOk()
             ->assertSee('Plot installment schedules')
             ->assertSee('BOOK-PORTAL')
+            ->assertSee('Flexible Package · 5.00 marla')
             ->assertSee('RC-FIRST-PORTAL')
             ->assertSee('First payment receipt')
             ->assertSee('25,000.00')
@@ -273,6 +274,9 @@ class CustomerPortalTest extends TestCase
             'fee_value' => 25,
             'pin_recovery_enabled' => 1,
             'customer_portal_show_referral_code' => 1,
+            'maintenance_mode_enabled' => 0,
+            'maintenance_page_title' => 'We will be back shortly.',
+            'maintenance_page_message' => 'Scheduled improvements are underway.',
         ])->assertRedirect()->assertSessionHas('success');
         $this->assertSame([
             'frequency' => 'monthly',
@@ -301,6 +305,8 @@ class CustomerPortalTest extends TestCase
             ->assertSee('Enable for customers')
             ->assertSee('Customer portal')
             ->assertSee('Show referral code')
+            ->assertSee('Maintenance mode')
+            ->assertSee('Preview maintenance page')
             ->assertSee('Save app settings');
         $this->actingAs($admin)->get(route('withdrawal-requests.index'))
             ->assertOk()

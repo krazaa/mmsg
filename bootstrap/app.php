@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureManagementUser;
+use App\Http\Middleware\HandleApplicationMaintenance;
 use App\Http\Middleware\RejectCustomerManagementAccess;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            HandleApplicationMaintenance::class,
+        ]);
+
         $middleware->alias([
             'not_customer' => RejectCustomerManagementAccess::class,
             'management' => EnsureManagementUser::class,

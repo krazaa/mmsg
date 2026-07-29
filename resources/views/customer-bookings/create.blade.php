@@ -5,14 +5,43 @@
         @if($pendingBooking)<div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500 font-black text-white">!</span><div><div class="font-black">Your booking request {{ $pendingBooking->booking_number }} is awaiting office approval.</div><p class="mt-1 text-amber-800">You can submit another plot request after this request is approved or cancelled.</p></div></div>@endif
 
         @php($packageCount = $projects->sum(fn ($project) => $project->packages->count()))
-        <section class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-indigo-700 to-violet-600 p-7 text-white shadow-2xl shadow-indigo-200 dark:shadow-none sm:p-10">
-            <div class="absolute -right-20 -top-24 -z-10 h-80 w-80 rounded-full bg-fuchsia-400/30 blur-3xl"></div><div class="absolute -bottom-28 left-1/3 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl"></div>
-            <div class="max-w-3xl"><span class="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-indigo-100 backdrop-blur">Property marketplace</span><h3 class="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Find a place to build your future.</h3><p class="mt-4 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare payment plans, select your ideal plot size, and send a secure booking request. No payment is charged until the office reviews your selection.</p>
-                <div class="mt-7 flex flex-wrap gap-3"><div class="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><div class="text-2xl font-black">{{ $projects->count() }}</div><div class="text-xs text-indigo-100">Active projects</div></div><div class="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><div class="text-2xl font-black">{{ $packageCount }}</div><div class="text-xs text-indigo-100">Available plans</div></div><div class="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><div class="text-2xl font-black">Rs {{ number_format($dueNow, 2) }}</div><div class="text-xs text-indigo-100">Your current amount due</div></div></div>
+        <section class="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 text-white shadow-2xl shadow-indigo-200 dark:shadow-none">
+            <div class="absolute -right-20 -top-24 -z-10 h-80 w-80 rounded-full bg-fuchsia-400/30 blur-3xl"></div>
+            <div class="absolute -bottom-28 left-1/3 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl"></div>
+            <div class="absolute inset-0 -z-10 opacity-[.06]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:22px 22px"></div>
+            <div class="grid lg:grid-cols-2">
+                <header class="flex flex-col justify-center p-6 sm:p-7 lg:p-8">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-indigo-100 backdrop-blur">Property marketplace</span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-200"><i class="h-1.5 w-1.5 rounded-full bg-emerald-300"></i>Live inventory</span>
+                    </div>
+                    <h1 class="mt-4 max-w-3xl text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl lg:leading-tight">Choose the right property plan for your future.</h1>
+                    <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare cash and installment prices, select your preferred plot size, and send a secure request for office approval.</p>
+                    <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-bold text-indigo-100">
+                        <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">1</i>Choose a plan</span>
+                        <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">2</i>Send request</span>
+                        <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">3</i>Office approval</span>
+                    </div>
+                </header>
+                <aside class="flex flex-col justify-center border-t border-white/10 bg-white/[.08] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-7 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div><div class="text-[10px] font-black uppercase tracking-[.18em] text-indigo-200">Marketplace overview</div><div class="mt-1 text-sm font-bold">Available to book</div></div>
+                        <span class="grid h-10 w-10 place-items-center rounded-xl border border-white/15 bg-white/10 text-lg">⌂</span>
+                    </div>
+                    <div class="mt-5 grid grid-cols-2 gap-3">
+                        <div class="rounded-2xl border border-white/10 bg-white/10 p-4"><div class="text-[9px] font-black uppercase tracking-wider text-indigo-200">Projects</div><div class="mt-1 text-2xl font-black">{{ $projects->count() }}</div></div>
+                        <div class="rounded-2xl border border-white/10 bg-white/10 p-4"><div class="text-[9px] font-black uppercase tracking-wider text-indigo-200">Plans</div><div class="mt-1 text-2xl font-black">{{ $packageCount }}</div></div>
+                    </div>
+                    <div class="mt-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
+                        <div class="text-[9px] font-black uppercase tracking-wider text-indigo-200">Your current amount due</div>
+                        <div class="mt-1 text-xl font-black text-white">Rs {{ number_format($dueNow, 2) }}</div>
+                        <p class="mt-1 text-[10px] leading-4 text-indigo-200">No booking payment is charged before office approval.</p>
+                    </div>
+                </aside>
             </div>
         </section>
 
-        <section class="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:grid-cols-3 sm:p-5">
+        <section class="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:grid-cols-3">
             <div class="flex items-center gap-3 rounded-xl bg-indigo-50 p-3 dark:bg-indigo-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 font-black text-white">1</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Choose a plan</div><div class="text-xs text-gray-500 dark:text-gray-300">Compare size and pricing</div></div></div>
             <div class="flex items-center gap-3 rounded-xl bg-violet-50 p-3 dark:bg-violet-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-600 font-black text-white">2</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Send request</div><div class="text-xs text-gray-500 dark:text-gray-300">Inventory is reserved</div></div></div>
             <div class="flex items-center gap-3 rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-600 font-black text-white">3</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Office approval</div><div class="text-xs text-gray-500 dark:text-gray-300">Pay only after approval</div></div></div>
@@ -113,7 +142,7 @@
                                                         <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/15 shadow-lg backdrop-blur">
                                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12 11.204 3.045a1.125 1.125 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg>
                                                         </span>
-                                                        <div><div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-200" x-text="paymentPlan === 'cash' ? 'Confirm cash selection' : 'Confirm installment selection'"></div><h3 class="mt-1 text-xl font-black" x-text="paymentPlan === 'cash' ? 'Submit cash booking request?' : 'Submit installment booking request?'"></h3></div>
+                                                        <div><div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-200">Confirm plan</div><h3 class="mt-1 text-xl font-black" x-text="paymentPlan === 'cash' ? 'Book with cash?' : 'Book with installments?'"></h3></div>
                                                     </div>
                                                     <button type="button" @click="confirmOpen=false" :disabled="submitting" class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-xl text-white/70 transition hover:bg-white/20 hover:text-white">×</button>
                                                 </div>

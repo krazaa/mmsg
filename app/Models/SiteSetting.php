@@ -99,4 +99,23 @@ class SiteSetting extends Model
             FILTER_VALIDATE_BOOL,
         );
     }
+
+    public static function maintenanceModeEnabled(): bool
+    {
+        return filter_var(
+            static::valueFor('maintenance_mode_enabled', '0'),
+            FILTER_VALIDATE_BOOL,
+        );
+    }
+
+    public static function maintenancePage(): array
+    {
+        return [
+            'title' => (string) static::valueFor('maintenance_page_title', 'We’ll be back shortly.'),
+            'message' => (string) static::valueFor(
+                'maintenance_page_message',
+                'We are completing scheduled improvements. Please check back soon.',
+            ),
+        ];
+    }
 }

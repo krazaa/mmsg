@@ -82,6 +82,50 @@
     color: #f8fafc;
 }
 
+.dark .customer-portal .customer-light-action {
+    background: #ffffff !important;
+    color: #3730a3 !important;
+}
+
+.dark .customer-portal .customer-light-action:hover {
+    background: #eef2ff !important;
+    color: #312e81 !important;
+}
+
+.dark .customer-portal .customer-notifications-card,
+.dark .customer-portal .customer-notification-item {
+    background: #0f172a !important;
+}
+
+.dark .customer-portal .customer-notifications-card,
+.dark .customer-portal .customer-notifications-header,
+.dark .customer-portal .customer-notifications-grid {
+    border-color: #334155 !important;
+}
+
+.dark .customer-portal .customer-notifications-grid {
+    --tw-divide-opacity: 1;
+    border-color: #334155 !important;
+}
+
+.dark .customer-portal .customer-notifications-grid > :not([hidden]) ~ :not([hidden]) {
+    border-color: #334155 !important;
+}
+
+.dark .customer-portal .customer-notifications-header h3,
+.dark .customer-portal .customer-notification-item .notification-title {
+    color: #f8fafc !important;
+}
+
+.dark .customer-portal .customer-notifications-header p,
+.dark .customer-portal .customer-notification-item .notification-copy {
+    color: #94a3b8 !important;
+}
+
+.dark .customer-portal .customer-notification-item .notification-time {
+    color: #64748b !important;
+}
+
 .installment-table th,
 .installment-table td {
     padding-left: .9rem;

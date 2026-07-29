@@ -18,6 +18,8 @@ class AppSettingsController extends Controller
             'fee' => WithdrawalSetting::fee(),
             'pinRecoveryEnabled' => WithdrawalSetting::pinRecoveryEnabled(),
             'showReferralCode' => SiteSetting::showReferralCodesOnCustomerPortal(),
+            'maintenanceEnabled' => SiteSetting::maintenanceModeEnabled(),
+            'maintenancePage' => SiteSetting::maintenancePage(),
         ]);
     }
 
@@ -29,6 +31,9 @@ class AppSettingsController extends Controller
             'fee_value' => ['required', 'numeric', 'min:0'],
             'pin_recovery_enabled' => ['required', 'boolean'],
             'customer_portal_show_referral_code' => ['required', 'boolean'],
+            'maintenance_mode_enabled' => ['required', 'boolean'],
+            'maintenance_page_title' => ['required', 'string', 'max:100'],
+            'maintenance_page_message' => ['required', 'string', 'max:500'],
         ]);
 
         if ($data['fee_type'] === 'percentage' && (float) $data['fee_value'] > 100) {
@@ -49,6 +54,19 @@ class AppSettingsController extends Controller
             ['value' => (string) (int) $data['customer_portal_show_referral_code']],
         );
 
+        foreach ([
+            'maintenance_mode_enabled' => (string) (int) $data['maintenance_mode_enabled'],
+            'maintenance_page_title' => $data['maintenance_page_title'],
+            'maintenance_page_message' => $data['maintenance_page_message'],
+        ] as $key => $value) {
+            SiteSetting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+
         return back()->with('success', 'App settings updated.');
+    }
+
+    public function maintenancePreview(): View
+    {
+        return view('maintenance', SiteSetting::maintenancePage() + ['preview' => true]);
     }
 }

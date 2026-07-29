@@ -18,17 +18,8 @@
                 <div class="absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl"></div>
                 <div class="absolute inset-0 -z-10 opacity-[.07]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:24px 24px"></div>
                 <div class="grid lg:grid-cols-[1.2fr_.8fr]">
-                    <div class="p-6 sm:p-9">
+                    <div class="p-6 sm:p-7">
                         <span class="sr-only">My property account</span>
-                        <div class="mb-6 inline-flex items-center gap-3 rounded-2xl bg-white/10 p-2 pr-4 backdrop-blur">
-                            <span class="flex h-11 w-18 shrink-0 flex-none items-center justify-center rounded-xl p-1.5">
-                                <img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain">
-                            </span>
-                            <span>
-                                <span class="block text-sm font-black tracking-wide text-white">MMS Group</span>
-                                <span class="block text-[9px] font-bold uppercase tracking-[.18em] text-indigo-200">Customer portal</span>
-                            </span>
-                        </div>
                         <div class="flex items-center gap-4">
                             <div class="relative grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/30 bg-gradient-to-br from-fuchsia-500 to-indigo-700 text-lg font-black shadow-xl ring-4 ring-white/10">
                                 {{ $customerInitials ?: 'CU' }}
@@ -40,36 +31,36 @@
                                 <p class="mt-1 text-xs text-indigo-200">{{ $customer->file_no ? 'File '.$customer->file_no.' · ' : '' }}Member since {{ $customer->created_at->format('M Y') }}</p>
                             </div>
                         </div>
-                        <p class="mt-6 max-w-xl text-sm leading-6 text-indigo-100">Your complete property journey—from booking and approval to every verified installment—in one secure account.</p>
-                        <div class="mt-6 flex flex-wrap gap-2">
+                        <p class="mt-4 max-w-xl text-sm leading-6 text-indigo-100">Your complete property journey—from booking and approval to every verified installment—in one secure account.</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
                             @unless($portalPreview ?? false)
-                                <a href="{{ route('customer.bookings.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-indigo-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-indigo-50"><span class="text-lg leading-none">＋</span> Book a plot</a>
+                                <a href="{{ route('customer.bookings.create') }}" class="customer-light-action inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-indigo-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-indigo-50"><span class="text-lg leading-none">＋</span> Book a plot</a>
                                 <a href="{{ route('customer.team') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">Team</a>
                                 <a href="{{ route('profile.edit') }}" class="inline-flex items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20">Profile</a>
                             @endunless
                         </div>
                     </div>
-                    <div class="border-t border-white/10 bg-white/[.07] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-8">
+                    <div class="border-t border-white/10 bg-white/[.07] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-7">
                         <div class="flex items-center justify-between"><div><div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-200">Account snapshot</div><div class="mt-1 text-sm font-bold text-white">Your property portfolio</div></div><span class="grid h-10 w-10 place-items-center rounded-xl border border-white/15 bg-white/10 text-lg">⌂</span></div>
-                        <div class="mt-6 grid grid-cols-2 gap-3">
+                        <div class="mt-4 grid grid-cols-2 gap-3">
                             <div class="rounded-2xl border border-white/10 bg-white/10 p-4"><div class="text-[9px] font-bold uppercase tracking-wider text-indigo-200">Total bookings</div><div class="mt-1 text-2xl font-black">{{ $bookings->count() }}</div></div>
                             <div class="rounded-2xl border border-white/10 bg-white/10 p-4"><div class="text-[9px] font-bold uppercase tracking-wider text-indigo-200">Due now</div><div class="mt-1 truncate text-lg font-black text-amber-300">Rs {{ number_format($dueNow) }}</div></div>
                         </div>
                         @if($showReferralCode)
                             <div x-data="{ copied:false }" class="mt-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/10 to-fuchsia-300/10 p-4">
-                                <div class="flex items-end justify-between gap-3"><div><div class="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-200">Referral code</div><div class="mt-1 font-mono text-lg font-black tracking-wider">{{ $customer->referral_code }}</div></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code]))); copied=true; setTimeout(()=>copied=false,1500)" class="rounded-lg bg-white px-3 py-2 text-[10px] font-black text-indigo-700" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button></div>
+                                <div class="flex items-end justify-between gap-3"><div><div class="text-[9px] font-bold uppercase tracking-[.16em] text-indigo-200">Referral code</div><div class="mt-1 font-mono text-lg font-black tracking-wider">{{ $customer->referral_code }}</div></div><button type="button" @click="navigator.clipboard.writeText(@js(route('register', ['ref' => $customer->referral_code]))); copied=true; setTimeout(()=>copied=false,1500)" class="customer-light-action rounded-lg bg-white px-3 py-2 text-[10px] font-black text-indigo-700" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button></div>
                             </div>
                         @endif
                     </div>
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-lg shadow-indigo-100/50">
-                <div class="flex items-center justify-between border-b border-slate-100 p-4 sm:p-5"><div><div class="flex items-center gap-2"><h3 class="font-black text-slate-950">Account notifications</h3>@if($unreadNotificationCount)<span class="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{{ $unreadNotificationCount }} new</span>@endif</div><p class="mt-1 text-xs text-slate-500">Latest booking, payment and verification activity</p></div>@unless($portalPreview ?? false)<a href="{{ route('customer.notifications.index') }}" class="text-xs font-black text-indigo-600">View all →</a>@endunless</div>
-                <div class="grid divide-y divide-slate-100 lg:grid-cols-5 lg:divide-x lg:divide-y-0">
+            <section class="customer-notifications-card overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-lg shadow-indigo-100/50">
+                <div class="customer-notifications-header flex items-center justify-between border-b border-slate-100 p-4 sm:p-5"><div><div class="flex items-center gap-2"><h3 class="font-black text-slate-950">Account notifications</h3>@if($unreadNotificationCount)<span class="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{{ $unreadNotificationCount }} new</span>@endif</div><p class="mt-1 text-xs text-slate-500">Latest booking, payment and verification activity</p></div>@unless($portalPreview ?? false)<a href="{{ route('customer.notifications.index') }}" class="text-xs font-black text-indigo-600">View all →</a>@endunless</div>
+                <div class="customer-notifications-grid grid divide-y divide-slate-100 lg:grid-cols-5 lg:divide-x lg:divide-y-0">
                     @forelse($notifications as $notification)
                         @php($category = $notification->data['category'] ?? 'account')
-                        <div class="relative p-4 {{ $notification->read_at ? 'bg-white' : 'bg-indigo-50/60' }}"><div class="flex items-start gap-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-xs font-black {{ $category === 'payment' ? 'bg-emerald-100 text-emerald-700' : ($category === 'reminder' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700') }}">{{ $category === 'payment' ? 'Rs' : ($category === 'reminder' ? '!' : '#') }}</span><div class="min-w-0"><b class="block text-xs text-slate-900">{{ $notification->data['title'] ?? 'Account update' }}</b><p class="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500">{{ $notification->data['message'] ?? '' }}</p><span class="mt-2 block text-[9px] text-slate-400">{{ $notification->created_at->diffForHumans() }}</span></div></div>@unless($notification->read_at)<span class="absolute right-3 top-3 h-2 w-2 rounded-full bg-indigo-600"></span>@endunless</div>
+                        <div class="customer-notification-item relative p-4 {{ $notification->read_at ? 'bg-white' : 'bg-indigo-50/60' }}"><div class="flex items-start gap-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-xs font-black {{ $category === 'payment' ? 'bg-emerald-100 text-emerald-700' : ($category === 'reminder' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700') }}">{{ $category === 'payment' ? 'Rs' : ($category === 'reminder' ? '!' : '#') }}</span><div class="min-w-0"><b class="notification-title block text-xs text-slate-900">{{ $notification->data['title'] ?? 'Account update' }}</b><p class="notification-copy mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500">{{ $notification->data['message'] ?? '' }}</p><span class="notification-time mt-2 block text-[9px] text-slate-400">{{ $notification->created_at->diffForHumans() }}</span></div></div>@unless($notification->read_at)<span class="absolute right-3 top-3 h-2 w-2 rounded-full bg-indigo-600"></span>@endunless</div>
                     @empty<div class="p-6 text-center text-sm text-slate-400 lg:col-span-5">No account notifications yet.</div>@endforelse
                 </div>
             </section>

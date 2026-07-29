@@ -65,54 +65,47 @@
 
         <main>
             <section class="hero-grid relative" style="background-color: {{ $heroGridBackgroundColor }}">
-                <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-12">
+                <div class="mx-auto grid min-h-[640px] max-w-7xl items-center gap-12 px-5 py-12 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-14">
                     <div class="hero-copy relative z-10">
                         <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold shadow-lg" style="background-color:{{ $pageAppearance['welcome_hero_badge_background_color'] }};color:{{ $pageAppearance['welcome_hero_badge_text_color'] }};border-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"><span class="pulse-dot h-2 w-2 rounded-full" style="background-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"></span> One secure property account</div>
-                        <h1 class="mt-7 font-black leading-[1.02] tracking-[-.045em]" style="color: {{ $heroHeadingColor }};font-size:clamp(3rem,6vw,{{ $pageAppearance['welcome_hero_heading_font_size'] }}px)">Your property journey, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">clearly managed.</span></h1>
-                        <p class="mt-7 max-w-xl leading-8" style="color: {{ $pageAppearance['welcome_hero_body_color'] }};font-size:{{ $pageAppearance['welcome_hero_body_font_size'] }}px">Book a plot, follow every installment, submit payment proof and keep your verified receipts together—from first payment to final allotment.</p>
-                        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+                        <h1 class="mt-6 font-black leading-[1.04] tracking-[-.04em]" style="color: {{ $heroHeadingColor }};font-size:clamp(2.8rem,5vw,{{ $pageAppearance['welcome_hero_heading_font_size'] }}px)">Property ownership, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">organized from day one.</span></h1>
+                        <p class="mt-6 max-w-xl leading-8" style="color: {{ $pageAppearance['welcome_hero_body_color'] }};font-size:{{ $pageAppearance['welcome_hero_body_font_size'] }}px">Choose a property plan, follow every installment, submit payment proof, and keep verified records together in one secure account.</p>
+                        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                             <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="hero-primary-button rounded-xl px-6 py-3.5 text-center font-black shadow-xl shadow-indigo-950 transition hover:-translate-y-0.5 hover:shadow-indigo-900/50">{{ auth()->check() ? 'Go to my dashboard' : 'Access my property account' }} →</a>
                             @guest<a href="{{ route('register') }}" class="hero-secondary-button rounded-xl px-6 py-3.5 text-center font-black transition">Create new account</a>@endguest
                             <a href="#platform" class="hero-explore-button rounded-xl border border-white/15 px-6 py-3.5 text-center font-bold transition">Explore the platform</a>
                         </div>
-                        <div class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-5"><div><b class="block text-xl" style="color: {{ $heroStatValueColor }}">24/7</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Account access</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Live</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Payment status</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Secure</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Digital records</span></div></div>
+                        <div class="mt-8 grid max-w-lg grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-4"><div><b class="block text-xl" style="color: {{ $heroStatValueColor }}">24/7</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Account access</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Live</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Payment status</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Secure</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Digital records</span></div></div>
                     </div>
 
                     @php
                         $heroProject = $projects->first();
-                        $heroImage = $heroProject?->image_url;
-                        $heroSecondProject = $projects->skip(1)->first();
-                        $heroSecondImage = $heroSecondProject?->image_url;
+                        $heroPackages = $heroProject?->packages ?? collect();
+                        $heroAvailable = $heroProject?->available_area_marla ?? 0;
                     @endphp
-                    <div class="hero-visual relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
+                    <div class="hero-visual relative mx-auto w-full max-w-xl">
                         <div class="absolute -inset-12 rounded-full blur-3xl" style="background-image:radial-gradient(circle at 35% 35%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 24%, transparent),transparent 65%),radial-gradient(circle at 70% 65%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 18%, transparent),transparent 65%)"></div>
-                        <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border p-2.5" style="border-color:{{ $pageAppearance['welcome_hero_image_border_color'] }};background:linear-gradient(135deg,{{ $pageAppearance['welcome_hero_image_gradient_start_color'] }},{{ $pageAppearance['welcome_hero_image_gradient_end_color'] }})">
-                            <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
-                                @if($heroImage)
-                                    <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover" fetchpriority="high" decoding="async">
-                                @else
-                                    <div class="h-full w-full bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"></div>
-                                @endif
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/10 to-transparent"></div>
-                                <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                                    <div class="flex items-end justify-between gap-4">
-                                        <div>
-                                            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-white backdrop-blur">Featured development</span>
-                                            <h2 class="mt-4 text-3xl font-black text-white sm:text-4xl">{{ $heroProject?->name ?? 'MMS Group' }}</h2>
-                                            <p class="mt-1 text-sm font-bold text-indigo-200">{{ $heroProject?->location ?? 'Premium property developments' }}</p>
-                                        </div>
-                                        <a href="#projects" class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white text-xl font-black text-slate-950 shadow-xl transition hover:scale-105">↘</a>
+                        <div class="glass-ring relative overflow-hidden rounded-[2rem] border border-white/15 bg-slate-950/95 shadow-2xl">
+                            <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+                                <div class="flex items-center gap-3"><span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-700 font-black text-white">M</span><div><b class="block text-sm text-white">My property account</b><span class="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Live customer portal</span></div></div>
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2.5 py-1 text-[9px] font-black uppercase text-emerald-300"><i class="h-1.5 w-1.5 rounded-full bg-emerald-300"></i>Active</span>
+                            </div>
+                            <div class="p-5 sm:p-6">
+                                <div class="relative overflow-hidden rounded-2xl border border-indigo-400/20 bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-800 p-5">
+                                    <div class="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-fuchsia-400/20 blur-2xl"></div>
+                                    <div class="relative">
+                                        <div class="flex items-start justify-between gap-4"><div><span class="text-[9px] font-black uppercase tracking-[.18em] text-indigo-300">Featured development</span><h2 class="mt-2 text-2xl font-black text-white">{{ $heroProject?->name ?? 'MMS Group' }}</h2><p class="mt-1 text-xs text-indigo-200">{{ $heroProject?->location ?? 'Premium property developments' }}</p></div><span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-white ring-1 ring-white/15">⌂</span></div>
+                                        <div class="mt-5 grid grid-cols-2 gap-3"><div class="rounded-xl bg-white/10 p-3"><span class="text-[8px] font-black uppercase tracking-wider text-indigo-300">Available plans</span><b class="mt-1 block text-xl text-white">{{ $heroPackages->count() }}</b></div><div class="rounded-xl bg-white/10 p-3"><span class="text-[8px] font-black uppercase tracking-wider text-indigo-300">Land available</span><b class="mt-1 block text-sm text-white">{{ number_format((float) $heroAvailable, 2) }} marla</b></div></div>
                                     </div>
                                 </div>
+                                <div class="mt-4 grid grid-cols-3 gap-2">
+                                    @foreach([['✓','Booking','Office approved'],['Rs','Payments','Verified records'],['#','Allotment','Clearly tracked']] as $step)
+                                        <div class="rounded-xl border border-white/10 bg-white/[.04] p-3"><span class="grid h-7 w-7 place-items-center rounded-lg bg-indigo-500/15 text-[10px] font-black text-indigo-300">{{ $step[0] }}</span><b class="mt-2 block text-[11px] text-white">{{ $step[1] }}</b><span class="mt-0.5 block text-[9px] leading-4 text-slate-400">{{ $step[2] }}</span></div>
+                                    @endforeach
+                                </div>
+                                <a href="#projects" class="mt-4 flex items-center justify-between rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-indigo-50"><span>Explore available developments</span><span>→</span></a>
                             </div>
                         </div>
-                        @if($heroSecondProject && $heroSecondImage)
-                            <div class="float-card absolute -bottom-3 -right-2 w-44 overflow-hidden rounded-2xl border border-white/20 bg-slate-900 p-2 shadow-2xl backdrop-blur sm:-right-6 sm:w-52">
-                                <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover" loading="lazy" decoding="async">
-                                <div class="flex items-center justify-between gap-2 px-2 pb-1 pt-2"><div><b class="block truncate text-xs text-white">{{ $heroSecondProject->name }}</b><span class="text-[10px] text-slate-400">{{ $heroSecondProject->location }}</span></div><span class="text-indigo-300">↗</span></div>
-                            </div>
-                        @endif
-                        <div class="float-card absolute -left-2 top-8 rounded-2xl border border-white/15 bg-slate-950/80 p-3 shadow-2xl backdrop-blur sm:-left-5"><div class="flex items-center gap-2"><span class="grid h-9 w-9 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">✓</span><div><b class="block text-xs text-white">Trusted process</b><span class="text-[10px] text-slate-400">Clear. Secure. Verified.</span></div></div></div>
                     </div>
                 </div>
             </section>

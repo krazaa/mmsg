@@ -2,19 +2,19 @@
     x-data="{ open: false }"
     x-effect="document.documentElement.classList.toggle('overflow-hidden', open); document.body.classList.toggle('overflow-hidden', open)"
     @keydown.escape.window="open = false"
-    @resize.window="if (window.innerWidth >= 640) open = false"
+    @resize.window="if (window.innerWidth >= 1280) open = false"
     class="{{ Auth::user()->role === 'customer' ? 'sticky top-0 z-50 border-b border-indigo-100/80 bg-white/90 shadow-lg shadow-indigo-100/40 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/90' : 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700' }}"
 >
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
+        <div class="flex h-16 items-center justify-between gap-3">
+            <div class="flex min-w-0 items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
                         @if(Auth::user()->role === 'customer')
                             <span class="relative grid h-11 w-18 flex-none place-items-center overflow-hidden  p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
-                            <span class="hidden leading-tight lg:block">
+                            <span class="hidden leading-tight md:block">
                                 <b class="block text-sm font-black tracking-tight text-slate-950 dark:text-white">MMS Group</b>
                                 <span class="block text-[9px] font-bold uppercase tracking-[.18em] text-indigo-500">Customer portal</span>
                             </span>
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden {{ Auth::user()->role === 'customer' ? 'items-center gap-1 sm:ms-6' : 'space-x-8 sm:-my-px sm:ms-10' }} sm:flex">
+                <div class="hidden {{ Auth::user()->role === 'customer' ? 'items-center gap-1 xl:ms-6' : 'space-x-8 xl:-my-px xl:ms-10' }} xl:flex">
                     @if(Auth::user()->role === 'customer')
                     @php($customerNavClass = 'inline-flex items-center rounded-xl px-3 py-2 text-xs font-black transition')
                     <a href="{{ route('dashboard') }}" class="{{ $customerNavClass }} {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Overview</a>
@@ -73,7 +73,7 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden xl:ms-6 xl:flex xl:items-center">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('customer.withdrawals.index') }}" class="me-2 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-200 transition hover:-translate-y-0.5 dark:shadow-none"><span>↗</span> Withdraw</a>
                     <a href="{{ route('customer.notifications.index') }}" class="relative me-2 grid h-10 w-10 place-items-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600 transition hover:-translate-y-0.5 hover:bg-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-300" title="Notifications" aria-label="Notifications">
@@ -137,14 +137,14 @@
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="flex shrink-0 items-center xl:hidden">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('customer.notifications.index') }}" class="relative me-2 grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-300" aria-label="Notifications">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31"/></svg>
                         @if(Auth::user()->unreadNotifications()->count())<span class="absolute -right-1 -top-1 h-5 min-w-5 rounded-full bg-rose-500 px-1 text-center text-[9px] font-black leading-5 text-white">{{ Auth::user()->unreadNotifications()->count() > 99 ? '99+' : Auth::user()->unreadNotifications()->count() }}</span>@endif
                     </a>
                 @endif
-                <button @click="open = ! open" class="inline-flex h-10 w-10 items-center justify-center rounded-xl {{ Auth::user()->role === 'customer' ? 'bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-md' : 'text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-900' }} focus:outline-none transition duration-150 ease-in-out">
+                <button type="button" @click="open = ! open" :aria-expanded="open" aria-label="Toggle navigation menu" class="inline-flex h-10 w-10 items-center justify-center rounded-xl {{ Auth::user()->role === 'customer' ? 'bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-900' }} focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -155,12 +155,16 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain {{ Auth::user()->role === 'customer' ? 'border-t border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white dark:border-slate-700 dark:from-slate-900 dark:to-slate-950' : '' }} sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t {{ Auth::user()->role === 'customer' ? 'border-indigo-100 bg-gradient-to-b from-indigo-50 via-white to-white shadow-2xl dark:border-slate-700 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950' : 'border-gray-100 dark:border-gray-700' }} xl:hidden">
         @if(Auth::user()->role === 'customer')
-            <div class="mx-4 mt-4 rounded-2xl bg-gradient-to-r from-indigo-700 to-violet-700 p-4 text-white shadow-lg">
-                <div class="text-[9px] font-black uppercase tracking-[.18em] text-indigo-200">Signed in as</div>
-                <div class="mt-1 truncate text-sm font-black">{{ Auth::user()->name }}</div>
-                <div class="mt-0.5 truncate text-xs text-indigo-200">{{ Auth::user()->email }}</div>
+            <div class="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 p-4 text-white shadow-lg">
+                <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/10 text-sm font-black ring-1 ring-white/20">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="text-[9px] font-black uppercase tracking-[.18em] text-indigo-300">Customer account</div>
+                    <div class="mt-1 truncate text-sm font-black">{{ Auth::user()->name }}</div>
+                    <div class="mt-0.5 truncate text-xs text-indigo-200">{{ Auth::user()->email }}</div>
+                </div>
+                <a href="{{ route('profile.edit') }}" @click="open = false" class="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-[10px] font-black text-white ring-1 ring-white/15">Profile</a>
             </div>
         @endif
         <div class="space-y-1 px-2 pb-3 pt-3">

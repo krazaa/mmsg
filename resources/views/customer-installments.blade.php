@@ -26,11 +26,12 @@
                                 class="rounded-xl px-4 py-3 text-left transition"
                             >
                                 <span class="block font-mono text-xs font-black">{{ $booking->booking_number }}</span>
-                                <span class="mt-1 block max-w-52 truncate text-[10px] font-bold opacity-75">
+                                <span class="mt-1 block whitespace-nowrap text-[10px] font-bold opacity-75">{{ $booking->package->name }} · {{ number_format($booking->package->size_marla, 2) }} marla</span>
+                                <span class="mt-0.5 block whitespace-nowrap text-[9px] font-bold opacity-60">
                                     @if($booking->allotment)
                                         {{ $booking->allotment->plot->block->name }} · Plot {{ $booking->allotment->plot->plot_number }}
                                     @else
-                                        {{ $booking->project->name }} · Allotment pending
+                                        Allotment pending
                                     @endif
                                 </span>
                             </button>
