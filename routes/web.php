@@ -38,9 +38,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $projects = Project::query()
+        ->with(['packages' => fn ($query) => $query->where('status', true)->orderBy('size_marla')])
         ->where('status', true)
         ->latest()
         ->get();
+    $offerPackages = $projects
+        ->flatMap(fn (Project $project) => $project->packages)
+        ->filter(fn ($package) => filled($package->welcome_offer));
+    $offerPackage = $offerPackages->isNotEmpty() ? $offerPackages->random() : null;
 
     $backgroundColor = SiteSetting::valueFor('welcome_background_color', '#020617');
     $heroGridBackgroundColor = SiteSetting::valueFor('welcome_hero_grid_background_color', '#020617');
@@ -49,7 +54,7 @@ Route::get('/', function () {
     $heroStatLabelColor = SiteSetting::valueFor('welcome_hero_stat_label_color', '#94a3b8');
     $pageAppearance = SiteSetting::welcomeAppearance();
 
-    return view('welcome', compact('projects', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance'));
+    return view('welcome', compact('projects', 'offerPackage', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance'));
 })->name('home');
 
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');

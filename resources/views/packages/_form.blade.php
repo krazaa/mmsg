@@ -49,6 +49,10 @@
         </select>
         <span class="mt-1 block text-xs font-normal text-gray-500">Choose which plans customers can select for this package.</span>
     </label>
+    <label class="block sm:col-span-2 text-sm font-medium text-gray-700">Welcome page offer <span class="font-normal text-gray-400">(optional)</span>
+        <textarea name="welcome_offer" rows="3" maxlength="500" class="mt-1 w-full rounded-md border-gray-300" placeholder="Example: Book this month and receive free processing plus priority allotment.">{{ old('welcome_offer', $package->welcome_offer ?? '') }}</textarea>
+        <span class="mt-1 block text-xs font-normal text-gray-500">Active package offers appear randomly beneath the featured project on the public welcome page. Leave blank to hide this package from the offer rotation.</span>
+    </label>
     <label class="block text-sm font-medium text-gray-700">Monthly installment (Rs)
         <input type="number" step="0.01" min="0" name="monthly_amount" x-model.number="monthly" value="{{ old('monthly_amount', $package->monthly_amount ?? 50000) }}" required class="mt-1 w-full rounded-md border-gray-300">
     </label>

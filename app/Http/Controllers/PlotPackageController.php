@@ -99,6 +99,7 @@ class PlotPackageController extends Controller
             'size_marla' => ['required', 'numeric', 'gt:0'],
             'cash_price' => ['nullable', 'numeric', 'gt:0'],
             'payment_plan_options' => ['nullable', 'in:cash,installment,both'],
+            'welcome_offer' => ['nullable', 'string', 'max:500'],
             'booking_amount' => ['required', 'numeric', 'min:0'],
             'months' => ['required', 'integer', 'between:1,60'],
             'monthly_amount' => ['required', 'numeric', 'min:0'],

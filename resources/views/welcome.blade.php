@@ -65,7 +65,7 @@
 
         <main>
             <section class="hero-grid relative" style="background-color: {{ $heroGridBackgroundColor }}">
-                <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:py-12">
+                <div class="mx-auto grid min-h-[690px] max-w-7xl items-center gap-14 px-5 py-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start lg:px-8 lg:py-12">
                     <div class="hero-copy relative z-10">
                         <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold shadow-lg" style="background-color:{{ $pageAppearance['welcome_hero_badge_background_color'] }};color:{{ $pageAppearance['welcome_hero_badge_text_color'] }};border-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"><span class="pulse-dot h-2 w-2 rounded-full" style="background-color:{{ $pageAppearance['welcome_hero_badge_border_color'] }}"></span> One secure property account</div>
                         <h1 class="mt-7 font-black leading-[1.02] tracking-[-.045em]" style="color: {{ $heroHeadingColor }};font-size:clamp(3rem,6vw,{{ $pageAppearance['welcome_hero_heading_font_size'] }}px)">Your property journey, <span class="bg-gradient-to-r from-violet-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">clearly managed.</span></h1>
@@ -75,7 +75,30 @@
                             @guest<a href="{{ route('register') }}" class="hero-secondary-button rounded-xl px-6 py-3.5 text-center font-black transition">Create new account</a>@endguest
                             <a href="#platform" class="hero-explore-button rounded-xl border border-white/15 px-6 py-3.5 text-center font-bold transition">Explore the platform</a>
                         </div>
-                        <div class="mt-10 grid max-w-lg grid-cols-3 divide-x divide-white/10 border-y border-white/10 py-5"><div><b class="block text-xl" style="color: {{ $heroStatValueColor }}">24/7</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Account access</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Live</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Payment status</span></div><div class="pl-5"><b class="block text-xl" style="color: {{ $heroStatValueColor }}">Secure</b><span class="text-xs" style="color: {{ $heroStatLabelColor }}">Digital records</span></div></div>
+                        <div class="relative mt-10 grid max-w-lg grid-cols-3 gap-3">
+                            <div class="rounded-xl border border-white/15 bg-slate-950/80 px-4 py-4 shadow-lg shadow-slate-950/20 backdrop-blur-sm">
+                                <b class="block text-xl" style="color: {{ $heroStatValueColor }}">24/7</b>
+                                <span class="mt-1 block text-xs" style="color: {{ $heroStatLabelColor }}">Account access</span>
+                            </div>
+                            <div class="rounded-xl border border-white/15 bg-slate-950/80 px-4 py-4 shadow-lg shadow-slate-950/20 backdrop-blur-sm">
+                                <b class="block text-xl" style="color: {{ $heroStatValueColor }}">Live</b>
+                                <span class="mt-1 block text-xs" style="color: {{ $heroStatLabelColor }}">Payment status</span>
+                            </div>
+                            <div class="rounded-xl border border-white/15 bg-slate-950/80 px-4 py-4 shadow-lg shadow-slate-950/20 backdrop-blur-sm">
+                                <b class="block text-xl" style="color: {{ $heroStatValueColor }}">Secure</b>
+                                <span class="mt-1 block text-xs" style="color: {{ $heroStatLabelColor }}">Digital records</span>
+                            </div>
+                            @if($offerPackage)
+                                <a href="#projects" class="group relative col-span-3 min-h-[84px] overflow-hidden rounded-xl border border-amber-300/30 bg-gradient-to-r from-amber-500 via-orange-500 to-orange-600 px-4 py-2 text-left text-white shadow-lg shadow-orange-950/20 transition hover:-translate-y-0.5 lg:absolute lg:left-[calc(100%+3.5rem)] lg:top-0 lg:h-full lg:w-96">
+                                    <span class="absolute -right-8 -top-12 h-28 w-28 rounded-full bg-white/15"></span>
+                                    <span class="relative block min-w-0">
+                                        <span class="block text-[10px] font-black uppercase tracking-[.14em] text-amber-100">Special offer</span>
+                                        <b class="block truncate text-xl leading-6">{{ $offerPackage->welcome_offer }}</b>
+                                        <span class="mt-1 block truncate text-xs text-amber-50">{{ $offerPackage->project->name }} · {{ $offerPackage->name }}</span>
+                                    </span>
+                                </a>
+                            @endif
+                        </div>
                     </div>
 
                     @php
@@ -83,6 +106,7 @@
                         $heroImage = $heroProject?->image_url;
                         $heroSecondProject = $projects->skip(1)->first();
                         $heroSecondImage = $heroSecondProject?->image_url;
+                        $heroThirdProject = $projects->skip(2)->first();
                     @endphp
                     <div class="hero-visual relative mx-auto w-full max-w-2xl pb-8 sm:pl-8">
                         <div class="absolute -inset-12 rounded-full blur-3xl" style="background-image:radial-gradient(circle at 35% 35%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 24%, transparent),transparent 65%),radial-gradient(circle at 70% 65%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 18%, transparent),transparent 65%)"></div>
@@ -111,6 +135,16 @@
                                 <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover" loading="lazy" decoding="async">
                                 <div class="flex items-center justify-between gap-2 px-2 pb-1 pt-2"><div><b class="block truncate text-xs text-white">{{ $heroSecondProject->name }}</b><span class="text-[10px] text-slate-400">{{ $heroSecondProject->location }}</span></div><span class="text-indigo-300">↗</span></div>
                             </div>
+                        @endif
+                        @if($heroThirdProject)
+                            <a href="#projects" class="float-card absolute -right-2 top-8 z-10 hidden w-52 items-center gap-3 rounded-2xl border border-white/15 bg-slate-950/90 p-3 shadow-2xl backdrop-blur transition hover:-translate-y-0.5 hover:border-indigo-300/40 sm:flex sm:-right-6">
+                                <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-indigo-400/15 text-[10px] font-black text-indigo-300">03</span>
+                                <span class="min-w-0">
+                                    <b class="block truncate text-xs text-white">{{ $heroThirdProject->name }}</b>
+                                    <span class="mt-0.5 block truncate text-[10px] text-slate-400">{{ $heroThirdProject->location ?: 'View development' }}</span>
+                                </span>
+                                <span class="ml-auto text-indigo-300">↗</span>
+                            </a>
                         @endif
                         <div class="float-card absolute -left-2 top-8 rounded-2xl border border-white/15 bg-slate-950/80 p-3 shadow-2xl backdrop-blur sm:-left-5"><div class="flex items-center gap-2"><span class="grid h-9 w-9 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">✓</span><div><b class="block text-xs text-white">Trusted process</b><span class="text-[10px] text-slate-400">Clear. Secure. Verified.</span></div></div></div>
                     </div>
