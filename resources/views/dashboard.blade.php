@@ -4,7 +4,7 @@
             <section class="management-command-pattern relative isolate overflow-hidden rounded-3xl p-5 text-slate-950 shadow-xl shadow-slate-200/60 sm:p-6">
                 <div class="absolute inset-y-0 left-0 w-1.5 bg-black"></div>
                 <div class="absolute -left-20 -bottom-24 h-48 w-48 rounded-full bg-indigo-100/50 blur-3xl"></div>
-                <div class="absolute -right-20 -top-24 h-64 w-64 rounded-full border-[44px] border-violet-100/70"></div>
+                <div class="absolute -right-20 -top-24 h-64 w-64 rounded-full border-[44px] border-gray-100/70"></div>
                 <div class="relative">
                     <div class="flex flex-col gap-3 border-b border-slate-300/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
                         <div class="flex items-center gap-3">
