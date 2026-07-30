@@ -92,6 +92,15 @@
     color: #312e81 !important;
 }
 
+.dark .customer-nav-notification {
+    color: #ffffff !important;
+}
+
+.dark .customer-nav-notification svg {
+    color: #ffffff !important;
+    stroke: currentColor;
+}
+
 .dark .customer-portal .customer-notifications-card,
 .dark .customer-portal .customer-notification-item {
     background: #0f172a !important;

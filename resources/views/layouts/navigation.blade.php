@@ -76,8 +76,8 @@
             <div class="hidden xl:ms-6 xl:flex xl:items-center">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('customer.withdrawals.index') }}" class="me-2 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3.5 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-200 transition hover:-translate-y-0.5 dark:shadow-none"><span>↗</span> Withdraw</a>
-                    <a href="{{ route('customer.notifications.index') }}" class="relative me-2 grid h-10 w-10 place-items-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600 transition hover:-translate-y-0.5 hover:bg-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-300" title="Notifications" aria-label="Notifications">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+                    <a href="{{ route('customer.notifications.index') }}" class="customer-nav-notification relative me-2 grid h-10 w-10 place-items-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600 transition hover:-translate-y-0.5 hover:bg-indigo-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-slate-500 dark:hover:bg-slate-700" title="Notifications" aria-label="Notifications">
+                        <svg class="h-5 w-5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
                         @if(Auth::user()->unreadNotifications()->count())<span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-500 px-1 text-center text-[9px] font-black leading-5 text-white ring-2 ring-white dark:ring-slate-950">{{ Auth::user()->unreadNotifications()->count() > 99 ? '99+' : Auth::user()->unreadNotifications()->count() }}</span>@endif
                     </a>
                 @endif
@@ -144,8 +144,8 @@
             <!-- Hamburger -->
             <div class="flex shrink-0 items-center xl:hidden">
                 @if(Auth::user()->role === 'customer')
-                    <a href="{{ route('customer.notifications.index') }}" class="relative me-2 grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-300" aria-label="Notifications">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31"/></svg>
+                    <a href="{{ route('customer.notifications.index') }}" class="customer-nav-notification relative me-2 grid h-10 w-10 place-items-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600 transition dark:border-slate-600 dark:bg-slate-800 dark:text-white" title="Notifications" aria-label="Notifications">
+                        <svg class="h-5 w-5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
                         @if(Auth::user()->unreadNotifications()->count())<span class="absolute -right-1 -top-1 h-5 min-w-5 rounded-full bg-rose-500 px-1 text-center text-[9px] font-black leading-5 text-white">{{ Auth::user()->unreadNotifications()->count() > 99 ? '99+' : Auth::user()->unreadNotifications()->count() }}</span>@endif
                     </a>
                 @endif

@@ -14,7 +14,15 @@
 
             @if($bookings->isNotEmpty())
             <div x-data="{ activeBooking: @js((string) $bookings->first()->id) }" class="space-y-5">
-                <div class="overflow-x-auto rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <label class="block rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:hidden">
+                    <span class="mb-2 block text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-300">Choose booking</span>
+                    <select x-model="activeBooking" class="w-full rounded-xl border-slate-300 bg-slate-50 py-3 text-sm font-black text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                        @foreach($bookings as $booking)
+                            <option value="{{ $booking->id }}">{{ $booking->booking_number }} · {{ $booking->package->name }} · {{ number_format($booking->package->size_marla, 2) }} marla{{ $booking->allotment ? ' · '.$booking->allotment->plot->block->name.' Plot '.$booking->allotment->plot->plot_number : ' · Allotment pending' }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="hidden overflow-x-auto rounded-2xl border border-indigo-100 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:block">
                     <div class="flex min-w-max gap-2" role="tablist" aria-label="Plot bookings">
                         @foreach($bookings as $booking)
                             <button
