@@ -107,8 +107,8 @@ return [
 
     'super_admin' => [
         'name' => env('SUPER_ADMIN_NAME', 'Super Admin'),
-        'email' => env('SUPER_ADMIN_EMAIL', 'super_admin@mmsgroup.pk'),
-        'password' => env('SUPER_ADMIN_PASSWORD', 'P@ssWord'),
+        'email' => env('SUPER_ADMIN_EMAIL', 'super-admin@example.com'),
+        'password' => env('SUPER_ADMIN_PASSWORD'),
     ],
 
     /*
