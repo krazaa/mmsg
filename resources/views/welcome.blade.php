@@ -55,6 +55,13 @@
     </style>
 </head>
 <body class="font-sans text-slate-100 antialiased" style="background-color:{{ $backgroundColor }};--welcome-section-heading-size:{{ $pageAppearance['welcome_section_heading_font_size'] }}px">
+    <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="Loading website">
+        <div class="app-preloader__panel">
+            <img src="{{ asset('logo.svg') }}" alt="" class="app-preloader__logo">
+            <span class="app-preloader__spinner" aria-hidden="true"></span>
+            <span class="app-preloader__text">Loading MMS Group</span>
+        </div>
+    </div>
     <div class="relative overflow-hidden">
         <div class="ambient-glow pointer-events-none absolute inset-x-0 top-0 h-[720px]" style="background-image:radial-gradient(circle at 20% 10%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 32%, transparent),transparent 36%),radial-gradient(circle at 82% 20%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 20%, transparent),transparent 30%)"></div>
 

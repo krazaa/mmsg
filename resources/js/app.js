@@ -6,6 +6,45 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+const appPreloader = document.getElementById('app-preloader');
+
+if (appPreloader) {
+    let hidden = false;
+    const preloaderStartedAt = performance.now();
+    const minimumDisplayTime = 450;
+
+    const hidePreloader = () => {
+        if (hidden) return;
+        const remainingTime = minimumDisplayTime - (performance.now() - preloaderStartedAt);
+
+        if (remainingTime > 0) {
+            window.setTimeout(hidePreloader, remainingTime);
+            return;
+        }
+
+        hidden = true;
+        appPreloader.classList.add('is-hidden');
+        window.setTimeout(() => appPreloader.setAttribute('aria-hidden', 'true'), 200);
+    };
+
+    const showPreloader = () => {
+        hidden = false;
+        appPreloader.removeAttribute('aria-hidden');
+        appPreloader.classList.remove('is-hidden');
+    };
+
+    if (document.readyState === 'complete') {
+        window.requestAnimationFrame(hidePreloader);
+    } else {
+        window.addEventListener('load', () => window.requestAnimationFrame(hidePreloader), { once: true });
+    }
+
+    // Never leave the interface covered if a third-party resource stalls.
+    window.setTimeout(hidePreloader, 4000);
+    window.addEventListener('beforeunload', showPreloader);
+    window.addEventListener('pageshow', hidePreloader);
+}
+
 const dataVersionMeta = document.querySelector('meta[name="data-version"]');
 const dataVersionUrl = document.querySelector('meta[name="data-version-url"]')?.content;
 

@@ -178,6 +178,13 @@
         @endif
     </head>
     <body class="font-sans antialiased">
+        <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="Loading application">
+            <div class="app-preloader__panel">
+                <img src="{{ asset('logo.svg') }}" alt="" class="app-preloader__logo">
+                <span class="app-preloader__spinner" aria-hidden="true"></span>
+                <span class="app-preloader__text">{{ auth()->user()?->role === 'customer' ? 'Loading customer portal' : 'Loading management portal' }}</span>
+            </div>
+        </div>
         @if(auth()->user()?->role && auth()->user()->role !== 'customer')
             <div
                 x-data="{ sidebarOpen: false, sidebarHover: false, sidebarExpanded: false, toggleSidebar(){ this.sidebarExpanded = !this.sidebarExpanded } }"

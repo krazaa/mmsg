@@ -1,6 +1,6 @@
 {
-  "_jquery.module-BlyV8X7W.js": {
-    "file": "assets/jquery.module-BlyV8X7W.js",
+  "_jquery.module-Cq1ru3ij.js": {
+    "file": "assets/jquery.module-Cq1ru3ij.js",
     "name": "jquery.module",
     "imports": [
       "resources/js/app.js"
@@ -13,17 +13,17 @@
     "isDynamicEntry": true
   },
   "node_modules/select2/dist/js/select2.js": {
-    "file": "assets/select2-CTp8ZSgk.js",
+    "file": "assets/select2-kympf789.js",
     "name": "select2",
     "src": "node_modules/select2/dist/js/select2.js",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_jquery.module-BlyV8X7W.js"
+      "_jquery.module-Cq1ru3ij.js"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CuGXl6Uf.css",
+    "file": "assets/app-CHlU3IW3.css",
     "name": "app",
     "names": [
       "app.css"
@@ -32,12 +32,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CzVxpLeA.js",
+    "file": "assets/app-D-U-vy9Z.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "dynamicImports": [
-      "_jquery.module-BlyV8X7W.js",
+      "_jquery.module-Cq1ru3ij.js",
       "node_modules/select2/dist/js/select2.js",
       "node_modules/@laravel/passkeys/dist/index.js"
     ]
