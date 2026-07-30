@@ -101,6 +101,213 @@
     stroke: currentColor;
 }
 
+@media (max-width: 639px) {
+    .admin-bookings-table,
+    .admin-bookings-table tbody,
+    .admin-bookings-table tr,
+    .admin-bookings-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-bookings-table thead {
+        display: none;
+    }
+
+    .admin-bookings-table tbody {
+        padding: 0.75rem;
+    }
+
+    .admin-bookings-table tr {
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        background: #fff;
+        box-shadow: 0 6px 18px rgb(15 23 42 / 0.06);
+    }
+
+    .admin-bookings-table tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .admin-bookings-table td {
+        display: flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.7rem 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-bookings-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .admin-bookings-table td::before {
+        content: attr(data-label);
+        flex: 0 0 5.4rem;
+        text-align: left;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    .dark .admin-bookings-table tr {
+        border-color: #334155;
+        background: #0f172a;
+        box-shadow: none;
+    }
+
+    .dark .admin-bookings-table td {
+        border-color: #1e293b;
+    }
+
+    .dark .admin-bookings-table td::before {
+        color: #94a3b8;
+    }
+
+    .admin-booking-schedule,
+    .admin-booking-schedule tbody,
+    .admin-booking-schedule tr,
+    .admin-booking-schedule td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-booking-schedule thead {
+        display: none;
+    }
+
+    .admin-booking-schedule tr {
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.875rem;
+    }
+
+    .admin-booking-schedule td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.65rem 0.8rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: right;
+    }
+
+    .admin-booking-schedule td:last-child {
+        border-bottom: 0;
+    }
+
+    .admin-booking-schedule td::before {
+        content: attr(data-label);
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    .dark .admin-booking-schedule tr,
+    .dark .admin-booking-schedule td {
+        border-color: #334155;
+    }
+
+    .dark .admin-booking-schedule td::before {
+        color: #94a3b8;
+    }
+
+    .admin-responsive-table,
+    .admin-responsive-table tbody,
+    .admin-responsive-table tr,
+    .admin-responsive-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-responsive-table thead {
+        display: none;
+    }
+
+    .admin-responsive-table tbody {
+        padding: 0.75rem;
+    }
+
+    .admin-responsive-table tr {
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        background: #fff;
+        box-shadow: 0 6px 18px rgb(15 23 42 / 0.06);
+    }
+
+    .admin-responsive-table tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .admin-responsive-table td {
+        display: flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.7rem 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-responsive-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .admin-responsive-table td::before {
+        content: attr(data-label);
+        flex: 0 0 5.5rem;
+        text-align: left;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    .admin-withdrawals-table td:nth-child(1)::before { content: "Request"; }
+    .admin-withdrawals-table td:nth-child(2)::before { content: "Customer"; }
+    .admin-withdrawals-table td:nth-child(3)::before { content: "Method"; }
+    .admin-withdrawals-table td:nth-child(4)::before { content: "Account"; }
+    .admin-withdrawals-table td:nth-child(5)::before { content: "Amount"; }
+    .admin-withdrawals-table td:nth-child(6)::before { content: "Status"; }
+    .admin-withdrawals-table td:nth-child(7)::before { content: "Submitted"; }
+    .admin-withdrawals-table td:nth-child(8)::before { content: "Action"; }
+
+    .admin-withdrawals-table td:nth-child(4) > *,
+    .admin-withdrawals-table td:nth-child(2) > * {
+        max-width: calc(100% - 6.5rem);
+    }
+
+    .dark .admin-responsive-table tr {
+        border-color: #334155;
+        background: #0f172a;
+        box-shadow: none;
+    }
+
+    .dark .admin-responsive-table td {
+        border-color: #1e293b;
+    }
+
+    .dark .admin-responsive-table td::before {
+        color: #94a3b8;
+    }
+}
+
 .dark .customer-portal .customer-notifications-card,
 .dark .customer-portal .customer-notification-item {
     background: #0f172a !important;

@@ -54,7 +54,7 @@
     </label>
 </div>
 
-<div class="mt-6 flex gap-3">
-    <button class="rounded-md bg-indigo-600 px-5 py-2.5 font-semibold text-white">{{ isset($staff) ? 'Save changes' : 'Create staff account' }}</button>
-    <a href="{{ route('staff.index') }}" class="rounded-md border px-5 py-2.5 text-gray-700">Cancel</a>
+<div class="mt-6 grid grid-cols-2 gap-3">
+    <button class="rounded-md bg-indigo-600 px-3 py-2.5 font-semibold text-white">{{ isset($staff) ? 'Save changes' : 'Create staff account' }}</button>
+    <a href="{{ route('staff.index') }}" class="rounded-md border px-3 py-2.5 text-center text-gray-700 dark:border-slate-600 dark:text-slate-300">Cancel</a>
 </div>
