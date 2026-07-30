@@ -1,25 +1,28 @@
 <x-app-layout>
 <div class="py-5 sm:py-8"><div class="mx-auto max-w-7xl space-y-5 px-3 sm:px-4">
-<section class="admin-command-card admin-command-summary p-5 text-white shadow-2xl sm:p-8">
+<section class="admin-command-card admin-command-summary bookings-command-card p-5 text-white shadow-2xl">
     <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full"></div>
     <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full "></div>
-    <div class="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div><div class="admin-command-badge inline-flex rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em]">Booking management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Bookings</h1><p class="mt-2 max-w-xl text-sm leading-6 text-indigo-100/80">Review property requests, monitor active plans and manage customer bookings.</p></div>
-        <a href="{{ route('sales.create') }}" class="admin-command-action inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-black shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:brightness-90 sm:w-auto"><span class="text-lg leading-none">+</span> New booking</a>
+    <div class="relative flex items-center justify-between gap-3">
+        <div class="admin-command-badge inline-flex rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em]">Booking management</div>
+        <a href="{{ route('sales.create') }}" class="admin-command-action inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black shadow-lg shadow-black/15 transition hover:-translate-y-0.5 hover:brightness-90"><span class="text-base leading-none">+</span> New booking</a>
     </div>
-    <div class="admin-command-stat-grid mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-        @foreach([
-            ['All bookings', $summary['total'], 'Total booking records', 'bg-slate-400', false],
-            ['Pending review', $summary['pending'], 'Awaiting decision', 'bg-amber-400', false],
-            ['Active plans', $summary['active'], 'Currently active', 'bg-emerald-400', false],
-            ['Amount received', $summary['received'], 'Verified payments', 'bg-cyan-400', true],
-        ] as [$label, $value, $hint, $accent, $currency])
-            <div class="admin-command-stat rounded-2xl border p-3.5 backdrop-blur sm:p-4">
-                <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-indigo-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
-                <div class="mt-2 break-words text-xl font-black tabular-nums text-white sm:text-3xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div>
-                <div class="mt-1 text-[10px] leading-4 text-indigo-100/65 sm:text-xs">{{ $hint }}</div>
-            </div>
-        @endforeach
+    <div class="relative mt-3 grid gap-4 lg:grid-cols-[minmax(260px,.78fr)_minmax(0,1.65fr)] lg:items-center">
+        <div><h1 class="text-3xl font-black tracking-tight">Bookings</h1><p class="mt-2 max-w-md text-sm leading-5 text-indigo-100/80">Review property requests, monitor active plans and manage customer bookings.</p></div>
+        <div class="admin-command-stat-grid grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+            @foreach([
+                ['All bookings', $summary['total'], 'Total booking records', 'bg-slate-400', false],
+                ['Pending review', $summary['pending'], 'Awaiting decision', 'bg-amber-400', false],
+                ['Active plans', $summary['active'], 'Currently active', 'bg-emerald-400', false],
+                ['Amount received', $summary['received'], 'Verified payments', 'bg-cyan-400', true],
+            ] as [$label, $value, $hint, $accent, $currency])
+                <div class="admin-command-stat rounded-2xl border backdrop-blur">
+                    <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-indigo-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
+                    <div class="mt-2 break-words text-xl font-black tabular-nums text-white sm:text-2xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div>
+                    <div class="mt-1 text-[10px] leading-4 text-indigo-100/65">{{ $hint }}</div>
+                </div>
+            @endforeach
+        </div>
     </div>
 </section>
 @if(session('success'))<div class="rounded-lg bg-green-100 p-4 text-green-800">{{ session('success') }}</div>@endif @if($errors->any())<div class="rounded-lg bg-red-100 p-4 text-red-800">{{ $errors->first() }}</div>@endif
