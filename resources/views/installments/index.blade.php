@@ -1,6 +1,24 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl font-semibold text-gray-800 dark:text-white">Manage installments</h2></x-slot>
     <div class="py-5 sm:py-8"><div class="mx-auto max-w-7xl px-3 sm:px-4 space-y-5">
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-950 to-violet-950 p-5 text-white shadow-2xl sm:p-8">
+            <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-violet-600/20 blur-3xl"></div>
+            <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-400/10 blur-3xl"></div>
+            <div class="relative"><div class="text-[10px] font-black uppercase tracking-[.22em] text-violet-400">Payment schedule management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Installments</h1><p class="mt-2 max-w-xl text-sm leading-6 text-violet-100/80">Monitor upcoming payments, overdue schedules and customer payment progress.</p></div>
+            <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                @foreach([
+                    ['All installments', $summary['total'], 'Total scheduled records', 'bg-violet-400', false],
+                    ['Upcoming', $summary['upcoming'], 'Next customer payments', 'bg-cyan-400', false],
+                    ['Overdue', $summary['overdue'], 'Require follow-up', 'bg-rose-400', false],
+                    ['Amount received', $summary['received'], 'Paid toward schedules', 'bg-emerald-400', true],
+                ] as [$label, $value, $hint, $accent, $currency])
+                    <div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4">
+                        <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-violet-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
+                        <div class="mt-2 break-words text-xl font-black tabular-nums text-white sm:text-3xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div>
+                        <div class="mt-1 text-[10px] leading-4 text-violet-100/65 sm:text-xs">{{ $hint }}</div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
         @if(session('success'))<div class="rounded-lg bg-green-100 p-4 text-green-800">{{ session('success') }}</div>@endif
         <form method="GET" class="grid gap-4 rounded-xl bg-white p-4 shadow sm:grid-cols-2 sm:p-5 lg:grid-cols-4 dark:bg-slate-800 dark:text-white">
             <label class="text-sm font-medium">Project<select name="project" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"><option value="">All projects</option>@foreach($projects as $project)<option value="{{ $project->id }}" @selected(request('project')==$project->id)>{{ $project->name }}</option>@endforeach</select></label>

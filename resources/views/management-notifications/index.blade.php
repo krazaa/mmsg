@@ -1,27 +1,13 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[.2em] text-indigo-600 dark:text-indigo-400">Activity center</p>
-                <h2 class="mt-1 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Alerts & notifications</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Stay on top of bookings, payments and customer activity.</p>
-            </div>
-            @if($unreadCount)
-                <form method="POST" action="{{ route('management.notifications.read-all') }}">
-                    @csrf
-                    <button class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:text-indigo-700 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-                        Mark all read
-                    </button>
-                </form>
-            @endif
-        </div>
-    </x-slot>
-
     <div class="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-7 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/40">
         <div class="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-violet-200/40 blur-3xl dark:bg-violet-900/20"></div>
         <div class="pointer-events-none absolute -right-24 top-1/3 h-80 w-80 rounded-full bg-cyan-200/40 blur-3xl dark:bg-cyan-900/20"></div>
         <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+            <section class="mb-6 relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-violet-950 p-5 text-white shadow-2xl sm:p-8">
+                <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl"></div>
+                <div class="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><div class="text-[10px] font-black uppercase tracking-[.22em] text-indigo-300">Activity center</div><h1 class="mt-2 text-3xl font-black sm:text-4xl">Alerts & notifications</h1><p class="mt-2 text-sm text-indigo-100/80">Stay on top of bookings, payments and customer activity.</p></div>@if($unreadCount)<form method="POST" action="{{ route('management.notifications.read-all') }}">@csrf<button class="w-full rounded-2xl bg-white px-5 py-3 text-sm font-black text-indigo-950 sm:w-auto">✓ Mark all read</button></form>@endif</div>
+                <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">@foreach([['All alerts',$totalCount,'Total notifications','bg-indigo-400'],['Unread',$unreadCount,'Need attention','bg-rose-400'],['Read',max(0,$totalCount-$unreadCount),'Reviewed alerts','bg-emerald-400'],['Received today',$todayCount,'Latest activity','bg-cyan-400']] as [$label,$value,$hint,$accent])<div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4"><div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-indigo-200 sm:text-[10px]"><span class="h-2 w-2 rounded-full {{ $accent }}"></span>{{ $label }}</div><div class="mt-2 text-2xl font-black sm:text-3xl">{{ number_format($value) }}</div><div class="mt-1 text-[10px] text-indigo-100/65 sm:text-xs">{{ $hint }}</div></div>@endforeach</div>
+            </section>
             @if(session('success'))
                 <div class="mb-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300">
                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-600 text-white">✓</span>

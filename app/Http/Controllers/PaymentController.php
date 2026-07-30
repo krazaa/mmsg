@@ -35,7 +35,14 @@ class PaymentController extends Controller
             })
             ->latest('payment_date')->paginate(25)->withQueryString();
 
-        return view('payments.index', compact('projects', 'payments'));
+        $summary = [
+            'total' => Payment::whereHas('booking')->count(),
+            'pending' => Payment::whereHas('booking')->where('status', 'pending')->count(),
+            'verified' => Payment::whereHas('booking')->where('status', 'verified')->count(),
+            'received' => Payment::whereHas('booking')->where('status', 'verified')->sum('amount'),
+        ];
+
+        return view('payments.index', compact('projects', 'payments', 'summary'));
     }
 
     public function edit(Payment $payment)

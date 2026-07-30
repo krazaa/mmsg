@@ -14,6 +14,20 @@
                         <span class="text-lg leading-none">+</span> Add customer
                     </a>
                 </div>
+                <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                    @foreach([
+                        ['All customers', $summary['total'], 'Total customer accounts', 'bg-blue-500'],
+                        ['Active', $summary['active'], 'Currently active', 'bg-emerald-400'],
+                        ['With bookings', $summary['booked'], 'Property customers', 'bg-cyan-400'],
+                        ['Commission earners', $summary['commission'], 'Referral commissions', 'bg-amber-400'],
+                    ] as [$label, $value, $hint, $accent])
+                        <div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4">
+                            <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-blue-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
+                            <div class="mt-2 text-2xl font-black tabular-nums text-white sm:text-3xl">{{ number_format($value) }}</div>
+                            <div class="mt-1 text-[10px] leading-4 text-blue-100/65 sm:text-xs">{{ $hint }}</div>
+                        </div>
+                    @endforeach
+                </div>
             </section>
 
             @if(session('success'))
@@ -22,24 +36,6 @@
             @if($errors->any())
                 <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800">{{ $errors->first() }}</div>
             @endif
-
-            <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                @foreach([
-                    ['All customers', $summary['total'], 'from-blue-700 to-blue-800', 'Total customer accounts'],
-                    ['Active', $summary['active'], 'from-emerald-500 to-green-600', 'Currently active'],
-                    ['With bookings', $summary['booked'], 'from-cyan-500 to-blue-600', 'Property customers'],
-                    ['Commission earners', $summary['commission'], 'from-amber-500 to-orange-600', 'Referral commissions'],
-                ] as [$label, $value, $color, $hint])
-                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                        <div class="h-1 bg-gradient-to-r {{ $color }}"></div>
-                        <div class="p-4 sm:p-5">
-                            <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $label }}</div>
-                            <div class="mt-2 text-2xl font-black tabular-nums text-slate-950 dark:text-white sm:text-3xl">{{ number_format($value) }}</div>
-                            <div class="mt-1 hidden text-xs text-slate-400 sm:block">{{ $hint }}</div>
-                        </div>
-                    </div>
-                @endforeach
-            </section>
 
             <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
                 <div class="border-b border-slate-100 p-4 dark:border-slate-800 sm:p-5">

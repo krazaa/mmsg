@@ -41,7 +41,17 @@ class InstallmentSchedulesController extends Controller
                 }
             })->orderBy('due_date')->paginate(25)->withQueryString();
 
-        return view('installments.index', compact('projects', 'bookings', 'installments', 'nextUpcomingIds'));
+        $summary = [
+            'total' => InstallmentSchedules::whereHas('booking')->count(),
+            'upcoming' => $nextUpcomingIds->count(),
+            'overdue' => InstallmentSchedules::whereHas('booking')
+                ->whereIn('status', ['pending', 'partial'])
+                ->whereDate('due_date', '<', today())
+                ->count(),
+            'received' => InstallmentSchedules::whereHas('booking')->sum('paid_amount'),
+        ];
+
+        return view('installments.index', compact('projects', 'bookings', 'installments', 'nextUpcomingIds', 'summary'));
     }
 
     public function edit(InstallmentSchedules $installment)

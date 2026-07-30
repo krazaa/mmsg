@@ -4,14 +4,10 @@
             <section class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-900 to-teal-600 p-6 text-white shadow-2xl shadow-emerald-200/60 dark:shadow-none sm:p-8">
                 <div class="absolute -right-16 -top-20 -z-10 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl"></div>
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><div class="text-[10px] font-black uppercase tracking-[.2em] text-emerald-200">Commission management</div><h1 class="mt-2 text-3xl font-black">Withdrawal requests</h1><p class="mt-2 text-sm text-emerald-100">Review customer payout requests and account details.</p></div><span class="w-fit rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-xs font-black">{{ $pendingCount }} pending review</span></div>
+                <div class="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                    @foreach([['Total requests',$totalCount,'All payout requests','bg-indigo-400',false],['Pending',$pendingCount,'Awaiting review','bg-amber-400',false],['Pending amount',$pendingAmount,'Requested funds','bg-orange-400',true],['Approved amount',$approvedAmount,'Paid withdrawals','bg-emerald-400',true]] as [$label,$value,$hint,$accent,$currency])<div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4"><div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-emerald-100 sm:text-[10px]"><span class="h-2 w-2 rounded-full {{ $accent }}"></span>{{ $label }}</div><div class="mt-2 break-words text-xl font-black sm:text-3xl">{{ $currency ? 'Rs '.number_format($value, 2) : number_format($value) }}</div><div class="mt-1 text-[10px] text-emerald-100/65 sm:text-xs">{{ $hint }}</div></div>@endforeach
+                </div>
             </section>
-
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="rounded-2xl border border-indigo-100 bg-white p-5 shadow-lg dark:border-slate-700 dark:bg-slate-900"><div class="text-[10px] font-black uppercase tracking-wider text-indigo-500">Total requests</div><div class="mt-2 text-2xl font-black text-slate-950 dark:text-white">{{ $totalCount }}</div></div>
-                <div class="rounded-2xl border border-amber-100 bg-white p-5 shadow-lg dark:border-slate-700 dark:bg-slate-900"><div class="text-[10px] font-black uppercase tracking-wider text-amber-500">Pending requests</div><div class="mt-2 text-2xl font-black text-amber-600">{{ $pendingCount }}</div></div>
-                <div class="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 p-5 text-white shadow-xl shadow-amber-200/50"><div class="text-[10px] font-black uppercase tracking-wider text-amber-50">Pending amount</div><div class="mt-2 text-2xl font-black">Rs {{ number_format($pendingAmount, 2) }}</div></div>
-                <div class="rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-5 text-white shadow-xl shadow-emerald-200/50"><div class="text-[10px] font-black uppercase tracking-wider text-emerald-50">Approved amount</div><div class="mt-2 text-2xl font-black">Rs {{ number_format($approvedAmount, 2) }}</div></div>
-            </div>
 
             @if(session('success'))
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm">{{ session('success') }}</div>

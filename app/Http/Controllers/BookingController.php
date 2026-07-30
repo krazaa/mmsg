@@ -7,6 +7,7 @@ use App\Contracts\BookingLifecycleManager;
 use App\Mail\BookingApprovedMail;
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\Project;
 use App\Notifications\AccountActivityNotification;
 use Illuminate\Http\Request;
@@ -47,7 +48,14 @@ class BookingController extends Controller
                     ->orWhereHas('customer', fn ($customer) => $customer->where('name', 'like', $search)->orWhere('cnic', 'like', $search)->orWhere('phone', 'like', $search)));
             })->latest()->paginate(25)->withQueryString();
 
-        return view('bookings.manage', compact('projects', 'bookings'));
+        $summary = [
+            'total' => Booking::count(),
+            'pending' => Booking::where('status', 'pending')->count(),
+            'active' => Booking::where('status', 'active')->count(),
+            'received' => Payment::where('status', 'verified')->sum('amount'),
+        ];
+
+        return view('bookings.manage', compact('projects', 'bookings', 'summary'));
     }
 
     public function store(Request $request, BookingCreator $creator)

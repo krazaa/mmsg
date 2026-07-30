@@ -63,6 +63,26 @@
     color: #cbd5e1;
 }
 
+.management-command-pattern {
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #e5e7eb;
+    color: #0f172a !important;
+}
+
+.management-command-pattern::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 42%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.5 0v40M0 .5h40' fill='none' stroke='%23dbe3f1' stroke-opacity='.65' stroke-width='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 40px 40px;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 30%);
+    mask-image: linear-gradient(to right, transparent, #000 30%);
+    opacity: 0.72;
+}
+
 @keyframes app-preloader-spin {
     to { transform: rotate(360deg); }
 }

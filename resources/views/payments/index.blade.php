@@ -1,7 +1,11 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl font-semibold dark:text-white">Manage payments</h2></x-slot>
     <div class="py-5 sm:py-8">
         <div class="mx-auto max-w-7xl space-y-5 px-3 sm:px-4">
+            <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-950 to-emerald-950 p-5 text-white shadow-2xl sm:p-8">
+                <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-emerald-500/20 blur-3xl"></div>
+                <div class="relative"><div class="text-[10px] font-black uppercase tracking-[.22em] text-emerald-400">Payment management</div><h1 class="mt-2 text-3xl font-black sm:text-4xl">Payments</h1><p class="mt-2 text-sm text-emerald-100/80">Review customer receipts, verify transactions and monitor collected funds.</p></div>
+                <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">@foreach([['All payments',$summary['total'],'Total receipts','bg-emerald-400',false],['Pending review',$summary['pending'],'Awaiting verification','bg-amber-400',false],['Verified',$summary['verified'],'Approved receipts','bg-cyan-400',false],['Amount received',$summary['received'],'Verified funds','bg-violet-400',true]] as [$label,$value,$hint,$accent,$currency])<div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4"><div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-emerald-200 sm:text-[10px]"><span class="h-2 w-2 rounded-full {{ $accent }}"></span>{{ $label }}</div><div class="mt-2 break-words text-xl font-black sm:text-3xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div><div class="mt-1 text-[10px] text-emerald-100/65 sm:text-xs">{{ $hint }}</div></div>@endforeach</div>
+            </section>
             @if(session('success'))<div class="rounded bg-green-100 p-4 text-green-800">{{ session('success') }}</div>@endif
             @if($errors->any())<div class="rounded bg-red-100 p-4 text-red-800">{{ $errors->first() }}</div>@endif
 

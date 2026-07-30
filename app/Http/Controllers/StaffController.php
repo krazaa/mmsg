@@ -23,7 +23,16 @@ class StaffController extends Controller
                 $query->where(fn ($inner) => $inner->where('name', 'like', $search)->orWhere('email', 'like', $search)->orWhere('phone', 'like', $search)->orWhere('cnic', 'like', $search)->orWhere('referral_code', 'like', $search));
             })->latest()->paginate(25)->withQueryString();
 
-        return view('staff.index', compact('staff'));
+        $visibleStaff = User::query()->whereIn('role', self::MANAGEMENT_ROLES)
+            ->when(! $request->user()->hasRole('super_admin'), fn ($query) => $query->where('role', '!=', 'super_admin'));
+        $summary = [
+            'total' => (clone $visibleStaff)->count(),
+            'active' => (clone $visibleStaff)->where('status', true)->count(),
+            'admins' => (clone $visibleStaff)->whereIn('role', ['super_admin', 'admin'])->count(),
+            'workflow' => (clone $visibleStaff)->whereIn('role', ['booking', 'verification', 'withdrawal'])->count(),
+        ];
+
+        return view('staff.index', compact('staff', 'summary'));
     }
 
     public function create()
