@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="min-h-screen bg-slate-50 py-6 dark:bg-slate-950 sm:py-8">
+    <div class="customer-theme-page min-h-screen bg-slate-50 py-6 dark:bg-slate-950 sm:py-8">
         <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6">
             @if(session('success'))<div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">{{ session('success') }}</div>@endif
-            <section class="overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-violet-800 p-6 text-white shadow-xl sm:p-8">
+            <section class="customer-theme-account-hero overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-violet-800 p-5 text-white shadow-xl sm:p-8">
                 <div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-300">My account</div>
                 <h1 class="mt-2 text-3xl font-black">Payout methods</h1>
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-indigo-100">Save multiple bank accounts or wallets and choose one default method for withdrawals.</p>
@@ -30,7 +30,7 @@
                         <article class="overflow-hidden rounded-2xl border {{ $method->is_default ? 'border-emerald-300 ring-2 ring-emerald-100' : 'border-slate-200' }} bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
                             <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 p-5 dark:border-slate-800">
                                 <div><div class="flex items-center gap-2"><h3 class="font-black text-slate-950 dark:text-white">{{ $method->label }}</h3>@if($method->is_default)<span class="rounded-full bg-emerald-100 px-2.5 py-1 text-[9px] font-black uppercase text-emerald-700">Default</span>@endif</div><p class="mt-1 text-xs text-slate-500">{{ ucwords(str_replace('_', ' ', $method->payment_method)) }}</p></div>
-                                <div class="flex gap-2">
+                                <div class="flex flex-wrap justify-end gap-2">
                                     @unless($method->is_default)<form method="POST" action="{{ route('customer.payout-methods.default', $method) }}">@csrf @method('PATCH')<button class="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700">Set default</button></form>@endunless
                                     <form method="POST" action="{{ route('customer.payout-methods.destroy', $method) }}" onsubmit="return confirm('Remove this payout method?')">@csrf @method('DELETE')<button class="rounded-lg bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">Remove</button></form>
                                 </div>

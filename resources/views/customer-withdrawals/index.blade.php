@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-emerald-50 py-6 dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/30 sm:py-8">
+    <div class="customer-theme-page relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-emerald-50 py-6 dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/30 sm:py-8">
         <div class="pointer-events-none absolute -left-32 top-24 h-96 w-96 rounded-full bg-violet-200/40 blur-3xl dark:bg-violet-900/20"></div>
         <div class="pointer-events-none absolute -right-32 top-[34rem] h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/20"></div>
         <div class="relative w-full space-y-6 px-3 sm:px-5 lg:px-6">
-            <section class="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-emerald-900 to-teal-600 p-6 text-white shadow-2xl shadow-emerald-200/70 dark:shadow-none sm:p-8">
+            <section class="customer-theme-account-hero relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-emerald-900 to-teal-600 p-5 text-white shadow-2xl shadow-emerald-200/70 dark:shadow-none sm:p-8">
                 <div class="absolute -right-16 -top-20 -z-10 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl"></div>
                 <div class="absolute inset-0 -z-10 opacity-[.07]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:22px 22px"></div>
                 <div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">

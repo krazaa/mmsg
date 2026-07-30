@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="min-h-screen bg-gradient-to-b from-violet-50 via-slate-50 to-white py-6 sm:py-8">
+    <div class="customer-theme-page min-h-screen bg-gradient-to-b from-violet-50 via-slate-50 to-white py-6 sm:py-8">
         <div class="w-full px-3 sm:px-5 lg:px-6">
             @if($portalPreview ?? false)
                 <div class="mb-5 flex flex-col gap-3 rounded-xl border border-violet-300 bg-violet-950 px-4 py-3 text-white shadow-xl sm:flex-row sm:items-center sm:justify-between">

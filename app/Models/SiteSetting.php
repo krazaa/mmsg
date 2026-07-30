@@ -82,6 +82,37 @@ class SiteSetting extends Model
             ->all();
     }
 
+    public static function customerPortalThemeDefaults(): array
+    {
+        return [
+            'customer_theme_page_background' => '#f1f5f9',
+            'customer_theme_nav_background' => '#ffffff',
+            'customer_theme_nav_text' => '#475569',
+            'customer_theme_primary' => '#4f46e5',
+            'customer_theme_accent' => '#7c3aed',
+            'customer_theme_hero_start' => '#020617',
+            'customer_theme_hero_middle' => '#312e81',
+            'customer_theme_hero_end' => '#6d28d9',
+            'customer_theme_hero_text' => '#ffffff',
+            'customer_theme_blur_color' => '#d946ef',
+            'customer_theme_active_badge_background' => '#064e3b',
+            'customer_theme_active_badge_text' => '#a7f3d0',
+            'customer_theme_card_background' => '#ffffff',
+            'customer_theme_surface_background' => '#f8fafc',
+            'customer_theme_text' => '#0f172a',
+            'customer_theme_muted_text' => '#64748b',
+            'customer_theme_border' => '#e2e8f0',
+            'customer_theme_button_text' => '#ffffff',
+        ];
+    }
+
+    public static function customerPortalTheme(): array
+    {
+        return collect(static::customerPortalThemeDefaults())
+            ->mapWithKeys(fn (string $default, string $key) => [$key => static::valueFor($key, $default)])
+            ->all();
+    }
+
     public static function valueFor(string $key, mixed $default = null): mixed
     {
         $values = Cache::rememberForever(

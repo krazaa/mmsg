@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="min-h-screen bg-slate-50 py-6 dark:bg-slate-950 sm:py-8">
+    <div class="customer-theme-page min-h-screen bg-slate-50 py-6 dark:bg-slate-950 sm:py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
             @if(session('success'))
                 <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800 shadow-sm"><span class="grid h-7 w-7 place-items-center rounded-full bg-emerald-500 text-white">✓</span>{{ session('success') }}</div>
@@ -14,7 +14,7 @@
                     $withdrawalDay = $withdrawalDays[$withdrawalPolicy['withdrawal_day'] ?? 0] ?? 'Any day';
                 @endphp
                 <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div class="relative bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 px-6 py-7 text-white sm:px-8">
+                    <div class="customer-theme-account-hero relative bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 px-5 py-6 text-white sm:px-8 sm:py-7">
                         <div class="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(129,140,248,.28),transparent_65%)]"></div>
                         <div class="relative grid grid-cols-[64px_minmax(0,1fr)] items-start gap-4 lg:grid-cols-[80px_minmax(0,1fr)_auto] lg:items-center lg:gap-5">
                             <div class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 text-xl font-black shadow-xl backdrop-blur lg:h-20 lg:w-20 lg:text-2xl">{{ $initials ?: 'CU' }}</div>
@@ -34,7 +34,7 @@
                                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                         <div class="min-w-0">
                                             <div class="text-[9px] font-black uppercase tracking-wider text-indigo-300">Your referral code</div>
-                                            <div class="mt-1 whitespace-nowrap font-mono text-lg font-black tracking-wider">{{ $user->referral_code }}</div>
+                                            <div class="mt-1 break-all font-mono text-lg font-black tracking-wider">{{ $user->referral_code }}</div>
                                             <a href="{{ $referralLink }}" target="_blank" rel="noopener" class="mt-1 block truncate text-xs text-indigo-200 underline decoration-indigo-300/50 underline-offset-2" title="{{ $referralLink }}">{{ $referralLink }}</a>
                                         </div>
                                         <button type="button" @click="navigator.clipboard.writeText(@js($referralLink)); copied = true; setTimeout(() => copied = false, 1500)" class="w-full shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-black text-indigo-800 transition hover:bg-indigo-50 sm:w-auto" x-text="copied ? 'Link copied ✓' : 'Copy referral link'">Copy referral link</button>

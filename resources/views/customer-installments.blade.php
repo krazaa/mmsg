@@ -1,12 +1,12 @@
 <x-app-layout>
-    <div class="py-8">
+    <div class="customer-theme-page py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <section class="overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 p-6 text-white shadow-xl sm:p-8">
+            <section class="customer-theme-account-hero overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 p-6 text-white shadow-xl sm:p-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-200">Customer portal</div>
+                        <div class="customer-theme-hero-copy text-[10px] font-black uppercase tracking-[.2em] text-indigo-200">Customer portal</div>
                         <h1 class="mt-2 text-3xl font-black">Plot installment schedules</h1>
-                        <p class="mt-2 text-sm text-indigo-100">View the complete installment plan for each of your plot bookings.</p>
+                        <p class="customer-theme-hero-copy mt-2 text-sm text-indigo-100">View the complete installment plan for each of your plot bookings.</p>
                     </div>
                     <a href="{{ route('dashboard') }}" class="w-fit rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-black text-white hover:bg-white/20">← Back to overview</a>
                 </div>
@@ -47,14 +47,14 @@
                 @php($firstPayment = $booking->payments->first())
                 <section x-show="activeBooking === @js((string) $booking->id)" x-cloak role="tabpanel" class="overflow-hidden rounded-3xl border border-indigo-100 bg-white shadow-lg shadow-indigo-100/40 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
                     @if($firstPayment)
-                        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 border-b border-slate-800 bg-black px-5 py-4 text-white sm:px-7">
+                        <div class="customer-theme-installment-receipt flex flex-wrap items-center gap-x-8 gap-y-3 border-b border-slate-800 bg-black px-5 py-4 text-white sm:px-7">
                             <div class="inline-flex min-w-0 items-center gap-3"><span class="shrink-0 text-[10px] font-black uppercase tracking-wider text-indigo-200">First payment receipt</span><b class="truncate font-mono text-sm">{{ $firstPayment->receipt_number }}</b></div>
                             <div class="inline-flex items-center gap-3"><span class="text-[10px] font-bold uppercase text-indigo-200">Date</span><b class="text-sm">{{ $firstPayment->payment_date->format('d M Y') }}</b></div>
                             <div class="inline-flex items-center gap-3"><span class="text-[10px] font-bold uppercase text-indigo-200">Amount</span><b class="text-sm">Rs {{ number_format($firstPayment->amount, 2) }}</b></div>
                             <span class="rounded-full px-3 py-1.5 text-xs font-black {{ $firstPayment->status === 'verified' ? 'bg-emerald-400 text-emerald-950' : ($firstPayment->status === 'pending' ? 'bg-amber-300 text-amber-950' : 'bg-rose-300 text-rose-950') }}">{{ $firstPayment->status === 'verified' ? 'Paid' : ucfirst($firstPayment->status) }}</span>
                         </div>
                     @endif
-                    <div class="border-b border-slate-100 bg-gradient-to-r from-indigo-50 to-violet-50 p-5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:p-6">
+                    <div class="customer-theme-installment-summary border-b border-slate-100 bg-gradient-to-r from-indigo-50 to-violet-50 p-5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900 sm:p-6">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <div class="flex flex-wrap items-center gap-2">
@@ -70,7 +70,7 @@
                                     @endif
                                 </p>
                             </div>
-                            <div class="grid grid-cols-3 gap-2 text-right">
+                            <div class="grid gap-2 text-left sm:grid-cols-3 sm:text-right">
                                 <div class="rounded-xl bg-white px-4 py-3 shadow-sm dark:bg-slate-800"><span class="block text-[10px] font-bold uppercase text-slate-400">Scheduled</span><b class="mt-1 block text-sm text-slate-950 dark:text-white">Rs {{ number_format($scheduled, 2) }}</b></div>
                                 <div class="rounded-xl bg-emerald-50 px-4 py-3 dark:bg-emerald-950"><span class="block text-[10px] font-bold uppercase text-emerald-600">Paid</span><b class="mt-1 block text-sm text-emerald-800 dark:text-emerald-300">Rs {{ number_format($paid, 2) }}</b></div>
                                 <div class="rounded-xl bg-rose-50 px-4 py-3 dark:bg-rose-950"><span class="block text-[10px] font-bold uppercase text-rose-600">Overdue</span><b class="mt-1 block text-sm text-rose-800 dark:text-rose-300">Rs {{ number_format($overdue, 2) }}</b></div>
@@ -78,7 +78,25 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+                        @forelse($booking->installments as $installment)
+                            @php($balance = max(0, (float) $installment->total_due - (float) $installment->paid_amount))
+                            @php($displayStatus = in_array($installment->status, ['pending', 'partial'], true) && $installment->due_date->lt(today()) ? 'overdue' : ($installment->id === $nextUpcomingId ? 'upcoming' : ($installment->status === 'pending' && $installment->due_date->gt(today()) ? 'scheduled' : $installment->status)))
+                            <article class="p-4">
+                                <div class="flex items-start justify-between gap-3"><div><div class="text-[9px] font-black uppercase tracking-wider text-slate-400">Installment</div><div class="mt-1 text-lg font-black text-slate-950 dark:text-white">Month {{ $installment->installment_number }}</div><div class="mt-0.5 text-xs text-slate-500 dark:text-slate-300">Due {{ $installment->due_date->format('d M Y') }}</div></div><span class="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold {{ $displayStatus === 'paid' ? 'bg-emerald-100 text-emerald-700' : ($displayStatus === 'overdue' ? 'bg-rose-100 text-rose-700' : ($displayStatus === 'partial' ? 'bg-blue-100 text-blue-700' : ($displayStatus === 'upcoming' ? 'bg-violet-100 text-violet-700' : ($displayStatus === 'scheduled' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700')))) }}">{{ ucfirst($displayStatus) }}</span></div>
+                                <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                    <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800"><span class="block text-[9px] font-black uppercase text-slate-400">Total due</span><b class="mt-1 block text-slate-900 dark:text-white">Rs {{ number_format($installment->total_due, 2) }}</b></div>
+                                    <div class="rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/30"><span class="block text-[9px] font-black uppercase text-emerald-600">Paid</span><b class="mt-1 block text-emerald-800 dark:text-emerald-300">Rs {{ number_format($installment->paid_amount, 2) }}</b></div>
+                                    <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800"><span class="block text-[9px] font-black uppercase text-slate-400">Regular</span><b class="mt-1 block text-slate-900 dark:text-white">Rs {{ number_format($installment->regular_amount, 2) }}</b></div>
+                                    <div class="rounded-xl bg-rose-50 p-3 dark:bg-rose-950/30"><span class="block text-[9px] font-black uppercase text-rose-600">Balance</span><b class="mt-1 block text-rose-800 dark:text-rose-300">Rs {{ number_format($balance, 2) }}</b></div>
+                                </div>
+                                @if((float) $installment->balloon_amount > 0)<div class="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"><span class="font-black">Balloon payment:</span> Rs {{ number_format($installment->balloon_amount, 2) }}</div>@endif
+                            </article>
+                        @empty
+                            <div class="p-10 text-center text-sm text-slate-400">No installments scheduled for this booking.</div>
+                        @endforelse
+                    </div>
+                    <div class="hidden overflow-x-auto md:block">
                         <table class="w-full min-w-[760px] text-left text-sm">
                             <thead class="bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:bg-slate-800">
                                 <tr><th class="p-4">Month</th><th>Due date</th><th>Regular</th><th>Balloon</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th></tr>

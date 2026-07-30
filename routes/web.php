@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerNotificationController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\CustomerPayoutMethodController;
+use App\Http\Controllers\CustomerPortalThemeController;
 use App\Http\Controllers\CustomerWithdrawalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailCampaignController;
@@ -111,6 +112,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/management/whatsapp/templates', [WhatsAppSettingsController::class, 'updateTemplates'])->middleware('permission:manage notifications')->name('management.whatsapp.templates.update');
         Route::get('/management/site-appearance', [SiteAppearanceController::class, 'edit'])->middleware('role:super_admin|admin')->name('site-appearance.edit');
         Route::put('/management/site-appearance', [SiteAppearanceController::class, 'update'])->middleware('role:super_admin|admin')->name('site-appearance.update');
+        Route::get('/management/customer-portal-theme', [CustomerPortalThemeController::class, 'edit'])->middleware('role:super_admin|admin')->name('customer-portal-theme.edit');
+        Route::put('/management/customer-portal-theme', [CustomerPortalThemeController::class, 'update'])->middleware('role:super_admin|admin')->name('customer-portal-theme.update');
         Route::get('/management/app-settings', [AppSettingsController::class, 'edit'])->middleware('role:super_admin|admin')->name('app-settings.edit');
         Route::put('/management/app-settings', [AppSettingsController::class, 'update'])->middleware('role:super_admin|admin')->name('app-settings.update');
         Route::get('/management/app-settings/maintenance-preview', [AppSettingsController::class, 'maintenancePreview'])->middleware('role:super_admin|admin')->name('app-settings.maintenance-preview');

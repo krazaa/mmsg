@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -59,7 +60,31 @@ class CustomerNotificationController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('customer-notifications.index', compact('notifications', 'totalCount', 'unreadCount', 'todayCount', 'status'));
+        $bookingNumbers = $notifications->getCollection()
+            ->pluck('data.details.Booking')
+            ->filter()
+            ->unique()
+            ->values();
+        $bookingDetails = Booking::query()
+            ->with(['package', 'allotment.plot.block'])
+            ->whereIn('booking_number', $bookingNumbers)
+            ->get()
+            ->mapWithKeys(function (Booking $booking): array {
+                $details = [
+                    'Plot size' => $booking->package ? number_format((float) $booking->package->size_marla, 2).' marla' : null,
+                    'Payment plan' => ucfirst((string) $booking->payment_plan),
+                ];
+                if ($booking->allotment?->plot) {
+                    $details['Plot'] = collect([
+                        $booking->allotment->plot->block?->name,
+                        'Plot '.$booking->allotment->plot->plot_number,
+                    ])->filter()->implode(' · ');
+                }
+
+                return [$booking->booking_number => array_filter($details, fn (mixed $value) => filled($value))];
+            });
+
+        return view('customer-notifications.index', compact('notifications', 'totalCount', 'unreadCount', 'todayCount', 'status', 'bookingDetails'));
     }
 
     public function read(Request $request, string $notification): RedirectResponse

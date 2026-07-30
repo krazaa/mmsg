@@ -3,7 +3,7 @@
     x-effect="document.documentElement.classList.toggle('overflow-hidden', open); document.body.classList.toggle('overflow-hidden', open)"
     @keydown.escape.window="open = false"
     @resize.window="if (window.innerWidth >= 1280) open = false"
-    class="{{ Auth::user()->role === 'customer' ? 'sticky top-0 z-50 border-b border-indigo-100/80 bg-white/90 shadow-lg shadow-indigo-100/40 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/90' : 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700' }}"
+    class="{{ Auth::user()->role === 'customer' ? 'customer-portal-nav sticky top-0 z-50 border-b border-indigo-100/80 bg-white/90 shadow-lg shadow-indigo-100/40 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/90' : 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700' }}"
 >
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,13 +27,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden {{ Auth::user()->role === 'customer' ? 'items-center gap-1 xl:ms-6' : 'space-x-8 xl:-my-px xl:ms-10' }} xl:flex">
                     @if(Auth::user()->role === 'customer')
-                    @php($customerNavClass = 'inline-flex items-center rounded-xl px-3 py-2 text-xs font-black transition')
-                    <a href="{{ route('dashboard') }}" class="{{ $customerNavClass }} {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Overview</a>
-                    <a href="{{ route('customer.bookings.create') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.bookings.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Book a plot</a>
-                    <a href="{{ route('customer.installments') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.installments') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Installments</a>
+                    @php($customerNavClass = 'customer-nav-link inline-flex items-center rounded-xl px-3 py-2 text-xs font-black transition')
+                    <a href="{{ route('dashboard') }}" class="{{ $customerNavClass }} {{ request()->routeIs('dashboard') ? 'customer-nav-active bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Overview</a>
+                    <a href="{{ route('customer.bookings.create') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.bookings.*') ? 'customer-nav-active bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Book a plot</a>
+                    <a href="{{ route('customer.installments') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.installments') ? 'customer-nav-active bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Installments</a>
                     <a href="{{ route('dashboard').'#payments' }}" class="{{ $customerNavClass }} text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">Payments</a>
-                    <a href="{{ route('customer.team') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.team') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Team</a>
-                    <a href="{{ route('customer.commissions') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.commissions') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Commissions</a>
+                    <a href="{{ route('customer.team') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.team') ? 'customer-nav-active bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Team</a>
+                    <a href="{{ route('customer.commissions') }}" class="{{ $customerNavClass }} {{ request()->routeIs('customer.commissions') ? 'customer-nav-active bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}">Commissions</a>
                     @else
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
@@ -160,7 +160,7 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t {{ Auth::user()->role === 'customer' ? 'border-indigo-100 bg-gradient-to-b from-indigo-50 via-white to-white shadow-2xl dark:border-slate-700 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950' : 'border-gray-100 dark:border-gray-700' }} xl:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t {{ Auth::user()->role === 'customer' ? 'customer-portal-mobile-menu border-indigo-100 bg-gradient-to-b from-indigo-50 via-white to-white shadow-2xl dark:border-slate-700 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950' : 'border-gray-100 dark:border-gray-700' }} xl:hidden">
         @if(Auth::user()->role === 'customer')
             <div class="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 p-4 text-white shadow-lg">
                 <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/10 text-sm font-black ring-1 ring-white/20">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>

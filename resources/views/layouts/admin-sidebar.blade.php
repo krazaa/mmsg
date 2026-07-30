@@ -26,6 +26,7 @@
         ['label' => 'Notification templates', 'route' => 'management.whatsapp.index', 'fragment' => 'notification-templates', 'active' => 'notification-templates.*', 'permission' => 'manage notifications', 'color' => 'bg-indigo-400', 'super_admin_only' => true],
         ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400', 'super_admin_only' => true],
         ['label' => 'Welcome page theme', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
+        ['label' => 'Customer portal theme', 'route' => 'customer-portal-theme.edit', 'active' => 'customer-portal-theme.*', 'permission' => 'manage projects', 'color' => 'bg-blue-400'],
     ];
     $settingsActive = collect($settingsItems)->contains(fn ($item) => request()->routeIs($item['active']));
 @endphp

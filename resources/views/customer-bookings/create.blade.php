@@ -5,25 +5,25 @@
         @if($pendingBooking)<div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500 font-black text-white">!</span><div><div class="font-black">Your booking request {{ $pendingBooking->booking_number }} is awaiting office approval.</div><p class="mt-1 text-amber-800">You can submit another plot request after this request is approved or cancelled.</p></div></div>@endif
 
         @php($packageCount = $projects->sum(fn ($project) => $project->packages->count()))
-        <section class="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 text-white shadow-2xl shadow-indigo-200 dark:shadow-none">
-            <div class="absolute -right-20 -top-24 -z-10 h-80 w-80 rounded-full bg-fuchsia-400/30 blur-3xl"></div>
-            <div class="absolute -bottom-28 left-1/3 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl"></div>
+        <section class="customer-theme-marketplace-hero relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 text-white shadow-2xl shadow-indigo-200 dark:shadow-none">
+            <div class="customer-theme-blur absolute -right-20 -top-24 -z-10 h-80 w-80 rounded-full bg-fuchsia-400/30 blur-3xl"></div>
+            <div class="customer-theme-blur absolute -bottom-28 left-1/3 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl"></div>
             <div class="absolute inset-0 -z-10 opacity-[.06]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:22px 22px"></div>
             <div class="grid lg:grid-cols-2">
                 <header class="flex flex-col justify-center p-6 sm:p-7 lg:p-8">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-indigo-100 backdrop-blur">Property marketplace</span>
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-200"><i class="h-1.5 w-1.5 rounded-full bg-emerald-300"></i>Live inventory</span>
+                        <span class="customer-theme-hero-copy inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-indigo-100 backdrop-blur">Property marketplace</span>
+                        <span class="customer-theme-active-badge inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-200"><i class="customer-theme-active-dot h-1.5 w-1.5 rounded-full bg-emerald-300"></i>Live inventory</span>
                     </div>
-                    <h1 class="mt-4 max-w-3xl text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl lg:leading-tight">Choose the right property plan for your future.</h1>
-                    <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare cash and installment prices, select your preferred plot size, and send a secure request for office approval.</p>
-                    <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-bold text-indigo-100">
+                    <h1 class="customer-theme-hero-heading mt-4 max-w-3xl text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl lg:leading-tight">Choose the right property plan for your future.</h1>
+                    <p class="customer-theme-hero-copy mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare cash and installment prices, select your preferred plot size, and send a secure request for office approval.</p>
+                    <div class="customer-theme-hero-copy mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-bold text-indigo-100">
                         <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">1</i>Choose a plan</span>
                         <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">2</i>Send request</span>
                         <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">3</i>Office approval</span>
                     </div>
                 </header>
-                <aside class="flex flex-col justify-center border-t border-white/10 bg-white/[.08] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-7 lg:p-8">
+                <aside class="customer-theme-hero-panel flex flex-col justify-center border-t border-white/10 bg-white/[.08] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-7 lg:p-8">
                     <div class="flex items-center justify-between gap-4">
                         <div><div class="text-[10px] font-black uppercase tracking-[.18em] text-indigo-200">Marketplace overview</div><div class="mt-1 text-sm font-bold">Available to book</div></div>
                         <span class="grid h-10 w-10 place-items-center rounded-xl border border-white/15 bg-white/10 text-lg">⌂</span>
@@ -68,7 +68,7 @@
                             <form x-data="{ confirmOpen: false, submitting: false, paymentPlan: @js($initialPlan), cashPrice: {{ (float) $package->effective_cash_price }}, installmentPrice: {{ (float) $package->total_price }}, money(value) { return 'Rs ' + Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) } }" x-ref="bookingForm" method="POST" action="{{ route('customer.bookings.store') }}" @submit.prevent="if (paymentPlan) confirmOpen = true" class="mt-5">
                                 @csrf
                                 <input type="hidden" name="package_id" value="{{ $package->id }}">
-                                <fieldset class="mb-4 grid {{ !$singlePlan ? 'grid-cols-2' : 'grid-cols-1' }} gap-2">
+                                <fieldset class="mb-4 grid grid-cols-1 gap-2 {{ !$singlePlan ? 'sm:grid-cols-2' : '' }}">
                                     <legend class="col-span-2 mb-2 min-h-9">
                                         <span class="block text-xs font-black uppercase tracking-wide text-slate-700 dark:text-slate-200">Choose payment plan</span>
                                         <span class="mt-1 block text-[10px] font-medium normal-case tracking-normal text-slate-500 dark:text-slate-400">{{ $singlePlan ? 'This is the only payment plan available for this package.' : 'Installments are selected by default. Choose Cash to compare plans.' }}</span>
@@ -109,11 +109,11 @@
                                     <div x-show="paymentPlan === 'installment'" class="p-4">
                                         <div class="text-[10px] font-black uppercase tracking-wider text-indigo-600">Selected installment plan</div>
                                         <div class="mt-1 text-2xl font-black text-indigo-950 dark:text-indigo-100" x-text="money(installmentPrice)"></div>
-                                        <div class="mt-3 grid grid-cols-3 gap-2 text-xs"><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">First payment</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">Rs {{ number_format($package->booking_amount) }}</b></div><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Monthly</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">Rs {{ number_format($package->monthly_amount) }}</b></div><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Duration</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">{{ $package->months }} months</b></div></div>
+                                        <div class="mt-3 grid gap-2 text-xs sm:grid-cols-3"><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">First payment</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">Rs {{ number_format($package->booking_amount) }}</b></div><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Monthly</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">Rs {{ number_format($package->monthly_amount) }}</b></div><div class="rounded-xl bg-white/70 p-3 dark:bg-slate-900/50"><span class="block text-[9px] font-bold uppercase text-slate-400">Duration</span><b class="mt-1 block text-indigo-800 dark:text-indigo-200">{{ $package->months }} months</b></div></div>
                                         @if($package->balloonPayments())
                                             <div class="mt-3 rounded-xl border border-amber-200 bg-white/70 p-3 dark:border-amber-900 dark:bg-slate-900/60">
                                                 <div class="mb-3 flex items-center gap-2.5"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-500 text-[11px] font-black text-white shadow-sm">B</span><div><div class="text-[9px] font-black uppercase tracking-[.14em] text-amber-700 dark:text-amber-300">Balloon payments</div><div class="mt-0.5 text-[9px] text-slate-500 dark:text-slate-400">Additional scheduled payments</div></div></div>
-                                                <div class="grid grid-cols-3 gap-2">
+                                                <div class="grid gap-2 sm:grid-cols-3">
                                                     @foreach($package->balloonPayments() as $balloon)
                                                         <div class="min-w-0 rounded-lg border border-amber-100 bg-amber-50/70 px-1.5 py-2.5 text-center dark:border-amber-900/60 dark:bg-amber-950/30">
                                                             <span class="block text-[8px] font-black uppercase tracking-wider text-amber-600/70 dark:text-amber-400">Month</span>
@@ -165,7 +165,7 @@
                                                 @if($package->balloonPayments())
                                                     <div x-show="paymentPlan === 'installment'" class="mt-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900 dark:bg-amber-950/30">
                                                         <div class="flex items-center gap-2"><span class="grid h-7 w-7 place-items-center rounded-lg bg-amber-500 text-[11px] font-black text-white">B</span><div><div class="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">Balloon payments</div><div class="text-[9px] text-slate-500 dark:text-slate-400">Additional scheduled payments</div></div></div>
-                                                        <div class="mt-3 grid grid-cols-3 gap-2">
+                                                        <div class="mt-3 grid gap-2 sm:grid-cols-3">
                                                             @foreach($package->balloonPayments() as $balloon)
                                                                 <div class="rounded-xl border border-amber-100 bg-white px-2 py-2.5 text-center dark:border-amber-900/60 dark:bg-slate-900/70">
                                                                     <span class="block text-[8px] font-black uppercase tracking-wider text-amber-600">Month</span>
@@ -184,7 +184,7 @@
                                                         <p x-show="paymentPlan === 'installment'" class="mt-0.5 text-xs leading-5 text-amber-700 dark:text-amber-300">The office will review your request first. Your first payment becomes available only after approval.</p>
                                                     </div>
                                                 </div>
-                                                <div class="mt-6 grid grid-cols-2 gap-3">
+                                                <div class="mt-6 grid gap-3 sm:grid-cols-2">
                                                     <button type="button" @click="confirmOpen=false" :disabled="submitting" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Keep browsing</button>
                                                     <button type="button" @click="submitting=true; $refs.bookingForm.submit()" :disabled="submitting" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-700 hover:to-violet-700 disabled:cursor-wait disabled:opacity-70 dark:shadow-none">
                                                         <svg x-show="!submitting" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
