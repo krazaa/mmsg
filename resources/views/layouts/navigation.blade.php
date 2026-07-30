@@ -85,7 +85,12 @@
                     <x-slot name="trigger">
                         <button class="inline-flex items-center {{ Auth::user()->role === 'customer' ? 'gap-2 rounded-xl border border-slate-200 bg-white py-1.5 ps-1.5 pe-3 shadow-sm hover:border-indigo-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900' : 'px-3 py-2 border border-transparent rounded-md bg-white dark:bg-gray-800' }} text-sm leading-4 font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition">
                             @if(Auth::user()->role === 'customer')<span class="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-fuchsia-500 to-indigo-700 text-xs font-black text-white">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>@endif
-                            <div class="{{ Auth::user()->role === 'customer' ? 'max-w-28 truncate font-bold text-slate-700 dark:text-slate-200' : '' }}">{{ Auth::user()->name }}</div>
+                            <div class="{{ Auth::user()->role === 'customer' ? 'max-w-32 text-left leading-tight' : '' }}">
+                                <div class="{{ Auth::user()->role === 'customer' ? 'truncate font-bold text-slate-700 dark:text-slate-200' : '' }}">{{ Auth::user()->name }}</div>
+                                @if(Auth::user()->role === 'customer' && \App\Models\SiteSetting::showReferralCodesOnCustomerPortal() && filled(Auth::user()->referral_code))
+                                    <div class="mt-0.5 truncate font-mono text-[9px] font-black uppercase tracking-wide text-indigo-500 dark:text-indigo-300">{{ Auth::user()->referral_code }}</div>
+                                @endif
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -162,6 +167,9 @@
                 <div class="min-w-0 flex-1">
                     <div class="text-[9px] font-black uppercase tracking-[.18em] text-indigo-300">Customer account</div>
                     <div class="mt-1 truncate text-sm font-black">{{ Auth::user()->name }}</div>
+                    @if(\App\Models\SiteSetting::showReferralCodesOnCustomerPortal() && filled(Auth::user()->referral_code))
+                        <div class="mt-0.5 truncate font-mono text-[10px] font-black uppercase tracking-wide text-indigo-300">{{ Auth::user()->referral_code }}</div>
+                    @endif
                     <div class="mt-0.5 truncate text-xs text-indigo-200">{{ Auth::user()->email }}</div>
                 </div>
                 <a href="{{ route('profile.edit') }}" @click="open = false" class="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-[10px] font-black text-white ring-1 ring-white/15">Profile</a>

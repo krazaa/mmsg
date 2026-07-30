@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\InstallmentSchedules;
 use App\Models\Payment;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Notifications\AccountActivityNotification;
+use App\Notifications\Channels\WhatsAppChannel;
+use App\Notifications\OwnerPaymentReceivedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -96,6 +100,10 @@ class CustomerPaymentController extends Controller
             ['Customer' => $customer->name, 'Receipt' => $payment->receipt_number, 'Amount' => 'Rs '.number_format($payment->amount, 2), 'Booking' => $booking->booking_number],
             false,
         )));
+        foreach (SiteSetting::ownerWhatsAppNumbers() as $ownerNumber) {
+            Notification::route(WhatsAppChannel::class, $ownerNumber)
+                ->notify(new OwnerPaymentReceivedNotification($payment->id));
+        }
 
         return back()->with('success', 'Payment proof submitted. The payment will appear as verified after office review.');
     }

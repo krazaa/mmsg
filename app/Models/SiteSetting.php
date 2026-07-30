@@ -100,6 +100,16 @@ class SiteSetting extends Model
         );
     }
 
+    public static function ownerWhatsAppNumbers(): array
+    {
+        return collect(preg_split('/[\s,;]+/', (string) static::valueFor('whatsapp_owner_numbers', '')))
+            ->map(fn (?string $number) => trim((string) $number))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
     public static function maintenanceModeEnabled(): bool
     {
         return filter_var(

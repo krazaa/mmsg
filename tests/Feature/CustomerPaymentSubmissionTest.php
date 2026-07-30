@@ -12,9 +12,11 @@ use App\Models\InstallmentSchedules;
 use App\Models\Payment;
 use App\Models\PlotPackage;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -27,6 +29,15 @@ class CustomerPaymentSubmissionTest extends TestCase
     {
         Storage::fake('local');
         Mail::fake();
+        config()->set('services.whatsapp', [
+            'enabled' => true,
+            'api_url' => 'https://graph.facebook.com/v23.0',
+            'phone_number_id' => '123456789',
+            'access_token' => 'test-token',
+            'default_country_code' => '92',
+        ]);
+        Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.test']]])]);
+        SiteSetting::create(['key' => 'whatsapp_owner_numbers', 'value' => '+923001112233']);
         [$customerUser, $admin, $booking, $installment] = $this->records();
 
         $this->actingAs($customerUser)->post(route('customer.payments.store'), [
@@ -58,6 +69,10 @@ class CustomerPaymentSubmissionTest extends TestCase
         ])->assertRedirect()->assertSessionHas('success');
 
         $payment = Payment::where('status', 'pending')->firstOrFail();
+        Http::assertSent(fn ($request) => $request['to'] === '923001112233'
+            && $request['type'] === 'text'
+            && str_contains($request['text']['body'], 'Installment payment received')
+            && str_contains($request['text']['body'], $payment->receipt_number));
         Storage::disk('local')->assertExists($payment->proof_path);
         $this->assertEquals(0, (float) $installment->refresh()->paid_amount);
         $this->assertDatabaseCount('commissions', 0);

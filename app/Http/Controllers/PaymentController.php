@@ -141,10 +141,18 @@ class PaymentController extends Controller
         if ($becameVerified) {
             $verifiedPayment = $payment->fresh()->load(['customer', 'booking.project', 'booking.package', 'installment']);
             Mail::to($verifiedPayment->customer->email)->send(new PaymentVerifiedMail($verifiedPayment));
-            $verifiedPayment->customer->notify(new AccountActivityNotification('Payment verified', 'Your payment has been verified and credited to your account.', 'payment', route('dashboard').'#payments', ['Receipt' => $verifiedPayment->receipt_number, 'Amount' => 'Rs '.number_format($verifiedPayment->amount, 2)]));
+            $verifiedPayment->customer->notify(new AccountActivityNotification(
+                $verifiedPayment->installment ? 'Installment payment verified' : 'First payment verified',
+                $verifiedPayment->installment ? 'Your installment payment has been verified and credited to your account.' : 'Your first payment has been verified and credited to your account.',
+                'payment',
+                route('dashboard').'#payments',
+                ['Receipt' => $verifiedPayment->receipt_number, 'Amount' => 'Rs '.number_format($verifiedPayment->amount, 2)],
+                true,
+                $verifiedPayment->installment ? 'customer_installment_verified' : 'customer_first_payment_verified'
+            ));
             if ($becameActive) {
                 Mail::to($verifiedPayment->customer->email)->send(new PlanActivatedMail($verifiedPayment->booking));
-                $verifiedPayment->customer->notify(new AccountActivityNotification('Property plan activated', 'Your first payment was verified and the property plan is now active.', 'booking', route('dashboard').'#payments', ['Booking' => $verifiedPayment->booking->booking_number, 'Project' => $verifiedPayment->booking->project->name]));
+                $verifiedPayment->customer->notify(new AccountActivityNotification('Property plan activated', 'Your first payment was verified and the property plan is now active.', 'booking', route('dashboard').'#payments', ['Booking' => $verifiedPayment->booking->booking_number, 'Project' => $verifiedPayment->booking->project->name], false));
             }
         }
 

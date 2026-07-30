@@ -16,7 +16,7 @@ class InstallmentSchedules extends Model
 
     protected function casts(): array
     {
-        return ['due_date' => 'date', 'regular_amount' => 'decimal:2', 'balloon_amount' => 'decimal:2', 'total_due' => 'decimal:2', 'paid_amount' => 'decimal:2', 'reminder_sent_at' => 'datetime'];
+        return ['due_date' => 'date', 'regular_amount' => 'decimal:2', 'balloon_amount' => 'decimal:2', 'total_due' => 'decimal:2', 'paid_amount' => 'decimal:2', 'reminder_sent_at' => 'datetime', 'overdue_reminder_sent_at' => 'datetime'];
     }
 
     public function booking()

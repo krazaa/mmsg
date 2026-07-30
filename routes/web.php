@@ -107,6 +107,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/withdrawal-pin-locks/{customer}', [CustomerWithdrawalController::class, 'unlockPin'])->middleware('permission:manage withdrawals')->name('withdrawal-pin-locks.destroy');
         Route::get('/management/notifications', [CustomerNotificationController::class, 'managementIndex'])->middleware('permission:manage notifications')->name('management.notifications.index');
         Route::get('/management/whatsapp', [WhatsAppSettingsController::class, 'index'])->middleware('permission:manage notifications')->name('management.whatsapp.index');
+        Route::put('/management/whatsapp/owners', [WhatsAppSettingsController::class, 'updateOwners'])->middleware('permission:manage notifications')->name('management.whatsapp.owners.update');
+        Route::put('/management/whatsapp/templates', [WhatsAppSettingsController::class, 'updateTemplates'])->middleware('permission:manage notifications')->name('management.whatsapp.templates.update');
         Route::get('/management/site-appearance', [SiteAppearanceController::class, 'edit'])->middleware('role:super_admin|admin')->name('site-appearance.edit');
         Route::put('/management/site-appearance', [SiteAppearanceController::class, 'update'])->middleware('role:super_admin|admin')->name('site-appearance.update');
         Route::get('/management/app-settings', [AppSettingsController::class, 'edit'])->middleware('role:super_admin|admin')->name('app-settings.edit');

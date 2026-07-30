@@ -38,11 +38,6 @@
                                 </a>
                             @endcan
                             <form method="POST" action="{{ route('theme.update') }}">@csrf @method('PATCH')<input type="hidden" name="theme" value="{{ auth()->user()->theme === 'dark' ? 'light' : 'dark' }}"><button class="grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700" title="Toggle appearance">{{ auth()->user()->theme === 'dark' ? '☀' : '☾' }}</button></form>
-                            @if(in_array(auth()->user()->role, ['super_admin', 'admin'], true))
-                                <a href="{{ route('site-appearance.edit') }}" class="grid h-9 w-9 place-items-center rounded-lg text-fuchsia-600 transition hover:bg-fuchsia-50 dark:text-fuchsia-300 dark:hover:bg-gray-700" title="Welcome page theme settings" aria-label="Welcome page theme settings">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 4.52a8.25 8.25 0 1 0 9.95 9.95c.43-1.52-1.03-2.87-2.5-2.3l-1.19.46a2 2 0 0 1-2.58-2.58l.46-1.19c.57-1.47-.78-2.93-2.3-2.5-.6.17-1.22.1-1.84.16Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 10.5h.01M9 15h.01M13.5 16.5h.01"/></svg>
-                                </a>
-                            @endif
                             <a href="{{ route('profile.edit') }}" class="hidden rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 sm:block dark:text-gray-200 dark:hover:bg-gray-700">{{ auth()->user()->name }}</a>
                             <form method="POST" action="{{ route('logout') }}">@csrf<button class="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950">Log out</button></form>
                         </div>

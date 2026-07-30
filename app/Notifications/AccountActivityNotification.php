@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Notifications\Channels\WhatsAppChannel;
+use App\Support\WhatsAppMessageTemplates;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -25,6 +26,7 @@ class AccountActivityNotification extends Notification implements ShouldQueue
         public string $url,
         public array $details = [],
         public bool $sendWhatsApp = true,
+        public ?string $whatsAppTemplateKey = null,
     ) {}
 
     public function via(object $notifiable): array
@@ -84,6 +86,10 @@ class AccountActivityNotification extends Notification implements ShouldQueue
 
     public function toWhatsApp(object $notifiable): string
     {
+        if ($this->whatsAppTemplateKey) {
+            return WhatsAppMessageTemplates::render($this->whatsAppTemplateKey, $this->templateValues($notifiable));
+        }
+
         $details = collect($this->details)
             ->map(fn (mixed $value, string $label): string => $label.': '.$value)
             ->implode("\n");
@@ -105,7 +111,9 @@ class AccountActivityNotification extends Notification implements ShouldQueue
         return [
             $notifiable->name ?? 'Customer',
             $this->title,
-            $this->message,
+            $this->whatsAppTemplateKey
+                ? WhatsAppMessageTemplates::render($this->whatsAppTemplateKey, $this->templateValues($notifiable))
+                : $this->message,
             $details ?: 'Open your customer portal for details.',
             $this->url,
         ];
@@ -114,5 +122,19 @@ class AccountActivityNotification extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return ['title' => $this->title, 'message' => $this->message, 'category' => $this->category, 'url' => $this->url, 'details' => $this->details];
+    }
+
+    private function templateValues(object $notifiable): array
+    {
+        return [
+            'customer' => $notifiable->name ?? 'Customer',
+            'booking' => $this->details['Booking'] ?? '',
+            'project' => $this->details['Project'] ?? '',
+            'amount' => $this->details['Amount'] ?? '',
+            'receipt' => $this->details['Receipt'] ?? '',
+            'due_date' => $this->details['Due date'] ?? '',
+            'days_overdue' => $this->details['Days overdue'] ?? '',
+            'url' => $this->url,
+        ];
     }
 }

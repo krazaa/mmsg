@@ -15,7 +15,7 @@ class WhatsAppChannel
             return false;
         }
 
-        $recipient = $this->normalizePhone((string) ($notifiable->phone ?? ''));
+        $recipient = $this->recipientPhone($notifiable, $notification);
         if ($recipient === '') {
             return false;
         }
@@ -44,7 +44,7 @@ class WhatsAppChannel
 
     public function sendTemplate(object $notifiable, string $template, string $language = 'en_US', array $parameters = []): bool
     {
-        $recipient = $this->normalizePhone((string) ($notifiable->phone ?? ''));
+        $recipient = $this->recipientPhone($notifiable);
         if ($recipient === '') {
             return false;
         }
@@ -113,5 +113,15 @@ class WhatsAppChannel
         }
 
         return $phone;
+    }
+
+    private function recipientPhone(object $notifiable, ?Notification $notification = null): string
+    {
+        $phone = (string) ($notifiable->phone ?? '');
+        if ($phone === '' && method_exists($notifiable, 'routeNotificationFor')) {
+            $phone = (string) $notifiable->routeNotificationFor(self::class, $notification);
+        }
+
+        return $this->normalizePhone($phone);
     }
 }

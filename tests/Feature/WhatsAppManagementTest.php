@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\WhatsAppMessageTemplates;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -29,7 +31,27 @@ class WhatsAppManagementTest extends TestCase
             ->assertOk()
             ->assertSee('WhatsApp notifications')
             ->assertSee('Ready')
+            ->assertSee('Owner payment alerts')
             ->assertSee('Send a test message');
+
+        $this->actingAs($admin)->put(route('management.whatsapp.owners.update'), [
+            'owner_numbers' => "+923001112233\n03002223334",
+        ])->assertRedirect()->assertSessionHas('success');
+        $this->assertSame(['+923001112233', '03002223334'], SiteSetting::ownerWhatsAppNumbers());
+
+        $templates = WhatsAppMessageTemplates::defaults();
+        $templates['customer_booking_approved'] = 'Approved {customer} · {booking} · {url}';
+        $this->actingAs($admin)->put(route('management.whatsapp.templates.update'), [
+            'templates' => $templates,
+        ])->assertRedirect()->assertSessionHas('success');
+        $this->assertSame(
+            'Approved Ali · BOOK-1 · https://example.test',
+            WhatsAppMessageTemplates::render('customer_booking_approved', [
+                'customer' => 'Ali',
+                'booking' => 'BOOK-1',
+                'url' => 'https://example.test',
+            ])
+        );
 
         $this->actingAs($admin)->post(route('management.whatsapp.test'), ['phone' => '03001234567'])
             ->assertRedirect()

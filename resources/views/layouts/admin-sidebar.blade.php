@@ -23,6 +23,7 @@
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
         ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
         ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],
+        ['label' => 'Notification templates', 'route' => 'management.whatsapp.index', 'fragment' => 'notification-templates', 'active' => 'notification-templates.*', 'permission' => 'manage notifications', 'color' => 'bg-indigo-400', 'super_admin_only' => true],
         ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400', 'super_admin_only' => true],
         ['label' => 'Welcome page theme', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
     ];
@@ -77,7 +78,7 @@
                     @foreach($settingsItems as $setting)
                         @if(!($setting['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin')
                             @can($setting['permission'])
-                            <a href="{{ route($setting['route']) }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($setting['active']) ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
+                            <a href="{{ route($setting['route']).(isset($setting['fragment']) ? '#'.$setting['fragment'] : '') }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($setting['active']) ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
                                 <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $setting['color'] }} {{ request()->routeIs($setting['active']) ? 'ring-4 ring-indigo-100' : '' }}"></span>
                                 <span class="whitespace-nowrap">{{ $setting['label'] }}</span>
                             </a>

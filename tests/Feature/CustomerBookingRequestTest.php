@@ -165,12 +165,12 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertTrue($titles->contains('Booking request submitted'));
         $this->assertTrue($titles->contains('Booking approved'));
         $this->assertTrue($titles->contains('Payment submitted for verification'));
-        $this->assertTrue($titles->contains('Payment verified'));
+        $this->assertTrue($titles->contains('First payment verified'));
         $this->assertTrue($titles->contains('Property plan activated'));
         $this->actingAs($customerUser)->get(route('customer.notifications.index'))
             ->assertOk()
             ->assertSee('Booking approved')
-            ->assertSee('Payment verified');
+            ->assertSee('First payment verified');
         $this->actingAs($customerUser)->post(route('customer.notifications.read-all'))->assertRedirect();
         $this->assertSame(0, $customerUser->unreadNotifications()->count());
     }

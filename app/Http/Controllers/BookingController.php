@@ -125,7 +125,7 @@ class BookingController extends Controller
         if ($approved) {
             $approvedBooking = $booking->fresh()->load(['customer', 'project', 'package']);
             Mail::to($approvedBooking->customer->email)->send(new BookingApprovedMail($approvedBooking));
-            $approvedBooking->customer->notify(new AccountActivityNotification('Booking approved', 'Your booking has been approved. You can now submit the first payment from your portal.', 'booking', route('dashboard').'#payments', ['Booking' => $approvedBooking->booking_number, 'Project' => $approvedBooking->project->name]));
+            $approvedBooking->customer->notify(new AccountActivityNotification('Booking approved', 'Your booking has been approved. You can now submit the first payment from your portal.', 'booking', route('dashboard').'#payments', ['Booking' => $approvedBooking->booking_number, 'Project' => $approvedBooking->project->name], true, 'customer_booking_approved'));
         }
 
         return redirect()->route('bookings.show', $booking)->with('success', 'Booking updated successfully.');
