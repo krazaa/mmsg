@@ -218,11 +218,11 @@
 }
 
 .dark .admin-command-card :is(h1, h2, h3, .admin-command-value) {
-    color: #f8fafc !important;
+    color: #0f172a !important;
 }
 
 .dark .admin-command-card :is(p, small) {
-    color: #cbd5e1 !important;
+    color: #64748b !important;
 }
 
 .dark .admin-command-card .admin-command-stat {
