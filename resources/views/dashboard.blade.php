@@ -15,7 +15,7 @@
                     </div>
                     <div class="grid gap-5 pt-5 lg:grid-cols-[minmax(0,1fr)_310px] lg:items-center">
                         <div class="min-w-0">
-                            <div class="inline-flex items-center gap-2 rounded-lg bg-gray-600 px-3 py-1.5 text-[10px] font-white uppercase tracking-[.18em] text-white-700"><span>◆</span> Business dashboard</div>
+                            <div class="admin-command-badge inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em]"><span>◆</span> Business dashboard</div>
                             <h3 class="mt-3 max-w-4xl text-3xl font-black leading-tight tracking-[-.035em] text-slate-950 sm:text-4xl lg:whitespace-nowrap">Welcome back, {{ auth()->user()->name }}.</h3>
                             <p class="mt-3 max-w-2xl text-sm leading-5 text-slate-500">Sales, collections, inventory and commissions—organized in one clear operational view.</p>
                         </div>

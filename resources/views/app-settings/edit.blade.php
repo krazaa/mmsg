@@ -33,6 +33,53 @@
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div class="flex items-start gap-3"><span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-100 text-lg">↗</span><div><h4 class="font-black text-slate-950 dark:text-white">Customer portal</h4><p class="mt-1 max-w-xl text-xs leading-5 text-slate-500 dark:text-slate-400">Control whether customers can see referral codes and copy referral links in their portal.</p></div></div><label class="inline-flex cursor-pointer items-center gap-3 rounded-xl border border-violet-200 bg-white px-4 py-3 text-xs font-black dark:border-slate-700 dark:bg-slate-800 dark:text-white"><input type="hidden" name="customer_portal_show_referral_code" value="0"><input type="checkbox" name="customer_portal_show_referral_code" value="1" x-model="showReferral" class="rounded border-slate-300 text-violet-600 focus:ring-violet-500"> Show referral code</label></div>
                     </section>
 
+                    @if(auth()->user()->hasRole('super_admin'))
+                        <section class="overflow-hidden rounded-2xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
+                            <div class="border-b border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex items-start gap-3">
+                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-900 text-white">◫</span>
+                                    <div><div class="text-[10px] font-black uppercase tracking-[.18em] text-slate-500">Super Admin only</div><h4 class="mt-1 font-black text-slate-950 dark:text-white">Admin card appearance</h4><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Change shared management cards, labels and primary card actions across every admin page.</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
+                                <label class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-[10px] font-black uppercase tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-800">
+                                    Card background mode
+                                    <select name="admin_card_background_mode" class="mt-2 w-full rounded-lg border-slate-200 py-2 text-xs font-bold normal-case text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+                                        <option value="solid" @selected(old('admin_card_background_mode', $adminCardAppearance['admin_card_background_mode']) === 'solid')>Solid color</option>
+                                        <option value="transparent" @selected(old('admin_card_background_mode', $adminCardAppearance['admin_card_background_mode']) === 'transparent')>Transparent</option>
+                                        <option value="gradient" @selected(old('admin_card_background_mode', $adminCardAppearance['admin_card_background_mode']) === 'gradient')>Linear gradient</option>
+                                    </select>
+                                    <span class="mt-2 block text-[10px] font-normal normal-case leading-4 tracking-normal text-slate-400">Solid uses Card background color. Linear gradient flows from Gradient start color into Card background color.</span>
+                                </label>
+                                <input type="hidden" name="admin_page_background_mode" value="solid">
+                                <input type="hidden" name="admin_page_gradient_start" value="{{ $adminCardAppearance['admin_page_gradient_start'] }}">
+                                <input type="hidden" name="admin_page_gradient_end" value="{{ $adminCardAppearance['admin_page_gradient_end'] }}">
+                                @foreach([
+                                    'admin_page_background' => 'Page background',
+                                    'admin_card_background' => 'Card background color',
+                                    'admin_card_gradient_start' => 'Gradient start color',
+                                    'admin_card_pattern' => 'Pattern lines',
+                                    'admin_card_accent_start' => 'Accent start',
+                                    'admin_card_accent_end' => 'Accent end',
+                                    'admin_card_badge_background' => 'Label background',
+                                    'admin_card_badge_text' => 'Label text',
+                                    'admin_card_action_background' => 'Action background',
+                                    'admin_card_action_text' => 'Action text',
+                                ] as $key => $label)
+                                    <label x-data="{ color: @js(old($key, $adminCardAppearance[$key])) }" class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-[10px] font-black uppercase tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-800">
+                                        {{ $label }}
+                                        <span class="mt-2 flex items-center gap-2">
+                                            <input type="color" x-model="color" class="h-10 w-12 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent p-0">
+                                            <input type="text" name="{{ $key }}" x-model="color" required pattern="#[0-9a-fA-F]{6}" maxlength="7" spellcheck="false" aria-label="{{ $label }} hex color" class="min-w-0 flex-1 rounded-lg border-slate-200 bg-white px-2 py-2 font-mono text-xs font-bold normal-case text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
+
                     <section class="overflow-hidden rounded-2xl border border-rose-200 bg-rose-50/60 dark:border-rose-900 dark:bg-rose-950/20">
                         <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                             <div class="flex items-start gap-3"><span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-rose-100 text-lg text-rose-700">⚙</span><div><h4 class="font-black text-slate-950 dark:text-white">Maintenance mode</h4><p class="mt-1 max-w-xl text-xs leading-5 text-slate-500 dark:text-slate-400">Temporarily show a branded maintenance page to customers and public visitors. Admin access and sign-in remain available.</p></div></div>

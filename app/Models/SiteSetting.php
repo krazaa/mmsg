@@ -113,6 +113,40 @@ class SiteSetting extends Model
             ->all();
     }
 
+    public static function adminCardAppearanceDefaults(): array
+    {
+        return [
+            'admin_page_background' => '#f1f5f9',
+            'admin_page_background_mode' => 'solid',
+            'admin_page_gradient_start' => '#f8fafc',
+            'admin_page_gradient_end' => '#e2e8f0',
+            'admin_card_background' => '#ffffff',
+            'admin_card_background_mode' => 'solid',
+            'admin_card_gradient_start' => '#ffffff',
+            'admin_card_pattern' => '#dbe3f1',
+            'admin_card_accent_start' => '#000000',
+            'admin_card_accent_end' => '#000000',
+            'admin_card_badge_background' => '#4b5563',
+            'admin_card_badge_text' => '#ffffff',
+            'admin_card_action_background' => '#000000',
+            'admin_card_action_text' => '#ffffff',
+        ];
+    }
+
+    public static function adminCardAppearance(): array
+    {
+        $appearance = collect(static::adminCardAppearanceDefaults())
+            ->mapWithKeys(fn (string $default, string $key) => [$key => static::valueFor($key, $default)])
+            ->all();
+
+        if (static::valueFor('admin_card_background_mode') === null
+            && filter_var(static::valueFor('admin_card_background_transparent', '0'), FILTER_VALIDATE_BOOL)) {
+            $appearance['admin_card_background_mode'] = 'transparent';
+        }
+
+        return $appearance;
+    }
+
     public static function valueFor(string $key, mixed $default = null): mixed
     {
         $values = Cache::rememberForever(

@@ -176,6 +176,31 @@
                 }
             </style>
         @endif
+        @if(auth()->user()?->role && auth()->user()->role !== 'customer')
+            @php($adminCardAppearance = \App\Models\SiteSetting::adminCardAppearance())
+            @php($adminCommandBackground = match($adminCardAppearance['admin_card_background_mode']) {
+                'transparent' => 'transparent',
+                'gradient' => 'linear-gradient(135deg, '.$adminCardAppearance['admin_card_gradient_start'].', '.$adminCardAppearance['admin_card_background'].')',
+                default => $adminCardAppearance['admin_card_background'],
+            })
+            @php($adminPageBackground = $adminCardAppearance['admin_page_background_mode'] === 'gradient'
+                ? 'linear-gradient(135deg, '.$adminCardAppearance['admin_page_gradient_start'].', '.$adminCardAppearance['admin_page_gradient_end'].')'
+                : $adminCardAppearance['admin_page_background'])
+            <style>
+                :root {
+                    --admin-page-background: {{ $adminPageBackground }};
+                    --admin-card-background: {{ $adminCardAppearance['admin_card_background'] }};
+                    --admin-command-card-background: {{ $adminCommandBackground }};
+                    --admin-card-pattern: {{ $adminCardAppearance['admin_card_pattern'] }};
+                    --admin-command-accent: {{ $adminCardAppearance['admin_card_accent_start'] }};
+                    --admin-command-accent-end: {{ $adminCardAppearance['admin_card_accent_end'] }};
+                    --admin-card-badge-background: {{ $adminCardAppearance['admin_card_badge_background'] }};
+                    --admin-card-badge-text: {{ $adminCardAppearance['admin_card_badge_text'] }};
+                    --admin-card-action-background: {{ $adminCardAppearance['admin_card_action_background'] }};
+                    --admin-card-action-text: {{ $adminCardAppearance['admin_card_action_text'] }};
+                }
+            </style>
+        @endif
     </head>
     <body class="font-sans antialiased">
         <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="Loading application">
@@ -191,7 +216,7 @@
                 x-effect="document.documentElement.classList.toggle('overflow-hidden', sidebarOpen); document.body.classList.toggle('overflow-hidden', sidebarOpen)"
                 @keydown.escape.window="sidebarOpen = false"
                 @resize.window="if (window.innerWidth >= 1024) sidebarOpen = false"
-                class="min-h-screen bg-gray-100 dark:bg-gray-900"
+                class="admin-portal-shell min-h-screen bg-gray-100 dark:bg-gray-900"
             >
                 @include('layouts.admin-sidebar')
                 <div :class="sidebarExpanded ? 'lg:pl-64' : 'lg:pl-20'" class="min-h-screen transition-[padding] duration-300">
@@ -215,8 +240,8 @@
                     </div>
 
                     @isset($header)
-                        <header class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-                            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{{ $header }}</div>
+                        <header class="border-b border-slate-200 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950 sm:px-6">
+                            <div class="admin-command-card mx-auto max-w-7xl rounded-3xl px-5 py-4 sm:px-6 sm:py-5">{{ $header }}</div>
                         </header>
                     @endisset
                     <main>{{ $slot }}</main>

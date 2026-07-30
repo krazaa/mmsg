@@ -1,20 +1,20 @@
 <x-app-layout>
 <div class="py-5 sm:py-8"><div class="mx-auto max-w-7xl space-y-5 px-3 sm:px-4">
-<section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-950 to-indigo-950 p-5 text-white shadow-2xl sm:p-8">
-    <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl"></div>
-    <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-violet-400/10 blur-3xl"></div>
+<section class="admin-command-card admin-command-summary p-5 text-white shadow-2xl sm:p-8">
+    <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full"></div>
+    <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full "></div>
     <div class="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div><div class="text-[10px] font-black uppercase tracking-[.22em] text-indigo-400">Booking management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Bookings</h1><p class="mt-2 max-w-xl text-sm leading-6 text-indigo-100/80">Review property requests, monitor active plans and manage customer bookings.</p></div>
-        <a href="{{ route('sales.create') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-indigo-950 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-indigo-50 sm:w-auto"><span class="text-lg leading-none">+</span> New booking</a>
+        <div><div class="admin-command-badge inline-flex rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em]">Booking management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Bookings</h1><p class="mt-2 max-w-xl text-sm leading-6 text-indigo-100/80">Review property requests, monitor active plans and manage customer bookings.</p></div>
+        <a href="{{ route('sales.create') }}" class="admin-command-action inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-black shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:brightness-90 sm:w-auto"><span class="text-lg leading-none">+</span> New booking</a>
     </div>
-    <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+    <div class="admin-command-stat-grid mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         @foreach([
-            ['All bookings', $summary['total'], 'Total booking records', 'bg-indigo-400', false],
+            ['All bookings', $summary['total'], 'Total booking records', 'bg-slate-400', false],
             ['Pending review', $summary['pending'], 'Awaiting decision', 'bg-amber-400', false],
             ['Active plans', $summary['active'], 'Currently active', 'bg-emerald-400', false],
             ['Amount received', $summary['received'], 'Verified payments', 'bg-cyan-400', true],
         ] as [$label, $value, $hint, $accent, $currency])
-            <div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4">
+            <div class="admin-command-stat rounded-2xl border p-3.5 backdrop-blur sm:p-4">
                 <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-indigo-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
                 <div class="mt-2 break-words text-xl font-black tabular-nums text-white sm:text-3xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div>
                 <div class="mt-1 text-[10px] leading-4 text-indigo-100/65 sm:text-xs">{{ $hint }}</div>
@@ -23,7 +23,7 @@
     </div>
 </section>
 @if(session('success'))<div class="rounded-lg bg-green-100 p-4 text-green-800">{{ session('success') }}</div>@endif @if($errors->any())<div class="rounded-lg bg-red-100 p-4 text-red-800">{{ $errors->first() }}</div>@endif
-<form method="GET" class="grid gap-4 rounded-xl bg-white p-4 shadow sm:grid-cols-2 sm:p-5 lg:grid-cols-4 dark:bg-slate-800 dark:text-slate-100"><label class="text-sm font-medium">Search<input name="search" value="{{ request('search') }}" placeholder="Booking, customer, CNIC or phone" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"></label><label class="text-sm font-medium">Project<select name="project" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"><option value="">All projects</option>@foreach($projects as $project)<option value="{{ $project->id }}" @selected(request('project')==$project->id)>{{ $project->name }}</option>@endforeach</select></label><label class="text-sm font-medium">Status<select name="status" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"><option value="">All statuses</option>@foreach(['pending','approved','active','completed','cancelled','defaulted'] as $status)<option value="{{ $status }}" @selected(request('status')===$status)>{{ ucfirst($status) }}</option>@endforeach</select></label><div class="grid grid-cols-2 items-end gap-2"><button class="rounded-md bg-indigo-600 px-5 py-2.5 font-semibold text-white">Filter</button><a href="{{ route('bookings.index') }}" class="rounded-md border px-4 py-2.5 text-center dark:border-slate-600">Clear</a></div></form>
+<form method="GET" class="grid gap-4 rounded-xl bg-white p-4 shadow sm:grid-cols-2 sm:p-5 lg:grid-cols-4 dark:bg-slate-800 dark:text-slate-100"><label class="text-sm font-medium">Search<input name="search" value="{{ request('search') }}" placeholder="Booking, customer, CNIC or phone" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"></label><label class="text-sm font-medium">Project<select name="project" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"><option value="">All projects</option>@foreach($projects as $project)<option value="{{ $project->id }}" @selected(request('project')==$project->id)>{{ $project->name }}</option>@endforeach</select></label><label class="text-sm font-medium">Status<select name="status" class="mt-1 w-full rounded-md border-gray-300 dark:border-slate-600 dark:bg-slate-900"><option value="">All statuses</option>@foreach(['pending','approved','active','completed','cancelled','defaulted'] as $status)<option value="{{ $status }}" @selected(request('status')===$status)>{{ ucfirst($status) }}</option>@endforeach</select></label><div class="grid grid-cols-2 items-end gap-2"><button class="rounded-md bg-gray-800 px-5 py-2.5 font-semibold text-white">Filter</button><a href="{{ route('bookings.index') }}" class="rounded-md border px-4 py-2.5 text-center dark:border-slate-600">Clear</a></div></form>
 <div class="rounded-xl bg-white shadow dark:bg-slate-800"><table class="admin-bookings-table w-full text-sm"><thead class="bg-gray-50 text-left text-gray-500 dark:bg-slate-900 dark:text-slate-300"><tr><th class="p-4">Booking</th><th>Customer</th><th>Project</th><th>Package</th><th>Total</th><th>Received</th><th>Referrer</th><th>Status</th><th class="pe-4 text-right">Actions</th></tr></thead><tbody>
 @forelse($bookings as $booking)
 <tr class="border-t dark:border-slate-700 dark:text-slate-100" x-data="{ open:false, decision:'', notes:'', addNote(note){const current=(this.notes||'').trim();this.notes=current?current+'\n'+note:note} }">

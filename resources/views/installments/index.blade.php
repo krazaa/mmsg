@@ -1,17 +1,17 @@
 <x-app-layout>
     <div class="py-5 sm:py-8"><div class="mx-auto max-w-7xl px-3 sm:px-4 space-y-5">
-        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-950 to-violet-950 p-5 text-white shadow-2xl sm:p-8">
-            <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-violet-600/20 blur-3xl"></div>
-            <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-indigo-400/10 blur-3xl"></div>
-            <div class="relative"><div class="text-[10px] font-black uppercase tracking-[.22em] text-violet-400">Payment schedule management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Installments</h1><p class="mt-2 max-w-xl text-sm leading-6 text-violet-100/80">Monitor upcoming payments, overdue schedules and customer payment progress.</p></div>
-            <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        <section class="admin-command-card admin-command-summary p-5 text-white shadow-2xl sm:p-8">
+            <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full"></div>
+            <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full"></div>
+            <div class="relative"><div class="admin-command-badge inline-flex rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em]">Payment schedule management</div><h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Installments</h1><p class="mt-2 max-w-xl text-sm leading-6 text-violet-100/80">Monitor upcoming payments, overdue schedules and customer payment progress.</p></div>
+            <div class="admin-command-stat-grid mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
                 @foreach([
                     ['All installments', $summary['total'], 'Total scheduled records', 'bg-violet-400', false],
                     ['Upcoming', $summary['upcoming'], 'Next customer payments', 'bg-cyan-400', false],
                     ['Overdue', $summary['overdue'], 'Require follow-up', 'bg-rose-400', false],
                     ['Amount received', $summary['received'], 'Paid toward schedules', 'bg-emerald-400', true],
                 ] as [$label, $value, $hint, $accent, $currency])
-                    <div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4">
+                    <div class="admin-command-stat rounded-2xl border p-3.5 backdrop-blur sm:p-4">
                         <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-violet-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
                         <div class="mt-2 break-words text-xl font-black tabular-nums text-white sm:text-3xl">{{ $currency ? 'Rs '.number_format($value) : number_format($value) }}</div>
                         <div class="mt-1 text-[10px] leading-4 text-violet-100/65 sm:text-xs">{{ $hint }}</div>

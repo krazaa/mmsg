@@ -1,27 +1,27 @@
 <x-app-layout>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/60 py-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950/30 sm:py-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white py-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950/30 sm:py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
-            <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-950 to-blue-950 p-6 text-white shadow-2xl sm:p-8">
-                <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl"></div>
-                <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl"></div>
+            <section class="admin-command-card admin-command-summary p-6 text-white shadow-2xl sm:p-8">
+                <div class="absolute -right-16 -top-20 h-64 w-64 rounded-full"></div>
+                <div class="absolute -bottom-24 left-1/3 h-56 w-56 rounded-full"></div>
                 <div class="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <div class="text-[10px] font-black uppercase tracking-[.22em] text-blue-400">Customer management</div>
+                        <div class="admin-command-badge inline-flex rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em]">Customer management</div>
                         <h1 class="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Customers</h1>
                         <p class="mt-2 max-w-xl text-sm leading-6 text-blue-100/80">Manage customer accounts, property bookings, payments and referral relationships.</p>
                     </div>
-                    <a href="{{ route('customers.create') }}" class="inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-blue-950 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-blue-50">
+                    <a href="{{ route('customers.create') }}" class="admin-command-action inline-flex w-fit items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:brightness-90">
                         <span class="text-lg leading-none">+</span> Add customer
                     </a>
                 </div>
-                <div class="relative mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+                <div class="admin-command-stat-grid mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
                     @foreach([
                         ['All customers', $summary['total'], 'Total customer accounts', 'bg-blue-500'],
                         ['Active', $summary['active'], 'Currently active', 'bg-emerald-400'],
                         ['With bookings', $summary['booked'], 'Property customers', 'bg-cyan-400'],
                         ['Commission earners', $summary['commission'], 'Referral commissions', 'bg-amber-400'],
                     ] as [$label, $value, $hint, $accent])
-                        <div class="rounded-2xl border border-white/10 bg-white/[.07] p-3.5 backdrop-blur sm:p-4">
+                        <div class="admin-command-stat rounded-2xl border p-3.5 backdrop-blur sm:p-4">
                             <div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-wider text-blue-200 sm:text-[10px]"><span class="h-2 w-2 shrink-0 rounded-full {{ $accent }}"></span>{{ $label }}</div>
                             <div class="mt-2 text-2xl font-black tabular-nums text-white sm:text-3xl">{{ number_format($value) }}</div>
                             <div class="mt-1 text-[10px] leading-4 text-blue-100/65 sm:text-xs">{{ $hint }}</div>

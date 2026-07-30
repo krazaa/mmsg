@@ -64,9 +64,9 @@
 }
 
 .management-command-pattern {
-    background-color: #ffffff;
+    background: var(--admin-command-card-background, var(--admin-card-background, #ffffff));
     background-image: none;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--admin-card-border, #e5e7eb);
     color: #0f172a !important;
 }
 
@@ -75,12 +75,201 @@
     position: absolute;
     inset: 0 0 0 42%;
     pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.5 0v40M0 .5h40' fill='none' stroke='%23dbe3f1' stroke-opacity='.65' stroke-width='1'/%3E%3C/svg%3E");
+    background-image:
+        linear-gradient(var(--admin-card-pattern, #dbe3f1) 1px, transparent 1px),
+        linear-gradient(90deg, var(--admin-card-pattern, #dbe3f1) 1px, transparent 1px);
     background-repeat: repeat;
     background-size: 40px 40px;
     -webkit-mask-image: linear-gradient(to right, transparent, #000 30%);
     mask-image: linear-gradient(to right, transparent, #000 30%);
     opacity: 0.72;
+}
+
+.admin-command-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--admin-card-border, #e2e8f0);
+    background: var(--admin-command-card-background, var(--admin-card-background, #fff)) !important;
+    color: #0f172a !important;
+    box-shadow: 0 18px 45px -28px rgba(15, 23, 42, .38);
+}
+
+.admin-command-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 42%;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+        linear-gradient(var(--admin-card-pattern, #dbe3f1) 1px, transparent 1px),
+        linear-gradient(90deg, var(--admin-card-pattern, #dbe3f1) 1px, transparent 1px);
+    background-repeat: repeat;
+    background-size: 40px 40px;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 30%);
+    mask-image: linear-gradient(to right, transparent, #000 30%);
+}
+
+.admin-command-card::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: -1;
+    width: .375rem;
+    background: linear-gradient(to bottom, var(--admin-command-accent, #4f46e5), var(--admin-command-accent-end, #22d3ee));
+}
+
+.admin-command-card :is(h1, h2, h3, .admin-command-value) {
+    color: #0f172a !important;
+}
+
+.admin-command-card :is(p, small) {
+    color: #64748b !important;
+}
+
+.admin-command-card .admin-command-kicker {
+    color: var(--admin-command-accent, #4f46e5) !important;
+}
+
+.admin-command-card .admin-command-stat {
+    border-color: #e2e8f0 !important;
+    background: rgba(255, 255, 255, .82) !important;
+    color: #0f172a !important;
+    backdrop-filter: blur(8px);
+}
+
+.admin-command-card .admin-command-stat > div {
+    color: #475569 !important;
+}
+
+.admin-command-card .admin-command-stat > div:nth-child(2) {
+    color: #0f172a !important;
+}
+
+.admin-command-card :is(a, button).bg-white {
+    border: 1px solid color-mix(in srgb, var(--admin-command-accent, #4f46e5) 35%, white);
+    background: var(--admin-card-action-background, var(--admin-command-accent, #4f46e5)) !important;
+    color: var(--admin-card-action-text, #fff) !important;
+    box-shadow: 0 12px 26px -16px var(--admin-command-accent, #4f46e5);
+}
+
+.admin-command-badge {
+    background: var(--admin-card-badge-background, #4b5563) !important;
+    color: var(--admin-card-badge-text, #fff) !important;
+}
+
+.admin-command-action {
+    background: var(--admin-card-action-background, #000) !important;
+    color: var(--admin-card-action-text, #fff) !important;
+}
+
+.admin-command-summary {
+    padding: 1.25rem !important;
+}
+
+.admin-command-summary .admin-command-stat-grid {
+    margin-top: 1rem !important;
+}
+
+.admin-command-summary .admin-command-stat {
+    padding: .875rem !important;
+}
+
+.admin-command-summary :is(h1, h2, h3) {
+    margin-top: .625rem;
+}
+
+@media (min-width: 640px) {
+    .admin-command-summary {
+        padding: 1.5rem !important;
+    }
+
+    .admin-command-summary > :is(.flex, .relative.flex) {
+        align-items: center;
+    }
+}
+
+.admin-command-card :is(a, button).bg-white:hover {
+    filter: brightness(.92);
+}
+
+.admin-command-card > div > span.bg-white\/10,
+.admin-command-card span.border-white\/15 {
+    border-color: #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #334155 !important;
+}
+
+.dark .admin-command-card {
+    border-color: #334155;
+    background: var(--admin-command-card-background, var(--admin-card-background, #0f172a)) !important;
+    color: #f8fafc !important;
+    box-shadow: none;
+}
+
+.dark .admin-command-card::before {
+    opacity: .14;
+}
+
+.dark .admin-command-card :is(h1, h2, h3, .admin-command-value) {
+    color: #f8fafc !important;
+}
+
+.dark .admin-command-card :is(p, small) {
+    color: #cbd5e1 !important;
+}
+
+.dark .admin-command-card .admin-command-stat {
+    border-color: #334155 !important;
+    background: rgba(30, 41, 59, .82) !important;
+    color: #f8fafc !important;
+}
+
+.dark .admin-command-card .admin-command-stat > div {
+    color: #cbd5e1 !important;
+}
+
+.dark .admin-command-card .admin-command-stat > div:nth-child(2) {
+    color: #f8fafc !important;
+}
+
+/* Keep every management surface visibly card-shaped without reducing existing 2xl/3xl corners. */
+.admin-portal-shell,
+.admin-portal-shell main {
+    background: var(--admin-page-background, #f1f5f9);
+}
+
+.admin-portal-shell main > div.min-h-screen {
+    background: var(--admin-page-background, #f1f5f9) !important;
+}
+
+.admin-portal-shell main :is(section, article, form, div).bg-white:not([class*="rounded"]),
+.admin-portal-shell main :is(section, article, form, div).shadow:not([class*="rounded"]),
+.admin-portal-shell main :is(section, article, form, div).shadow-sm:not([class*="rounded"]),
+.admin-portal-shell main :is(section, article, form, div).shadow-lg:not([class*="rounded"]),
+.admin-portal-shell main :is(section, article, form, div).shadow-xl:not([class*="rounded"]),
+.admin-portal-shell main :is(section, article, form, div).shadow-2xl:not([class*="rounded"]) {
+    border-radius: 1rem;
+}
+
+.admin-portal-shell main :is(section, article, form, div):is(.rounded, .rounded-md, .rounded-lg, .rounded-xl) {
+    border-radius: 1rem;
+}
+
+.admin-portal-shell main :is(.admin-responsive-table, .admin-bookings-table) {
+    border-radius: inherit;
+}
+
+/* Super Admin appearance settings are intentionally scoped to section/header cards. */
+.admin-portal-shell main :is(.admin-command-card, .management-command-pattern) {
+    border-color: var(--admin-card-border, #e2e8f0) !important;
+    background: var(--admin-command-card-background, var(--admin-card-background, #fff)) !important;
+}
+
+.dark .admin-portal-shell,
+.dark .admin-portal-shell main,
+.dark .admin-portal-shell main > div.min-h-screen {
+    background: #020617 !important;
 }
 
 @keyframes app-preloader-spin {

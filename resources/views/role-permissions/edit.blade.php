@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 py-7 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/30">
         <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6">
-            <section class="overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-violet-800 p-6 text-white shadow-2xl sm:p-8">
-                <div class="text-[10px] font-black uppercase tracking-[.2em] text-indigo-300">Super Admin only</div>
+            <section class="admin-command-card admin-command-summary rounded-3xl p-6 shadow-2xl sm:p-8">
+                <div class="admin-command-kicker text-[10px] font-black uppercase tracking-[.2em]">Super Admin only</div>
                 <h1 class="mt-2 text-3xl font-black">Roles & permissions</h1>
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-indigo-100">Choose which management areas Administrators and Staff can access. Super Admin always retains complete access.</p>
             </section>

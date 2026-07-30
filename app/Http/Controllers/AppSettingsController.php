@@ -20,12 +20,13 @@ class AppSettingsController extends Controller
             'showReferralCode' => SiteSetting::showReferralCodesOnCustomerPortal(),
             'maintenanceEnabled' => SiteSetting::maintenanceModeEnabled(),
             'maintenancePage' => SiteSetting::maintenancePage(),
+            'adminCardAppearance' => SiteSetting::adminCardAppearance(),
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $data = $request->validate([
+        $rules = [
             'fee_enabled' => ['required', 'boolean'],
             'fee_type' => ['required', Rule::in(['fixed', 'percentage'])],
             'fee_value' => ['required', 'numeric', 'min:0'],
@@ -34,7 +35,27 @@ class AppSettingsController extends Controller
             'maintenance_mode_enabled' => ['required', 'boolean'],
             'maintenance_page_title' => ['required', 'string', 'max:100'],
             'maintenance_page_message' => ['required', 'string', 'max:500'],
-        ]);
+        ];
+
+        if ($request->user()->hasRole('super_admin')) {
+            foreach (array_keys(SiteSetting::adminCardAppearanceDefaults()) as $key) {
+                if ($key === 'admin_card_background_mode') {
+                    $rules[$key] = ['required', Rule::in(['solid', 'transparent', 'gradient'])];
+
+                    continue;
+                }
+
+                if ($key === 'admin_page_background_mode') {
+                    $rules[$key] = ['required', Rule::in(['solid', 'gradient'])];
+
+                    continue;
+                }
+
+                $rules[$key] = ['required', 'regex:/^#[0-9a-fA-F]{6}$/'];
+            }
+        }
+
+        $data = $request->validate($rules);
 
         if ($data['fee_type'] === 'percentage' && (float) $data['fee_value'] > 100) {
             throw ValidationException::withMessages([
@@ -60,6 +81,14 @@ class AppSettingsController extends Controller
             'maintenance_page_message' => $data['maintenance_page_message'],
         ] as $key => $value) {
             SiteSetting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+
+        if ($request->user()->hasRole('super_admin')) {
+            foreach (array_keys(SiteSetting::adminCardAppearanceDefaults()) as $key) {
+                $value = strtolower($data[$key]);
+
+                SiteSetting::updateOrCreate(['key' => $key], ['value' => $value]);
+            }
         }
 
         return back()->with('success', 'App settings updated.');
