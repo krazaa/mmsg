@@ -16,9 +16,7 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->get('/login');
 
-        $response->assertStatus(200)
-            ->assertSee('Sign in with a passkey')
-            ->assertSee('No passkey yet?');
+        $response->assertStatus(200)->assertSee('Sign in with a passkey');
     }
 
     public function test_passkey_login_success_always_returns_json_for_the_browser_client(): void

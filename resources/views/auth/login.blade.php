@@ -43,6 +43,5 @@
         Sign in with a passkey
     </button>
     <p id="passkey-login-message" hidden class="mt-3 text-center text-xs font-bold"></p>
-    <p class="mt-2 text-center text-[11px] leading-5 text-slate-500">No passkey yet? Sign in with your password, then create one from your Profile page.</p>
     <p class="mt-3 text-center text-[10px] leading-5 text-slate-400">Face ID · Fingerprint · Windows Hello · Security key</p>
 </x-guest-layout>
