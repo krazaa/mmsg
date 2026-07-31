@@ -144,14 +144,14 @@ The database seeder creates the initial Super Admin from these `.env` values:
 
 ```env
 SUPER_ADMIN_NAME="Super Admin"
-SUPER_ADMIN_EMAIL=sadmin@mmsgroup.pk
+SUPER_ADMIN_EMAIL=sadmin@example.com
 SUPER_ADMIN_PASSWORD=P@ssWord
 ```
 
 Default login:
 
 ```text
-Email:    sadmin@mmsgroup.pk
+Email:    sadmin@example.com
 Password: P@ssWord
 ```
 
@@ -249,7 +249,7 @@ MAIL_PORT=587
 MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
 MAIL_SCHEME=tls
-MAIL_FROM_ADDRESS=no-reply@mmsgroup.pk
+MAIL_FROM_ADDRESS=no-reply@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
