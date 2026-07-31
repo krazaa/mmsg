@@ -3,9 +3,88 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="MMS Group property booking, installment, inventory and customer portal.">
-    <title>MMS Group · Property made simple</title>
+    <title>{{ $seo['title'] }}</title>
+    <meta name="description" content="{{ $seo['description'] }}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="author" content="MMS Group">
+    <meta name="theme-color" content="{{ $pageAppearance['welcome_header_background_color'] }}">
+    <link rel="canonical" href="{{ $seo['canonical'] }}">
+    <link rel="alternate" hreflang="en" href="{{ $seo['canonical'] }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $seo['canonical'] }}">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ route('sitemap') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MMS Group">
+    <meta property="og:locale" content="en_PK">
+    <meta property="og:title" content="{{ $seo['title'] }}">
+    <meta property="og:description" content="{{ $seo['description'] }}">
+    <meta property="og:url" content="{{ $seo['canonical'] }}">
+    <meta property="og:image" content="{{ $seo['image'] }}">
+    <meta property="og:image:alt" content="MMS Group property development and customer platform">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seo['title'] }}">
+    <meta name="twitter:description" content="{{ $seo['description'] }}">
+    <meta name="twitter:image" content="{{ $seo['image'] }}">
+    <meta name="twitter:image:alt" content="MMS Group property development and customer platform">
     <link rel="icon" href="{{ asset('email-logo.png') }}" type="image/png">
+    @php
+        $sameAs = collect($socialLinks)->filter()->values()->all();
+        $structuredData = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Organization',
+                    '@id' => route('home').'#organization',
+                    'name' => 'MMS Group',
+                    'url' => route('home'),
+                    'logo' => asset('email-logo.png'),
+                    'description' => $seo['description'],
+                    'sameAs' => $sameAs,
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => route('home').'#website',
+                    'url' => route('home'),
+                    'name' => 'MMS Group',
+                    'description' => $seo['description'],
+                    'publisher' => ['@id' => route('home').'#organization'],
+                    'inLanguage' => 'en-PK',
+                ],
+                [
+                    '@type' => 'WebPage',
+                    '@id' => route('home').'#webpage',
+                    'url' => route('home'),
+                    'name' => $seo['title'],
+                    'description' => $seo['description'],
+                    'isPartOf' => ['@id' => route('home').'#website'],
+                    'about' => ['@id' => route('home').'#organization'],
+                    'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $seo['image']],
+                    'inLanguage' => 'en-PK',
+                ],
+                [
+                    '@type' => 'ItemList',
+                    '@id' => route('home').'#developments',
+                    'name' => 'MMS Group property developments',
+                    'numberOfItems' => $projects->count(),
+                    'itemListElement' => $projects->values()->map(fn ($project, $index) => [
+                        '@type' => 'ListItem',
+                        'position' => $index + 1,
+                        'name' => $project->name,
+                        'url' => route('home').'#project-'.$project->slug,
+                    ])->all(),
+                ],
+                [
+                    '@type' => 'FAQPage',
+                    '@id' => route('home').'#faq',
+                    'mainEntity' => collect($faqs)->map(fn ($faq) => [
+                        '@type' => 'Question',
+                        'name' => $faq['question'],
+                        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['answer']],
+                    ])->all(),
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-grid { background-image: linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 34px 34px; }
@@ -23,7 +102,7 @@
         [data-reveal][data-effect="right"] { transform: translateX(28px); }
         [data-reveal][data-effect="scale"] { transform: translateY(14px) scale(.96); }
         [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
-        #projects h2, #platform h2, #journey h2, #access h2 { font-size: var(--welcome-section-heading-size) !important; }
+        #projects h2, #platform h2, #journey h2, #faq h2, #access h2 { font-size: var(--welcome-section-heading-size) !important; }
         .hero-primary-button { background: {{ $pageAppearance['welcome_hero_primary_button_background_color'] }}; color: {{ $pageAppearance['welcome_hero_primary_button_text_color'] }}; }
         .hero-primary-button:hover { background: {{ $pageAppearance['welcome_hero_primary_button_hover_color'] }}; }
         .hero-secondary-button { background: {{ $pageAppearance['welcome_hero_secondary_button_background_color'] }}; color: {{ $pageAppearance['welcome_hero_secondary_button_text_color'] }}; }
@@ -64,7 +143,7 @@
                     <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('email-logo.png') }}" width="72" height="48" alt="MMS Group logo" class="h-full w-full object-contain"></span>
                     <span><b class="block text-base font-black tracking-tight">MMS Group</b><span class="block text-[10px] font-bold uppercase tracking-[.2em] text-indigo-300">Property platform</span></span>
                 </a>
-                <div class="hidden items-center gap-7 text-sm font-semibold text-slate-300 md:flex"><a href="#projects" class="hover:text-white">Projects</a><a href="#platform" class="hover:text-white">Platform</a><a href="#journey" class="hover:text-white">How it works</a><a href="#access" class="hover:text-white">Portal access</a></div>
+                <div class="hidden items-center gap-7 text-sm font-semibold text-slate-300 md:flex"><a href="#projects" class="hover:text-white">Projects</a><a href="#platform" class="hover:text-white">Platform</a><a href="#journey" class="hover:text-white">How it works</a><a href="#faq" class="hover:text-white">FAQs</a><a href="#access" class="hover:text-white">Portal access</a></div>
                 <div class="flex items-center gap-2">
                     @auth
                         <a href="{{ route('dashboard') }}" class="rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 hover:bg-indigo-50">Open dashboard →</a>
@@ -191,7 +270,7 @@
                                 $projectImage = $project->image_url;
                                 $blueprintImage = $project->blueprint_url;
                             @endphp
-                            <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
+                            <article id="project-{{ $project->slug }}" class="group scroll-mt-24 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">
                                     @if($projectImage)
                                         <img src="{{ $projectImage }}" width="640" height="400" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" decoding="async">
@@ -273,6 +352,27 @@
                             <li class="group rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-indigo-200 hover:bg-white hover:shadow-lg" data-reveal data-effect="right" style="--reveal-delay: {{ ($index % 2) * 100 }}ms"><div class="flex items-center justify-between"><span class="text-xs font-black text-indigo-600">STEP 0{{ $index+1 }}</span><span class="grid h-7 w-7 place-items-center rounded-full bg-indigo-100 text-xs text-indigo-700 transition group-hover:bg-indigo-600 group-hover:text-white">→</span></div><h3 class="mt-3 font-black">{{ $step[0] }}</h3><p class="mt-2 text-sm leading-6 text-slate-600">{{ $step[1] }}</p></li>
                         @endforeach
                     </ol>
+                </div>
+            </section>
+
+            <section id="faq" class="border-y border-slate-200 bg-slate-50 py-12 text-slate-950 sm:py-16" aria-labelledby="faq-heading">
+                <div class="mx-auto max-w-5xl px-5 sm:px-6 lg:px-8">
+                    <div class="max-w-3xl" data-reveal data-effect="left">
+                        <span class="text-xs font-black uppercase tracking-[.2em] text-indigo-600">Helpful answers</span>
+                        <h2 id="faq-heading" class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">MMS Group property questions, answered.</h2>
+                        <p class="mt-4 text-base leading-7 text-slate-600">Direct answers about plot booking, installments, payment verification, allotment, and secure account access.</p>
+                    </div>
+                    <div class="mt-9 grid gap-4 md:grid-cols-2">
+                        @foreach($faqs as $faq)
+                            <details class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm open:border-indigo-200 open:shadow-md" data-reveal data-effect="scale">
+                                <summary class="flex cursor-pointer list-none items-start justify-between gap-4 font-black text-slate-900 marker:hidden">
+                                    <span>{{ $faq['question'] }}</span>
+                                    <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-700 transition group-open:rotate-45" aria-hidden="true">+</span>
+                                </summary>
+                                <p class="mt-4 border-t border-slate-100 pt-4 text-sm leading-7 text-slate-600">{{ $faq['answer'] }}</p>
+                            </details>
+                        @endforeach
+                    </div>
                 </div>
             </section>
 

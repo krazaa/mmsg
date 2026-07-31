@@ -96,4 +96,57 @@ class WelcomeAppearanceTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder(['Latest Project', 'Older Project']);
     }
+
+    public function test_welcome_page_exposes_search_and_answer_engine_metadata(): void
+    {
+        Project::create([
+            'name' => 'Searchable Project',
+            'slug' => 'searchable-project',
+            'location' => 'Lahore',
+            'image_path' => 'projects/searchable.jpg',
+            'gross_area_marla' => 200,
+            'saleable_area_marla' => 150,
+            'sold_area_marla' => 0,
+            'reserved_area_marla' => 0,
+            'status' => true,
+        ]);
+
+        $response = $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('<meta name="description"', false)
+            ->assertSee('<meta name="robots" content="index, follow', false)
+            ->assertSee('<link rel="canonical" href="'.route('home').'">', false)
+            ->assertSee('<meta property="og:type" content="website">', false)
+            ->assertSee('<meta name="twitter:card" content="summary_large_image">', false)
+            ->assertSee('<script type="application/ld+json">', false)
+            ->assertSee('MMS Group property questions, answered.')
+            ->assertSee('id="project-searchable-project"', false);
+
+        preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $response->getContent(), $matches);
+        $structuredData = json_decode($matches[1] ?? '', true, flags: JSON_THROW_ON_ERROR);
+        $types = collect($structuredData['@graph'])->pluck('@type');
+
+        $this->assertTrue($types->contains('Organization'));
+        $this->assertTrue($types->contains('WebSite'));
+        $this->assertTrue($types->contains('WebPage'));
+        $this->assertTrue($types->contains('ItemList'));
+        $this->assertTrue($types->contains('FAQPage'));
+    }
+
+    public function test_xml_sitemap_lists_the_public_home_page(): void
+    {
+        $this->get(route('sitemap'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
+            ->assertSee('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', false)
+            ->assertSee('<loc>'.route('home').'</loc>', false);
+    }
+
+    public function test_robots_file_advertises_the_sitemap(): void
+    {
+        $robots = file_get_contents(public_path('robots.txt'));
+
+        $this->assertStringContainsString('User-agent: *', $robots);
+        $this->assertStringContainsString('Sitemap: https://mmsgroup.pk/sitemap.xml', $robots);
+    }
 }

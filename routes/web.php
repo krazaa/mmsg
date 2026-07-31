@@ -62,9 +62,33 @@ Route::get('/', function () {
         'LinkedIn' => SiteSetting::valueFor('welcome_social_linkedin_url', ''),
         'X' => SiteSetting::valueFor('welcome_social_x_url', ''),
     ];
+    $seo = [
+        'title' => 'MMS Group | Property Booking, Installments & Plot Management',
+        'description' => 'Explore MMS Group property developments, book a plot, track installments, submit payment proof, access verified receipts, and follow plot allotment online.',
+        'canonical' => route('home'),
+        'image' => $projects->first()?->image_url ?: asset('email-logo.png'),
+    ];
+    $faqs = [
+        ['question' => 'What is MMS Group?', 'answer' => 'MMS Group is a property platform that connects plot booking, installment tracking, payment verification, digital receipts, project inventory, and plot allotment in one secure account.'],
+        ['question' => 'How do I book a plot with MMS Group?', 'answer' => 'Create or sign in to your customer account, review an available project package, submit your booking details, and upload proof of the required first payment for verification.'],
+        ['question' => 'Can I track property installments online?', 'answer' => 'Yes. Your MMS Group account shows installment due dates, paid amounts, remaining balances, payment verification status, and downloadable receipts.'],
+        ['question' => 'How are property payments verified?', 'answer' => 'Customers submit payment proof through their account. The MMS Group team reviews the payment and, after verification, makes the updated status and receipt available in the customer portal.'],
+        ['question' => 'Where can I find my plot allotment details?', 'answer' => 'When a plot is allotted, its project, block, plot number, and size remain connected to your booking and can be viewed from your secure customer account.'],
+        ['question' => 'Is the MMS Group customer portal secure?', 'answer' => 'The portal uses authenticated accounts, verified email access, protected payment records, and optional passkey sign-in on supported devices.'],
+    ];
 
-    return view('welcome', compact('projects', 'offerPackage', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance', 'socialLinks'));
+    return view('welcome', compact('projects', 'offerPackage', 'backgroundColor', 'heroGridBackgroundColor', 'heroHeadingColor', 'heroStatValueColor', 'heroStatLabelColor', 'pageAppearance', 'socialLinks', 'seo', 'faqs'));
 })->name('home');
+
+Route::get('/sitemap.xml', function () {
+    $lastModified = collect([
+        Project::query()->max('updated_at'),
+        SiteSetting::query()->max('updated_at'),
+    ])->filter()->max();
+
+    return response()->view('sitemap', compact('lastModified'))
+        ->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('sitemap');
 
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');
 Route::post('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'store'])->name('email-unsubscribe.store');
