@@ -4,6 +4,8 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -14,7 +16,19 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->get('/login');
 
-        $response->assertStatus(200)->assertSee('Sign in with a passkey');
+        $response->assertStatus(200)
+            ->assertSee('Sign in with a passkey')
+            ->assertSee('No passkey yet?');
+    }
+
+    public function test_passkey_login_success_always_returns_json_for_the_browser_client(): void
+    {
+        $request = Request::create('/passkeys/login', 'POST');
+
+        $response = app(PasskeyLoginResponse::class)->toResponse($request);
+
+        $this->assertSame('application/json', $response->headers->get('Content-Type'));
+        $this->assertSame(route('dashboard'), $response->getData(true)['redirect']);
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

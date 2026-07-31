@@ -9,6 +9,7 @@ use App\Contracts\BookingPaymentRecorder;
 use App\Contracts\CommissionDistributor;
 use App\Contracts\InstallmentScheduleGenerator;
 use App\Models\User;
+use App\Http\Responses\PasskeyLoginResponse;
 use App\Repositories\EloquentActivityLogReadRepository;
 use App\Services\BookingLifecycleService;
 use App\Services\BookingService;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passkeys\Contracts\PasskeyUser;
+use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
 use Laravel\Passkeys\Passkey;
 use Laravel\Passkeys\Passkeys;
 use Spatie\Permission\Models\Role;
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BookingPaymentRecorder::class, BookingService::class);
         $this->app->bind(CommissionDistributor::class, CommissionService::class);
         $this->app->bind(InstallmentScheduleGenerator::class, InstallmentScheduleService::class);
+        $this->app->singleton(PasskeyLoginResponseContract::class, PasskeyLoginResponse::class);
     }
 
     /**

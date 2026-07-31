@@ -201,6 +201,7 @@ passkeyLoginButtons.forEach((button) => {
 
     button.addEventListener('click', async () => {
         const original = button.innerHTML;
+        message.hidden = true;
         button.disabled = true;
         button.textContent = 'Checking your passkey…';
 
@@ -213,7 +214,12 @@ passkeyLoginButtons.forEach((button) => {
             });
             window.location.assign(response.redirect || button.dataset.fallbackUrl);
         } catch (error) {
-            showPasskeyMessage(message, error.message || 'Passkey sign-in was not completed.', true);
+            const passkeyMissing = error.name === 'UserCancelledError'
+                || /not recognized|no passkey|cancelled/i.test(error.message || '');
+            const errorMessage = passkeyMissing
+                ? 'No matching passkey was found. Sign in with your password, then create a passkey from your Profile page.'
+                : (error.message || 'Passkey sign-in was not completed.');
+            showPasskeyMessage(message, errorMessage, true);
             button.disabled = false;
             button.innerHTML = original;
         }
