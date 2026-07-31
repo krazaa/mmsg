@@ -20,6 +20,7 @@
         ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
         ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage withdrawals', 'color' => 'bg-teal-400'],
         ['label' => 'App settings', 'route' => 'app-settings.edit', 'active' => 'app-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-indigo-400'],
+        ['label' => 'Backup & restore', 'route' => 'database-backup.index', 'active' => 'database-backup.*', 'permission' => 'manage staff', 'color' => 'bg-amber-300', 'super_admin_only' => true],
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
         ['label' => 'Payment Gateway', 'route' => 'payment-gateways.index', 'active' => 'payment-gateways.*', 'permission' => 'manage payments', 'color' => 'bg-orange-400', 'super_admin_only' => true],
         ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],

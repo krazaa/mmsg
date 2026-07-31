@@ -113,7 +113,7 @@ if (dataVersionMeta && dataVersionUrl) {
 }
 
 if (document.querySelector('[data-allotment-selects], [data-booking-filter-select]')) {
-    Promise.all([import('jquery'), import('select2')]).then(([jquery, select2]) => {
+    Promise.all([import('jquery'), import('select2'), import('select2/dist/css/select2.css')]).then(([jquery, select2]) => {
         const $ = jquery.default;
         window.$ = window.jQuery = $;
         select2.default(window, $);

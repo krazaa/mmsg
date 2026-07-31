@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="MMS Group property booking, installment, inventory and customer portal.">
     <title>MMS Group · Property made simple</title>
-    <link rel="icon" href="{{ asset('logo.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('email-logo.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-grid { background-image: linear-gradient(rgba(99,102,241,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 34px 34px; }
@@ -55,20 +55,13 @@
     </style>
 </head>
 <body class="font-sans text-slate-100 antialiased" style="background-color:{{ $backgroundColor }};--welcome-section-heading-size:{{ $pageAppearance['welcome_section_heading_font_size'] }}px">
-    <div id="app-preloader" class="app-preloader" role="status" aria-live="polite" aria-label="Loading website">
-        <div class="app-preloader__panel">
-            <img src="{{ asset('logo.svg') }}" alt="" class="app-preloader__logo">
-            <span class="app-preloader__spinner" aria-hidden="true"></span>
-            <span class="app-preloader__text">Loading MMS Group</span>
-        </div>
-    </div>
     <div class="relative overflow-hidden">
         <div class="ambient-glow pointer-events-none absolute inset-x-0 top-0 h-[720px]" style="background-image:radial-gradient(circle at 20% 10%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_primary_color'] }} 32%, transparent),transparent 36%),radial-gradient(circle at 82% 20%,color-mix(in srgb, {{ $pageAppearance['welcome_hero_blur_secondary_color'] }} 20%, transparent),transparent 30%)"></div>
 
         <header class="hero-copy sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl" style="background-color: {{ $pageAppearance['welcome_header_background_color'] }}e6">
             <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Main navigation">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span>
+                    <span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-xl p-1"><img src="{{ asset('email-logo.png') }}" width="72" height="48" alt="MMS Group logo" class="h-full w-full object-contain"></span>
                     <span><b class="block text-base font-black tracking-tight">MMS Group</b><span class="block text-[10px] font-bold uppercase tracking-[.2em] text-indigo-300">Property platform</span></span>
                 </a>
                 <div class="hidden items-center gap-7 text-sm font-semibold text-slate-300 md:flex"><a href="#projects" class="hover:text-white">Projects</a><a href="#platform" class="hover:text-white">Platform</a><a href="#journey" class="hover:text-white">How it works</a><a href="#access" class="hover:text-white">Portal access</a></div>
@@ -133,7 +126,7 @@
                         <div class="glass-ring relative overflow-hidden rounded-[2.25rem] border p-2.5" style="border-color:{{ $pageAppearance['welcome_hero_image_border_color'] }};background:linear-gradient(135deg,{{ $pageAppearance['welcome_hero_image_gradient_start_color'] }},{{ $pageAppearance['welcome_hero_image_gradient_end_color'] }})">
                             <div class="relative aspect-[4/5] overflow-hidden rounded-[1.8rem] sm:aspect-[5/4]">
                                 @if($heroImage)
-                                    <img src="{{ $heroImage }}" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover" fetchpriority="high" decoding="async">
+                                    <img src="{{ $heroImage }}" width="800" height="640" alt="{{ $heroProject?->name ?? 'MMS Group project' }}" class="h-full w-full object-cover" fetchpriority="high" decoding="async">
                                 @else
                                     <div class="h-full w-full bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"></div>
                                 @endif
@@ -152,7 +145,7 @@
                         </div>
                         @if($heroSecondProject && $heroSecondImage)
                             <div class="float-card absolute -bottom-3 -right-2 w-44 overflow-hidden rounded-2xl border border-white/20 bg-slate-900 p-2 shadow-2xl backdrop-blur sm:-right-6 sm:w-52">
-                                <img src="{{ $heroSecondImage }}" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover" loading="lazy" decoding="async">
+                                <img src="{{ $heroSecondImage }}" width="416" height="234" alt="{{ $heroSecondProject->name }}" class="aspect-[16/9] w-full rounded-xl object-cover" loading="lazy" decoding="async">
                                 <div class="flex items-center justify-between gap-2 px-2 pb-1 pt-2"><div><b class="block truncate text-xs text-white">{{ $heroSecondProject->name }}</b><span class="text-[10px] text-slate-400">{{ $heroSecondProject->location }}</span></div><span class="text-indigo-300">↗</span></div>
                             </div>
                         @endif
@@ -201,7 +194,7 @@
                             <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-indigo-300" data-reveal data-effect="scale" style="--reveal-delay: {{ $loop->index * 100 }}ms">
                                 <div class="relative aspect-[16/10] overflow-hidden">
                                     @if($projectImage)
-                                        <img src="{{ $projectImage }}" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" decoding="async">
+                                        <img src="{{ $projectImage }}" width="640" height="400" alt="{{ $project->name }} development view" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" decoding="async">
                                     @else
                                         <div class="grid h-full place-items-center bg-gradient-to-br from-indigo-700 via-violet-800 to-slate-950"><span class="text-7xl font-black text-white/15">{{ $initials }}</span></div>
                                     @endif
@@ -291,7 +284,7 @@
 
         <footer class="border-t border-white/10" style="background-color:{{ $pageAppearance['welcome_footer_background_color'] }};color:{{ $pageAppearance['welcome_footer_text_color'] }};font-size:{{ $pageAppearance['welcome_body_font_size'] }}px">
             <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-400 sm:flex-row sm:items-center lg:px-8" data-reveal>
-                <div class="order-1 flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('logo.svg') }}" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200"></b></div>
+                <div class="order-1 flex items-center gap-2"><span class="grid h-11 w-18 flex-none place-items-center overflow-hidden rounded-lg p-1"><img src="{{ asset('email-logo.png') }}" width="72" height="48" alt="MMS Group logo" class="h-full w-full object-contain"></span><b class="text-slate-200"></b></div>
                 <p class="order-3 sm:ml-auto">Property records, payments and allotments in one secure platform.</p>
                 <p class="order-4">© {{ date('Y') }} MMS Group</p>
                 @if(collect($socialLinks)->filter()->isNotEmpty())

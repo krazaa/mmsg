@@ -14,6 +14,7 @@ use App\Http\Controllers\CustomerPayoutMethodController;
 use App\Http\Controllers\CustomerPortalThemeController;
 use App\Http\Controllers\CustomerWithdrawalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DatabaseBackupController;
 use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailUnsubscribeController;
 use App\Http\Controllers\InstallmentSchedulesController;
@@ -100,6 +101,11 @@ Route::middleware('auth')->group(function () {
     Route::middleware('management')->group(function () {
         Route::get('/management/roles-permissions', [RolePermissionController::class, 'edit'])->middleware('role:super_admin')->name('role-permissions.edit');
         Route::put('/management/roles-permissions/{role}', [RolePermissionController::class, 'update'])->middleware('role:super_admin')->name('role-permissions.update');
+        Route::get('/management/database-backup', [DatabaseBackupController::class, 'index'])->middleware('role:super_admin')->name('database-backup.index');
+        Route::post('/management/database-backup', [DatabaseBackupController::class, 'store'])->middleware(['role:super_admin', 'throttle:3,1'])->name('database-backup.store');
+        Route::get('/management/database-backup/{filename}/download', [DatabaseBackupController::class, 'download'])->middleware('role:super_admin')->name('database-backup.download');
+        Route::delete('/management/database-backup/{filename}', [DatabaseBackupController::class, 'destroy'])->middleware('role:super_admin')->name('database-backup.destroy');
+        Route::post('/management/database-backup/restore', [DatabaseBackupController::class, 'restore'])->middleware(['role:super_admin', 'throttle:3,1'])->name('database-backup.restore');
         Route::get('/management/activity-log', [ActivityLogController::class, 'index'])->middleware('permission:view activity log')->name('management.activity-log.index');
         Route::get('/withdrawal-requests', [CustomerWithdrawalController::class, 'managementIndex'])->middleware('permission:manage withdrawals')->name('withdrawal-requests.index');
         Route::get('/management/withdrawal-settings', [CustomerWithdrawalController::class, 'editSettings'])->middleware('permission:manage withdrawals')->name('withdrawal-settings.edit');
