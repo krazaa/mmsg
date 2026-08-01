@@ -23,23 +23,31 @@ class CommissionRuleController extends Controller
     public function update(Request $request, PlotPackage $package)
     {
         $data = $request->validate([
-            'levels' => ['required', 'array', 'size:3'],
-            'levels.1' => ['required', 'numeric', 'between:0,100'],
-            'levels.2' => ['required', 'numeric', 'between:0,100'],
-            'levels.3' => ['required', 'numeric', 'between:0,100'],
-            'active' => ['nullable', 'array'], 'active.*' => ['nullable', 'boolean'],
+            'levels' => ['required', 'array'],
+            'levels.cash' => ['required', 'array', 'size:3'],
+            'levels.installment' => ['required', 'array', 'size:3'],
+            'levels.*.1' => ['required', 'numeric', 'between:0,100'],
+            'levels.*.2' => ['required', 'numeric', 'between:0,100'],
+            'levels.*.3' => ['required', 'numeric', 'between:0,100'],
+            'active' => ['nullable', 'array'],
+            'active.*' => ['nullable', 'array'],
+            'active.*.*' => ['nullable', 'boolean'],
         ]);
 
         DB::transaction(function () use ($package, $data) {
-            foreach ([1, 2, 3] as $level) {
-                CommissionRule::updateOrCreate(
-                    ['package_id' => $package->id, 'level' => $level],
-                    ['percentage' => $data['levels'][$level], 'status' => (bool) ($data['active'][$level] ?? false)]
-                );
+            foreach (['cash', 'installment'] as $paymentPlan) {
+                foreach ([1, 2, 3] as $level) {
+                    CommissionRule::updateOrCreate(
+                        ['package_id' => $package->id, 'payment_plan' => $paymentPlan, 'level' => $level],
+                        ['percentage' => $data['levels'][$paymentPlan][$level], 'status' => (bool) ($data['active'][$paymentPlan][$level] ?? false)]
+                    );
+                }
             }
-            CommissionRule::where('package_id', $package->id)->whereNotIn('level', [1, 2, 3])->delete();
+            CommissionRule::where('package_id', $package->id)
+                ->where(fn ($query) => $query->whereNotIn('payment_plan', ['cash', 'installment'])->orWhereNotIn('level', [1, 2, 3]))
+                ->delete();
         });
 
-        return redirect()->route('commission-rules.index', ['project' => $package->project_id, 'package' => $package->id])->with('success', 'Package commission levels updated.');
+        return redirect()->route('commission-rules.index', ['project' => $package->project_id, 'package' => $package->id])->with('success', 'Cash and installment commission levels updated.');
     }
 }

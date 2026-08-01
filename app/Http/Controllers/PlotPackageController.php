@@ -56,8 +56,10 @@ class PlotPackageController extends Controller
     {
         $data = $this->validated($request);
         $package = PlotPackage::create($this->attributes($data));
-        foreach ([1 => 5, 2 => 3, 3 => 2] as $level => $percentage) {
-            $package->commissionRules()->create(compact('level', 'percentage') + ['status' => true]);
+        foreach (['cash', 'installment'] as $paymentPlan) {
+            foreach ([1 => 5, 2 => 3, 3 => 2] as $level => $percentage) {
+                $package->commissionRules()->create(compact('level', 'percentage') + ['payment_plan' => $paymentPlan, 'status' => true]);
+            }
         }
 
         return redirect()->route('packages.index', ['project' => $data['project_id']])->with('success', 'Package created successfully.');

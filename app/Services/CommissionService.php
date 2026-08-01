@@ -19,6 +19,7 @@ class CommissionService implements CommissionDistributor
         }
 
         $rules = CommissionRule::query()->where('package_id', $booking->package_id)
+            ->where('payment_plan', $booking->payment_plan === 'cash' ? 'cash' : 'installment')
             ->where('status', true)->orderBy('level')->limit(3)->get();
 
         foreach ($rules as $rule) {

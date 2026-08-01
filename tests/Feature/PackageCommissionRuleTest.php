@@ -6,8 +6,10 @@ use App\Models\Booking;
 use App\Models\Commission;
 use App\Models\CommissionPayout;
 use App\Models\CommissionRule;
+use App\Models\Payment;
 use App\Models\PlotPackage;
 use App\Models\User;
+use App\Contracts\CommissionDistributor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -24,8 +26,14 @@ class PackageCommissionRuleTest extends TestCase
         $package = PlotPackage::where('name', '10 Marla')->firstOrFail();
 
         $this->actingAs($admin)->put(route('commission-rules.update', $package), [
-            'levels' => [1 => 8, 2 => 4, 3 => 1],
-            'active' => [1 => 1, 2 => 1, 3 => 1],
+            'levels' => [
+                'cash' => [1 => 6, 2 => 3, 3 => 1],
+                'installment' => [1 => 8, 2 => 4, 3 => 1],
+            ],
+            'active' => [
+                'cash' => [1 => 1, 2 => 1, 3 => 1],
+                'installment' => [1 => 1, 2 => 1, 3 => 1],
+            ],
         ])->assertRedirect();
         $this->actingAs($admin)->post(route('bookings.store'), [
             'package_id' => $package->id, 'name' => 'Customer', 'cnic' => '33333-3333333-3',
@@ -34,8 +42,8 @@ class PackageCommissionRuleTest extends TestCase
 
         $this->assertEquals([28000.0, 14000.0, 3500.0], Commission::orderBy('level')->pluck('amount')->map(fn ($amount) => (float) $amount)->all());
         $other = PlotPackage::where('name', '5 Marla')->firstOrFail();
-        $this->assertEquals(5, (float) CommissionRule::where('package_id', $other->id)->where('level', 1)->value('percentage'));
-        $this->assertEquals(3, CommissionRule::where('package_id', $package->id)->count());
+        $this->assertEquals(5, (float) CommissionRule::where('package_id', $other->id)->where('payment_plan', 'installment')->where('level', 1)->value('percentage'));
+        $this->assertEquals(6, CommissionRule::where('package_id', $package->id)->count());
         $booking = Booking::firstOrFail();
         $this->actingAs($admin)->get(route('bookings.show', $booking))->assertOk()->assertSee('AGT-AGENT');
 
@@ -56,5 +64,18 @@ class PackageCommissionRuleTest extends TestCase
         $this->assertTrue(Activity::where('subject_type', Commission::class)->where('event', 'updated')->where('properties->attributes->status', 'paid')->exists());
         $this->actingAs($admin)->get(route('customers.show', $agent))
             ->assertOk()->assertSee('AGENT-PAY-1');
+
+        $cashBooking = $booking->replicate();
+        $cashBooking->booking_number = 'B-CASH-RATE';
+        $cashBooking->payment_plan = 'cash';
+        $cashBooking->save();
+        $cashPayment = Payment::create([
+            'receipt_number' => 'CASH-RATE-1', 'booking_id' => $cashBooking->id,
+            'customer_id' => $cashBooking->customer_id, 'amount' => 1000,
+            'payment_method' => 'cash', 'payment_date' => today(), 'status' => 'verified',
+        ]);
+        app(CommissionDistributor::class)->distribute($cashPayment, $cashBooking);
+
+        $this->assertEquals(60, (float) Commission::where('payment_id', $cashPayment->id)->where('level', 1)->value('amount'));
     }
 }
