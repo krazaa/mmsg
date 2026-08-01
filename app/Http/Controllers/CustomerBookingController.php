@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\InstallmentScheduleGenerator;
 use App\Models\Booking;
 use App\Models\PlotPackage;
 use App\Models\Project;
@@ -13,11 +14,14 @@ use Illuminate\Validation\ValidationException;
 
 class CustomerBookingController extends Controller
 {
+    public function __construct(private readonly InstallmentScheduleGenerator $schedules) {}
+
     public function create(Request $request)
     {
         abort_unless($request->user()->role === 'customer' && $request->user()->customer, 403);
         $pendingBooking = $request->user()->customer->bookings()
-            ->where('status', 'pending')
+            ->whereIn('status', ['pending', 'approved'])
+            ->whereDoesntHave('payments', fn ($query) => $query->whereNull('installment_schedule_id')->where('status', 'verified'))
             ->latest('id')
             ->first();
         $projects = Project::where('status', true)->with(['packages' => fn ($query) => $query->where('status', true)->orderBy('size_marla')])->orderBy('name')->get()
@@ -63,9 +67,10 @@ class CustomerBookingController extends Controller
 
         $booking = DB::transaction(function () use ($data, $customer) {
             User::whereKey($customer->id)->lockForUpdate()->firstOrFail();
-            if ($customer->bookings()->where('status', 'pending')->exists()) {
+            if ($customer->bookings()->whereIn('status', ['pending', 'approved'])
+                ->whereDoesntHave('payments', fn ($query) => $query->whereNull('installment_schedule_id')->where('status', 'verified'))->exists()) {
                 throw ValidationException::withMessages([
-                    'package_id' => 'Your previous plot request is still pending office approval. You can submit another request after it is approved or cancelled.',
+                    'package_id' => 'Complete and verify the first payment for your current booking before creating another booking.',
                 ]);
             }
 
@@ -95,22 +100,18 @@ class CustomerBookingController extends Controller
                 'total_price' => $data['payment_plan'] === 'cash' ? $package->effective_cash_price : $package->total_price,
                 'booking_amount' => $data['payment_plan'] === 'cash' ? $package->effective_cash_price : $package->booking_amount,
                 'financed_amount' => $data['payment_plan'] === 'cash' ? 0 : $package->total_price - (float) $package->booking_amount,
-                'status' => 'pending',
+                'status' => 'approved',
             ]);
+            if ($booking->payment_plan === 'installment') {
+                $this->schedules->generate($booking);
+            }
             $project->increment('reserved_area_marla', (float) $package->size_marla);
 
             return $booking;
         });
 
-        $customer->user->notify(new AccountActivityNotification('Booking request submitted', 'Your plot booking request has been received and is awaiting office approval.', 'booking', route('dashboard'), ['Booking' => $booking->booking_number, 'Project' => $booking->project->name]));
-        User::whereIn('role', ['super_admin', 'admin'])->where('status', true)->each(fn (User $admin) => $admin->notify(new AccountActivityNotification(
-            'New booking requires approval',
-            $customer->name.' submitted a new plot booking request.',
-            'booking',
-            route('bookings.manage', $booking),
-            ['Customer' => $customer->name, 'Booking' => $booking->booking_number, 'Project' => $booking->project->name, 'Package' => $booking->package->name],
-        )));
+        $customer->user->notify(new AccountActivityNotification('Booking created — payment required', 'Your plot is reserved. Submit the required first payment to activate the booking and unlock another booking.', 'booking', route('dashboard').'#payments', ['Booking' => $booking->booking_number, 'Project' => $booking->project->name]));
 
-        return redirect()->route('dashboard')->with('success', 'Plot booking request '.$booking->booking_number.' submitted for office approval.');
+        return redirect()->route('dashboard')->with('success', 'Booking '.$booking->booking_number.' created. Submit the required payment to activate it.');
     }
 }

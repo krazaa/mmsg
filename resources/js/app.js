@@ -23,12 +23,14 @@ if (appPreloader) {
         }
 
         hidden = true;
+        document.body.classList.remove('app-loading');
         appPreloader.classList.add('is-hidden');
         window.setTimeout(() => appPreloader.setAttribute('aria-hidden', 'true'), 200);
     };
 
     const showPreloader = () => {
         hidden = false;
+        document.body.classList.add('app-loading');
         appPreloader.removeAttribute('aria-hidden');
         appPreloader.classList.remove('is-hidden');
     };

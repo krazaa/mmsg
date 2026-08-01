@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Mail\BookingApprovedMail;
 use App\Mail\PaymentVerifiedMail;
 use App\Mail\PlanActivatedMail;
 use App\Models\Booking;
@@ -43,56 +42,37 @@ class CustomerBookingRequestTest extends TestCase
             ->assertSee('Selected installment plan')
             ->assertSee('Continue with Installments')
             ->assertDontSee('Choose a payment plan below')
-            ->assertSee('You can make the first payment after your booking is approved by the office.')
+            ->assertSee('Your first payment is available immediately after creating the booking.')
             ->assertSee('Your current amount due')->assertSee('0.00')
             ->assertDontSee('Sold Out Project')->assertDontSee('0.00 marla available');
         $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id, 'payment_plan' => 'installment'])
             ->assertRedirect(route('dashboard'))->assertSessionHas('success');
 
         $booking = Booking::firstOrFail();
-        $this->assertEquals('pending', $booking->status);
+        $this->assertEquals('approved', $booking->status);
         $this->assertEquals(10, (float) $project->refresh()->reserved_area_marla);
         $this->assertEquals(0, (float) $project->sold_area_marla);
-        $this->assertCount(0, $booking->installments);
+        $this->assertCount(12, $booking->installments);
         $this->assertDatabaseCount('payments', 0);
-        $this->assertSame('Booking request submitted', $customerUser->notifications()->first()->data['title']);
-        $this->assertSame('New booking requires approval', $admin->notifications()->first()->data['title']);
-        $this->assertSame(route('bookings.manage', $booking), $admin->notifications()->first()->data['url']);
+        $this->assertSame('Booking created — payment required', $customerUser->notifications()->first()->data['title']);
+        $this->assertCount(0, $admin->notifications);
         $this->actingAs($customerUser)->get(route('customer.bookings.create'))
             ->assertOk()
-            ->assertSee('is awaiting office approval')
-            ->assertSee('Approval pending');
+            ->assertSee('Payment is required for booking')
+            ->assertSee('Payment required first');
         $this->actingAs($customerUser)->post(route('customer.bookings.store'), ['package_id' => $package->id, 'payment_plan' => 'installment'])
             ->assertSessionHasErrors('package_id');
         $this->assertDatabaseCount('bookings', 1);
         $this->assertEquals(10, (float) $project->refresh()->reserved_area_marla);
-        $this->actingAs($admin)->get(route('management.notifications.index'))
-            ->assertOk()
-            ->assertSee('New booking requires approval')
-            ->assertSee($booking->booking_number)
-            ->assertSee('Plot Buyer');
         $this->actingAs($customerUser)->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Account notifications')
-            ->assertSee('Booking request submitted');
-
-        $this->actingAs($admin)->put(route('bookings.update', $booking), [
-            'name' => $customer->name,
-            'cnic' => $customer->cnic,
-            'phone' => $customer->phone,
-            'booking_date' => $booking->booking_date->toDateString(),
-            'status' => 'approved',
-        ])->assertRedirect(route('bookings.show', $booking));
+            ->assertSee('Booking created — payment required');
 
         $this->assertEquals('approved', $booking->refresh()->status);
         $this->assertEquals(10, (float) $project->refresh()->reserved_area_marla);
         $this->assertEquals(0, (float) $project->sold_area_marla);
         $this->assertCount(12, $booking->refresh()->installments);
-        Mail::assertSent(BookingApprovedMail::class, fn (BookingApprovedMail $mail) => $mail->hasTo($customer->email));
-        $bookingEmailHtml = (new BookingApprovedMail($booking->fresh()->load(['customer', 'project', 'package'])))->render();
-        $this->assertStringContainsString('Your booking is approved', $bookingEmailHtml);
-        $this->assertStringContainsString('MMS Group', $bookingEmailHtml);
-
         $this->actingAs($customerUser)->get(route('dashboard'))
             ->assertOk()->assertSee('Pay your first payment')->assertSee('200,000.00');
         $this->actingAs($customerUser)->post(route('customer.payments.store'), [
@@ -155,6 +135,10 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertEquals(10000, (float) Commission::where('payment_id', $firstPayment->id)->value('amount'));
         $this->assertEquals(0, (float) $project->refresh()->reserved_area_marla);
         $this->assertEquals(10, (float) $project->sold_area_marla);
+        $this->actingAs($customerUser)->get(route('customer.bookings.create'))
+            ->assertOk()
+            ->assertDontSee('Payment is required for booking')
+            ->assertSee('Continue with Installments');
         Mail::assertSent(PaymentVerifiedMail::class, fn (PaymentVerifiedMail $mail) => $mail->hasTo($customer->email));
         Mail::assertSent(PlanActivatedMail::class, fn (PlanActivatedMail $mail) => $mail->hasTo($customer->email));
         $planEmailHtml = (new PlanActivatedMail($booking->fresh()->load(['customer', 'project', 'package'])))->render();
@@ -162,14 +146,13 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertStringContainsString('MMS Group', $planEmailHtml);
 
         $titles = $customerUser->notifications()->get()->pluck('data.title');
-        $this->assertTrue($titles->contains('Booking request submitted'));
-        $this->assertTrue($titles->contains('Booking approved'));
+        $this->assertTrue($titles->contains('Booking created — payment required'));
         $this->assertTrue($titles->contains('Payment submitted for verification'));
         $this->assertTrue($titles->contains('First payment verified'));
         $this->assertTrue($titles->contains('Property plan activated'));
         $this->actingAs($customerUser)->get(route('customer.notifications.index'))
             ->assertOk()
-            ->assertSee('Booking approved')
+            ->assertSee('Booking created — payment required')
             ->assertSee('First payment verified');
         $this->actingAs($customerUser)->post(route('customer.notifications.read-all'))->assertRedirect();
         $this->assertSame(0, $customerUser->unreadNotifications()->count());
@@ -216,9 +199,9 @@ class CustomerBookingRequestTest extends TestCase
             ->assertSee('Book with cash?')
             ->assertSee('Book with installments?')
             ->assertSee('Full cash payment')
-            ->assertSee('One full payment after office approval.')
-            ->assertSee('No cash payment is charged now')
-            ->assertSee('Your full cash payment becomes available only after approval.')
+            ->assertSee('One full payment after booking.')
+            ->assertSee('Cash payment required after booking')
+            ->assertSee('Your booking is created immediately, then you can submit the full cash payment.')
             ->assertSee('No installments');
 
         $this->actingAs($customer)->post(route('customer.bookings.store'), [
@@ -232,14 +215,7 @@ class CustomerBookingRequestTest extends TestCase
         $this->assertSame(900000.0, (float) $booking->booking_amount);
         $this->assertSame(0.0, (float) $booking->financed_amount);
 
-        $this->actingAs($admin)->put(route('bookings.update', $booking), [
-            'name' => $customer->name,
-            'cnic' => $customer->cnic,
-            'phone' => $customer->phone,
-            'booking_date' => $booking->booking_date->toDateString(),
-            'status' => 'approved',
-        ])->assertRedirect(route('bookings.show', $booking));
-
+        $this->assertSame('approved', $booking->status);
         $this->assertCount(0, $booking->refresh()->installments);
     }
 

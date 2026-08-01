@@ -2,7 +2,7 @@
 
     <div class="min-h-screen bg-gradient-to-b from-indigo-50/80 via-slate-50 to-white py-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:py-8"><div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6">
         @if($errors->any())<div class="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800 shadow-sm"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-600 text-white">!</span>{{ $errors->first() }}</div>@endif
-        @if($pendingBooking)<div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500 font-black text-white">!</span><div><div class="font-black">Your booking request {{ $pendingBooking->booking_number }} is awaiting office approval.</div><p class="mt-1 text-amber-800">You can submit another plot request after this request is approved or cancelled.</p></div></div>@endif
+        @if($pendingBooking)<div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500 font-black text-white">!</span><div><div class="font-black">Payment is required for booking {{ $pendingBooking->booking_number }}.</div><p class="mt-1 text-amber-800">Submit the cash or first installment-plan payment and wait for verification to unlock another booking.</p></div></div>@endif
 
         @php($packageCount = $projects->sum(fn ($project) => $project->packages->count()))
         <section class="customer-theme-marketplace-hero relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-900 to-violet-700 text-white shadow-2xl shadow-indigo-200 dark:shadow-none">
@@ -16,11 +16,11 @@
                         <span class="customer-theme-active-badge inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-200"><i class="customer-theme-active-dot h-1.5 w-1.5 rounded-full bg-emerald-300"></i>Live inventory</span>
                     </div>
                     <h1 class="customer-theme-hero-heading mt-4 max-w-3xl text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl lg:leading-tight">Choose the right property plan for your future.</h1>
-                    <p class="customer-theme-hero-copy mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare cash and installment prices, select your preferred plot size, and send a secure request for office approval.</p>
+                    <p class="customer-theme-hero-copy mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">Compare cash and installment prices, select your preferred plot size, and create your booking instantly.</p>
                     <div class="customer-theme-hero-copy mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-bold text-indigo-100">
                         <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">1</i>Choose a plan</span>
                         <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">2</i>Send request</span>
-                        <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">3</i>Office approval</span>
+                        <span class="inline-flex items-center gap-2"><i class="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[9px]">3</i>Submit payment</span>
                     </div>
                 </header>
                 <aside class="customer-theme-hero-panel flex flex-col justify-center border-t border-white/10 bg-white/[.08] p-6 backdrop-blur-md lg:border-l lg:border-t-0 sm:p-7 lg:p-8">
@@ -35,7 +35,7 @@
                     <div class="mt-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
                         <div class="text-[9px] font-black uppercase tracking-wider text-indigo-200">Your current amount due</div>
                         <div class="mt-1 text-xl font-black text-white">Rs {{ number_format($dueNow, 2) }}</div>
-                        <p class="mt-1 text-[10px] leading-4 text-indigo-200">No booking payment is charged before office approval.</p>
+                        <p class="mt-1 text-[10px] leading-4 text-indigo-200">Complete the required payment to unlock another booking.</p>
                     </div>
                 </aside>
             </div>
@@ -44,7 +44,7 @@
         <section class="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:grid-cols-3">
             <div class="flex items-center gap-3 rounded-xl bg-indigo-50 p-3 dark:bg-indigo-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 font-black text-white">1</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Choose a plan</div><div class="text-xs text-gray-500 dark:text-gray-300">Compare size and pricing</div></div></div>
             <div class="flex items-center gap-3 rounded-xl bg-violet-50 p-3 dark:bg-violet-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-600 font-black text-white">2</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Send request</div><div class="text-xs text-gray-500 dark:text-gray-300">Inventory is reserved</div></div></div>
-            <div class="flex items-center gap-3 rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-600 font-black text-white">3</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Office approval</div><div class="text-xs text-gray-500 dark:text-gray-300">Pay only after approval</div></div></div>
+            <div class="flex items-center gap-3 rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/50"><span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-600 font-black text-white">3</span><div><div class="text-sm font-bold text-gray-900 dark:text-white">Submit payment</div><div class="text-xs text-gray-500 dark:text-gray-300">Activate and unlock the next booking</div></div></div>
         </section>
 
         @if($projects->count() > 1)<nav class="flex gap-2 overflow-x-auto pb-1">@foreach($projects as $project)<a href="#project-{{ $project->id }}" class="whitespace-nowrap rounded-full border border-indigo-200 bg-white px-4 py-2 text-sm font-bold text-indigo-700 shadow-sm hover:bg-indigo-600 hover:text-white dark:border-gray-600 dark:bg-gray-800 dark:text-indigo-300">{{ $project->name }}</a>@endforeach</nav>@endif
@@ -127,8 +127,8 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200"><span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 font-black text-amber-800">i</span><span x-show="paymentPlan === 'cash'">You can make the full cash payment after your booking is approved by the office.</span><span x-show="paymentPlan !== 'cash'">You can make the first payment after your booking is approved by the office.</span></div>
-                                <button :disabled="!paymentPlan || @js(!$canRequest)" class="customer-booking-continue w-full rounded-xl px-5 py-3.5 font-black text-white shadow-lg transition disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none dark:disabled:bg-gray-700 {{ $canRequest?'bg-gradient-to-r from-indigo-600 to-violet-600 shadow-indigo-200 hover:from-indigo-700 hover:to-violet-700':'cursor-not-allowed bg-gray-300 shadow-none dark:bg-gray-700' }}"><span x-show="!paymentPlan">{{ $pendingBooking ? 'Approval pending' : ($available ? 'Choose Cash or Installments' : 'Currently unavailable') }}</span><span x-show="paymentPlan === 'cash'">{{ $pendingBooking ? 'Approval pending' : ($available ? 'Continue with Cash' : 'Currently unavailable') }}</span><span x-show="paymentPlan === 'installment'">{{ $pendingBooking ? 'Approval pending' : ($available ? 'Continue with Installments' : 'Currently unavailable') }}</span></button>
+                                <div class="mb-3 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200"><span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 font-black text-amber-800">i</span><span x-show="paymentPlan === 'cash'">Your full cash payment is available immediately after creating the booking.</span><span x-show="paymentPlan !== 'cash'">Your first payment is available immediately after creating the booking.</span></div>
+                                <button :disabled="!paymentPlan || @js(!$canRequest)" class="customer-booking-continue w-full rounded-xl px-5 py-3.5 font-black text-white shadow-lg transition disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none dark:disabled:bg-gray-700 {{ $canRequest?'bg-gradient-to-r from-indigo-600 to-violet-600 shadow-indigo-200 hover:from-indigo-700 hover:to-violet-700':'cursor-not-allowed bg-gray-300 shadow-none dark:bg-gray-700' }}"><span x-show="!paymentPlan">{{ $pendingBooking ? 'Payment required first' : ($available ? 'Choose Cash or Installments' : 'Currently unavailable') }}</span><span x-show="paymentPlan === 'cash'">{{ $pendingBooking ? 'Payment required first' : ($available ? 'Continue with Cash' : 'Currently unavailable') }}</span><span x-show="paymentPlan === 'installment'">{{ $pendingBooking ? 'Payment required first' : ($available ? 'Continue with Installments' : 'Currently unavailable') }}</span></button>
 
                                 <template x-teleport="body">
                                     <div x-show="confirmOpen" x-cloak @keydown.escape.window="if(!submitting) confirmOpen=false" class="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
@@ -156,7 +156,7 @@
                                                 <div x-show="paymentPlan === 'cash'" x-cloak class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/40">
                                                     <div class="text-[10px] font-black uppercase tracking-wider text-emerald-600">Full cash payment</div>
                                                     <div class="mt-1 text-2xl font-black text-emerald-950 dark:text-emerald-200" x-text="money(cashPrice)"></div>
-                                                    <div class="mt-1 text-xs text-emerald-700 dark:text-emerald-300">One full payment after office approval.</div>
+                                                    <div class="mt-1 text-xs text-emerald-700 dark:text-emerald-300">One full payment after booking.</div>
                                                 </div>
                                                 <div x-show="paymentPlan === 'installment'" class="grid grid-cols-2 gap-3">
                                                     <div class="rounded-2xl border border-violet-100 bg-violet-50 p-4 dark:border-violet-900 dark:bg-violet-950/40"><div class="text-[10px] font-black uppercase tracking-wider text-violet-500">First payment</div><div class="mt-1 text-lg font-black text-violet-950 dark:text-violet-200">Rs {{ number_format($package->booking_amount) }}</div></div>
@@ -179,9 +179,9 @@
                                                 <div class="mt-4 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
                                                     <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-amber-200 text-xs font-black text-amber-800">i</span>
                                                     <div>
-                                                        <div class="text-sm font-black" x-text="paymentPlan === 'cash' ? 'No cash payment is charged now' : 'No payment is charged now'"></div>
-                                                        <p x-show="paymentPlan === 'cash'" class="mt-0.5 text-xs leading-5 text-amber-700 dark:text-amber-300">The office will review your request first. Your full cash payment becomes available only after approval.</p>
-                                                        <p x-show="paymentPlan === 'installment'" class="mt-0.5 text-xs leading-5 text-amber-700 dark:text-amber-300">The office will review your request first. Your first payment becomes available only after approval.</p>
+                                                        <div class="text-sm font-black" x-text="paymentPlan === 'cash' ? 'Cash payment required after booking' : 'First payment required after booking'"></div>
+                                                        <p x-show="paymentPlan === 'cash'" class="mt-0.5 text-xs leading-5 text-amber-700 dark:text-amber-300">Your booking is created immediately, then you can submit the full cash payment.</p>
+                                                        <p x-show="paymentPlan === 'installment'" class="mt-0.5 text-xs leading-5 text-amber-700 dark:text-amber-300">Your booking is created immediately, then you can submit the first payment.</p>
                                                     </div>
                                                 </div>
                                                 <div class="mt-6 grid gap-3 sm:grid-cols-2">
