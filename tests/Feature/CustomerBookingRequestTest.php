@@ -269,6 +269,7 @@ class CustomerBookingRequestTest extends TestCase
             ->assertOk()
             ->assertSee('Cash Only')
             ->assertSee('Installments not available')
+            ->assertDontSee('No installments')
             ->assertDontSee('Choose a payment plan below');
 
         $this->actingAs($customer)->post(route('customer.bookings.store'), [

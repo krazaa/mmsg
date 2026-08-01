@@ -100,9 +100,9 @@ class PlotPackageController extends Controller
             'cash_price' => ['nullable', 'numeric', 'gt:0'],
             'payment_plan_options' => ['nullable', 'in:cash,installment,both'],
             'welcome_offer' => ['nullable', 'string', 'max:500'],
-            'booking_amount' => ['required', 'numeric', 'min:0'],
-            'months' => ['required', 'integer', 'between:1,60'],
-            'monthly_amount' => ['required', 'numeric', 'min:0'],
+            'booking_amount' => ['nullable', 'required_unless:payment_plan_options,cash', 'numeric', 'min:0'],
+            'months' => ['nullable', 'required_unless:payment_plan_options,cash', 'integer', 'between:1,60'],
+            'monthly_amount' => ['nullable', 'required_unless:payment_plan_options,cash', 'numeric', 'min:0'],
             'balloons' => ['nullable', 'array', 'max:60'],
             'balloons.*.month' => ['required', 'integer', 'min:1', 'distinct'],
             'balloons.*.amount' => ['required', 'numeric', 'gt:0'],
@@ -120,6 +120,14 @@ class PlotPackageController extends Controller
             throw ValidationException::withMessages(['size_marla' => 'Package size cannot exceed the project saleable area.']);
         }
 
+        $planOptions = $data['payment_plan_options'] ?? ($data['cash_price'] === null ? 'installment' : 'both');
+        if ($planOptions === 'cash') {
+            $data['booking_amount'] = 0;
+            $data['months'] = 0;
+            $data['monthly_amount'] = 0;
+            $data['balloons'] = [];
+        }
+
         foreach ($data['balloons'] ?? [] as $index => $balloon) {
             if ((int) $balloon['month'] > (int) $data['months']) {
                 throw ValidationException::withMessages([
@@ -131,12 +139,11 @@ class PlotPackageController extends Controller
         $installmentPrice = (float) $data['booking_amount']
             + ((int) $data['months'] * (float) $data['monthly_amount'])
             + collect($data['balloons'] ?? [])->sum(fn (array $balloon) => (float) $balloon['amount']);
-        if ($data['cash_price'] !== null && abs((float) $data['cash_price'] - $installmentPrice) < 0.01) {
+        if ($planOptions !== 'cash' && $data['cash_price'] !== null && abs((float) $data['cash_price'] - $installmentPrice) < 0.01) {
             throw ValidationException::withMessages([
                 'cash_price' => 'Cash price must be different from the calculated installment price.',
             ]);
         }
-        $planOptions = $data['payment_plan_options'] ?? ($data['cash_price'] === null ? 'installment' : 'both');
         if (in_array($planOptions, ['cash', 'both'], true) && $data['cash_price'] === null) {
             throw ValidationException::withMessages([
                 'cash_price' => 'Cash price is required when Cash is an available payment plan.',

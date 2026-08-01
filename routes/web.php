@@ -6,6 +6,7 @@ use App\Http\Controllers\BlockController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CommissionRuleController;
 use App\Http\Controllers\CustomerBookingController;
+use App\Http\Controllers\CustomerAnnouncementController;
 use App\Http\Controllers\CustomerCommissionPayoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerNotificationController;
@@ -146,6 +147,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/management/customer-portal-theme', [CustomerPortalThemeController::class, 'update'])->middleware('role:super_admin|admin')->name('customer-portal-theme.update');
         Route::get('/management/app-settings', [AppSettingsController::class, 'edit'])->middleware('role:super_admin|admin')->name('app-settings.edit');
         Route::put('/management/app-settings', [AppSettingsController::class, 'update'])->middleware('role:super_admin|admin')->name('app-settings.update');
+        Route::get('/management/customer-announcement', [CustomerAnnouncementController::class, 'edit'])->middleware('role:super_admin|admin')->name('customer-announcement.edit');
+        Route::put('/management/customer-announcement', [CustomerAnnouncementController::class, 'update'])->middleware('role:super_admin|admin')->name('customer-announcement.update');
         Route::get('/management/app-settings/maintenance-preview', [AppSettingsController::class, 'maintenancePreview'])->middleware('role:super_admin|admin')->name('app-settings.maintenance-preview');
         Route::post('/management/whatsapp/test', [WhatsAppSettingsController::class, 'test'])->middleware('permission:manage notifications')->name('management.whatsapp.test');
         Route::post('/management/notifications/read-all', [CustomerNotificationController::class, 'managementReadAll'])->middleware('permission:manage notifications')->name('management.notifications.read-all');

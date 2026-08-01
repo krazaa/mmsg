@@ -119,7 +119,7 @@ class InstallmentManagementTest extends TestCase
         $package = PlotPackage::create(['project_id' => $project->id, 'name' => '5 Marla', 'size_marla' => 5, 'booking_amount' => 350000, 'months' => 36, 'monthly_amount' => 50000, 'month_12_balloon' => 150000, 'month_24_balloon' => 250000, 'month_36_balloon' => 350000]);
         $customer = Customer::create(['name' => 'Ali', 'cnic' => '12345-1234567-1', 'phone' => '0300']);
         $booking = Booking::create(['booking_number' => 'B-1', 'project_id' => $project->id, 'package_id' => $package->id, 'customer_id' => $customer->id, 'booking_date' => today(), 'total_price' => 400000, 'booking_amount' => 350000, 'financed_amount' => 50000, 'status' => 'active']);
-        $installment = InstallmentSchedules::create(['booking_id' => $booking->id, 'installment_number' => 1, 'due_date' => '2026-08-01', 'regular_amount' => 50000, 'balloon_amount' => 0, 'total_due' => 50000]);
+        $installment = InstallmentSchedules::create(['booking_id' => $booking->id, 'installment_number' => 1, 'due_date' => today()->addMonth(), 'regular_amount' => 50000, 'balloon_amount' => 0, 'total_due' => 50000]);
 
         return [$user, $booking, $installment];
     }

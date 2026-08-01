@@ -165,6 +165,16 @@ class SiteSetting extends Model
         );
     }
 
+    public static function customerPortalAnnouncement(): array
+    {
+        return [
+            'enabled' => filter_var(static::valueFor('customer_announcement_enabled', '0'), FILTER_VALIDATE_BOOL),
+            'title' => (string) static::valueFor('customer_announcement_title', 'Important announcement'),
+            'message' => (string) static::valueFor('customer_announcement_message', ''),
+            'version' => (string) static::valueFor('customer_announcement_version', '0'),
+        ];
+    }
+
     public static function ownerWhatsAppNumbers(): array
     {
         return collect(preg_split('/[\s,;]+/', (string) static::valueFor('whatsapp_owner_numbers', '')))

@@ -12,6 +12,30 @@ class PackageManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_cash_only_package_does_not_require_installment_fields(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::create([
+            'name' => 'Cash Project', 'slug' => 'cash-project', 'gross_area_marla' => 100,
+            'saleable_area_marla' => 100, 'status' => true,
+        ]);
+
+        $this->actingAs($user)->post(route('packages.store'), [
+            'project_id' => $project->id,
+            'name' => 'Cash Only Plan',
+            'size_marla' => 5,
+            'cash_price' => 750000,
+            'payment_plan_options' => 'cash',
+            'status' => 1,
+        ])->assertRedirect(route('packages.index', ['project' => $project->id]));
+
+        $package = PlotPackage::where('name', 'Cash Only Plan')->firstOrFail();
+        $this->assertSame(0.0, (float) $package->booking_amount);
+        $this->assertSame(0, $package->months);
+        $this->assertSame(0.0, (float) $package->monthly_amount);
+        $this->assertSame([], $package->balloonPayments());
+    }
+
     public function test_user_can_create_and_update_package(): void
     {
         $user = User::factory()->create();

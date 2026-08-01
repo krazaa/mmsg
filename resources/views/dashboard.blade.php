@@ -51,6 +51,7 @@
                     <a href="{{ $metric['link'] }}" class="group relative overflow-hidden rounded-2xl border border-slate-200 p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-xl dark:border-slate-700 {{ $metric['tint'] }}"><span class="absolute inset-y-0 left-0 w-1 {{ $metric['bar'] }}"></span><div class="flex items-start justify-between gap-4"><div class="min-w-0"><div class="text-[10px] font-black uppercase tracking-[.16em] text-slate-400">{{ $metric['label'] }}</div><div class="mt-3 break-words text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{{ $metric['value'] }}</div><div class="mt-2 text-xs font-medium text-slate-400">{{ $metric['note'] }}</div></div><span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black {{ $metric['accent'] }}">{{ $metric['icon'] }}</span></div><div class="mt-4 flex items-center justify-between border-t border-white/70 pt-3 text-[10px] font-black uppercase tracking-wider text-slate-600 dark:border-white/10 dark:text-slate-300"><span>Open details</span><span class="transition group-hover:translate-x-1">→</span></div></a>
                 @endforeach
                 </div>
+
             </section>
 
             <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">

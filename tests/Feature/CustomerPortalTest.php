@@ -21,6 +21,46 @@ class CustomerPortalTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_manages_customer_announcement_on_its_own_page(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+
+        $this->actingAs($admin)->get(route('customer-announcement.edit'))
+            ->assertOk()
+            ->assertSee('Customer announcement popup')
+            ->assertSee('Save announcement');
+
+        $this->actingAs($admin)->put(route('customer-announcement.update'), [
+            'enabled' => 1,
+            'title' => 'Project update',
+            'message' => 'A new project update is now available.',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('site_settings', ['key' => 'customer_announcement_enabled', 'value' => '1']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'customer_announcement_title', 'value' => 'Project update']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'customer_announcement_message', 'value' => 'A new project update is now available.']);
+    }
+
+    public function test_customer_portal_shows_active_announcement_popup(): void
+    {
+        $user = User::factory()->create(['role' => 'customer', 'email_verified_at' => now()]);
+        foreach ([
+            'customer_announcement_enabled' => '1',
+            'customer_announcement_title' => 'Office holiday notice',
+            'customer_announcement_message' => 'The office will be closed on Monday.',
+            'customer_announcement_version' => '123',
+        ] as $key => $value) {
+            SiteSetting::create(compact('key', 'value'));
+        }
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Office holiday notice')
+            ->assertSee('The office will be closed on Monday.')
+            ->assertSee('Close announcement');
+    }
+
     public function test_admin_setting_can_hide_referral_codes_from_the_customer_portal(): void
     {
         $user = User::factory()->create([

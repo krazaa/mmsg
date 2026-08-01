@@ -19,6 +19,7 @@
         ['label' => 'Packages', 'route' => 'packages.index', 'active' => 'packages.*', 'permission' => 'manage packages', 'color' => 'bg-violet-400'],
         ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
         ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage withdrawals', 'color' => 'bg-teal-400'],
+        ['label' => 'Announcement popup', 'route' => 'customer-announcement.edit', 'active' => 'customer-announcement.*', 'permission' => 'manage commissions', 'color' => 'bg-orange-400'],
         ['label' => 'App settings', 'route' => 'app-settings.edit', 'active' => 'app-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-indigo-400'],
         ['label' => 'Backup & restore', 'route' => 'database-backup.index', 'active' => 'database-backup.*', 'permission' => 'manage staff', 'color' => 'bg-amber-300', 'super_admin_only' => true],
         ['label' => 'Payment settings', 'route' => 'payment-methods.index', 'active' => 'payment-methods.*', 'permission' => 'manage payments', 'color' => 'bg-emerald-400'],
@@ -26,10 +27,13 @@
         ['label' => 'WhatsApp', 'route' => 'management.whatsapp.index', 'active' => 'management.whatsapp.*', 'permission' => 'manage notifications', 'color' => 'bg-green-400', 'super_admin_only' => true],
         ['label' => 'Notification templates', 'route' => 'management.whatsapp.index', 'fragment' => 'notification-templates', 'active' => 'notification-templates.*', 'permission' => 'manage notifications', 'color' => 'bg-indigo-400', 'super_admin_only' => true],
         ['label' => 'Email settings', 'route' => 'email-campaigns.index', 'active' => 'email-campaigns.*', 'permission' => 'manage notifications', 'color' => 'bg-rose-400', 'super_admin_only' => true],
-        ['label' => 'Welcome page theme', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
-        ['label' => 'Customer portal theme', 'route' => 'customer-portal-theme.edit', 'active' => 'customer-portal-theme.*', 'permission' => 'manage projects', 'color' => 'bg-blue-400'],
+        ['label' => 'Welcome page', 'route' => 'site-appearance.edit', 'active' => 'site-appearance.*', 'permission' => 'manage projects', 'color' => 'bg-fuchsia-400'],
+        ['label' => 'Customer Portal', 'route' => 'customer-portal-theme.edit', 'active' => 'customer-portal-theme.*', 'permission' => 'manage projects', 'color' => 'bg-blue-400'],
     ];
-    $settingsActive = collect($settingsItems)->contains(fn ($item) => request()->routeIs($item['active']));
+    $isSettingActive = fn ($item) => request()->routeIs($item['active'])
+        && (! isset($item['active_section']) || request('section') === $item['active_section'])
+        && (! isset($item['exclude_section']) || request('section') !== $item['exclude_section']);
+    $settingsActive = collect($settingsItems)->contains($isSettingActive);
 @endphp
 
 <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden" @click="sidebarOpen = false" x-cloak></div>
@@ -78,10 +82,11 @@
 
                 <div x-show="settingsOpen && (sidebarOpen || sidebarExpanded || sidebarHover)" x-transition class="ml-7 mt-1 space-y-1 border-l border-indigo-400/25 pl-3">
                     @foreach($settingsItems as $setting)
+                        @php($settingIsActive = $isSettingActive($setting))
                         @if(!($setting['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin')
                             @can($setting['permission'])
-                            <a href="{{ route($setting['route']).(isset($setting['fragment']) ? '#'.$setting['fragment'] : '') }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($setting['active']) ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
-                                <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $setting['color'] }} {{ request()->routeIs($setting['active']) ? 'ring-4 ring-indigo-100' : '' }}"></span>
+                            <a href="{{ route($setting['route'], $setting['params'] ?? []).(isset($setting['fragment']) ? '#'.$setting['fragment'] : '') }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $settingIsActive ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
+                                <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $setting['color'] }} {{ $settingIsActive ? 'ring-4 ring-indigo-100' : '' }}"></span>
                                 <span class="whitespace-nowrap">{{ $setting['label'] }}</span>
                             </a>
                             @endcan
