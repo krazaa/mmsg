@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Notifications\AccountActivityNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -152,8 +153,9 @@ class PaymentController extends Controller
 
         if ($becameVerified) {
             $verifiedPayment = $payment->fresh()->load(['customer', 'booking.project', 'booking.package', 'installment']);
-            Mail::to($verifiedPayment->customer->email)->send(new PaymentVerifiedMail($verifiedPayment));
-            $verifiedPayment->customer->notify(new AccountActivityNotification(
+            $this->attemptCustomerDelivery($verifiedPayment, 'payment verified email', fn () => Mail::to($verifiedPayment->customer->email)->send(new PaymentVerifiedMail($verifiedPayment))
+            );
+            $this->attemptCustomerDelivery($verifiedPayment, 'payment verified notification', fn () => $verifiedPayment->customer->notify(new AccountActivityNotification(
                 $verifiedPayment->installment ? 'Installment payment verified' : 'First payment verified',
                 $verifiedPayment->installment ? 'Your installment payment has been verified and credited to your account.' : 'Your first payment has been verified and credited to your account.',
                 'payment',
@@ -161,10 +163,13 @@ class PaymentController extends Controller
                 ['Receipt' => $verifiedPayment->receipt_number, 'Amount' => 'Rs '.number_format($verifiedPayment->amount, 2)],
                 true,
                 $verifiedPayment->installment ? 'customer_installment_verified' : 'customer_first_payment_verified'
-            ));
+            ))
+            );
             if ($becameActive) {
-                Mail::to($verifiedPayment->customer->email)->send(new PlanActivatedMail($verifiedPayment->booking));
-                $verifiedPayment->customer->notify(new AccountActivityNotification('Property plan activated', 'Your first payment was verified and the property plan is now active.', 'booking', route('dashboard').'#payments', ['Booking' => $verifiedPayment->booking->booking_number, 'Project' => $verifiedPayment->booking->project->name], false));
+                $this->attemptCustomerDelivery($verifiedPayment, 'plan activated email', fn () => Mail::to($verifiedPayment->customer->email)->send(new PlanActivatedMail($verifiedPayment->booking))
+                );
+                $this->attemptCustomerDelivery($verifiedPayment, 'plan activated notification', fn () => $verifiedPayment->customer->notify(new AccountActivityNotification('Property plan activated', 'Your first payment was verified and the property plan is now active.', 'booking', route('dashboard').'#payments', ['Booking' => $verifiedPayment->booking->booking_number, 'Project' => $verifiedPayment->booking->project->name], false))
+                );
             }
         }
 
@@ -185,6 +190,20 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('payments.index')->with('success', 'Payment updated.');
+    }
+
+    private function attemptCustomerDelivery(Payment $payment, string $delivery, callable $callback): void
+    {
+        try {
+            $callback();
+        } catch (\Throwable $exception) {
+            Log::warning('Customer notification delivery failed after payment update.', [
+                'payment_id' => $payment->id,
+                'customer_id' => $payment->customer_id,
+                'delivery' => $delivery,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function store(Request $request, Booking $booking, BookingPaymentRecorder $payments)

@@ -96,6 +96,30 @@ class CustomerPaymentSubmissionTest extends TestCase
         Mail::assertNotSent(PlanActivatedMail::class);
     }
 
+    public function test_email_delivery_failure_does_not_fail_installment_verification(): void
+    {
+        [$customerUser, $admin, $booking, $installment] = $this->records();
+        $payment = Payment::create([
+            'receipt_number' => 'RC-SMTP-FAIL',
+            'booking_id' => $booking->id,
+            'customer_id' => $customerUser->id,
+            'installment_schedule_id' => $installment->id,
+            'amount' => 25000,
+            'payment_method' => 'online_transfer',
+            'payment_date' => today(),
+            'status' => 'pending',
+        ]);
+        Mail::shouldReceive('to')->andThrow(new \RuntimeException('550 No Such User Here'));
+
+        $this->actingAs($admin)->put(route('payments.update', $payment), [
+            'payment_method' => 'online_transfer',
+            'status' => 'verified',
+        ])->assertRedirect(route('payments.index'))->assertSessionHas('success');
+
+        $this->assertSame('verified', $payment->refresh()->status);
+        $this->assertEquals(25000, (float) $installment->refresh()->paid_amount);
+    }
+
     private function records(): array
     {
         $customerUser = User::factory()->create(['role' => 'customer', 'email_verified_at' => now()]);
