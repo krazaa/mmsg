@@ -1,9 +1,7 @@
 <x-app-layout>
 
 
-    <div class="customer-portal relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-6 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/40 sm:py-8">
-        <div class="pointer-events-none absolute -left-32 top-32 h-96 w-96 rounded-full bg-violet-200/40 blur-3xl dark:bg-violet-900/20"></div>
-        <div class="pointer-events-none absolute -right-32 top-[38rem] h-96 w-96 rounded-full bg-cyan-200/40 blur-3xl dark:bg-cyan-900/20"></div>
+    <div class="customer-portal relative min-h-screen overflow-hidden bg-white py-6 dark:bg-slate-950 sm:py-8">
         <div class="relative mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
         @if($portalPreview ?? false)<div class="sticky top-3 z-40 flex flex-col gap-3 rounded-xl border border-violet-300 bg-violet-950 px-4 py-3 text-white shadow-xl sm:flex-row sm:items-center sm:justify-between"><div><b class="text-sm">Admin portal preview</b><p class="text-xs text-violet-200">Viewing {{ $customer->name }}'s customer portal in read-only mode.</p></div><div class="flex gap-2"><a href="{{ route('customers.team',$customer) }}" class="rounded-lg bg-violet-800 px-4 py-2 text-center text-xs font-black text-white">View team</a><a href="{{ route('customers.show',$customer) }}" class="rounded-lg bg-white px-4 py-2 text-center text-xs font-black text-violet-800">Exit preview</a></div></div>@endif
         @if(session('success'))<div class="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-medium text-green-800 shadow-sm"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-600 text-xs text-white">✓</span>{{ session('success') }}</div>@endif
@@ -105,8 +103,7 @@
                     @if($payableInstallments->isNotEmpty() && !($portalPreview ?? false))
                     <form id="payment-form-{{ $booking->id }}" method="POST" action="{{ route('customer.payments.store') }}" enctype="multipart/form-data" data-compress-proof class="hidden scroll-mt-20 overflow-hidden border-b border-indigo-100 bg-white">@csrf
                         <input type="hidden" name="booking_id" value="{{ $booking->id }}"><input type="hidden" name="payment_type" value="installment">
-                        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-700 via-violet-700 to-purple-800 p-5 text-white sm:p-6">
-                            <div class="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-fuchsia-400/20 blur-2xl"></div>
+                        <div class="relative overflow-hidden p-5 text-white sm:p-6" style="background-color: var(--customer-primary, #4f46e5)">
                             <div class="relative flex items-start justify-between gap-4">
                                 <div class="flex items-start gap-3">
                                     <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 11.25 16.5 15 12.75m6-1.5a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>
