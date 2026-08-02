@@ -96,7 +96,7 @@ class CustomerBookingRequestTest extends TestCase
         $this->actingAs($admin)->get(route('payments.edit', $firstPayment))
             ->assertOk()
             ->assertSee('Customer file number')
-            ->assertSee('name="file_no"', false);
+            ->assertSee('name="file_no" value=""', false);
 
         $this->actingAs($admin)->put(route('payments.update', $firstPayment), [
             'payment_method' => 'online_transfer',

@@ -75,7 +75,7 @@
                     @if($payment->installment_schedule_id === null)
                         <label x-show="status === 'verified'" x-cloak class="block text-sm font-semibold text-gray-700">
                             Customer file number
-                            <input name="file_no" value="{{ old('file_no', $payment->customer->file_no) }}" :required="status === 'verified' && @js($payment->status === 'pending')" maxlength="50" placeholder="Enter the manually assigned file number" class="mt-1.5 w-full rounded-lg border-gray-300 font-mono uppercase">
+                            <input name="file_no" value="{{ old('file_no', '') }}" :required="status === 'verified' && @js($payment->status === 'pending')" maxlength="50" placeholder="Enter the manually assigned file number" class="mt-1.5 w-full rounded-lg border-gray-300 font-mono uppercase">
                             <span class="mt-1 block text-xs font-normal text-gray-500">Required when approving the first payment. The number must be unique.</span>
                             <x-input-error :messages="$errors->get('file_no')" class="mt-2" />
                         </label>
