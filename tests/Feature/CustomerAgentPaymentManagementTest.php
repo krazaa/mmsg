@@ -54,6 +54,33 @@ class CustomerAgentPaymentManagementTest extends TestCase
         $this->assertEquals(3, Commission::where('payment_id', $payment->id)->where('status', 'reversed')->count());
     }
 
+    public function test_rejecting_first_payment_does_not_require_or_validate_file_number(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'admin@abdullahtown.pk')->firstOrFail();
+        $package = PlotPackage::where('name', '5 Marla')->firstOrFail();
+        $this->actingAs($admin)->post(route('bookings.store'), [
+            'package_id' => $package->id, 'name' => 'Rejected Buyer',
+            'cnic' => '44444-4444444-4', 'phone' => '0300',
+            'booking_date' => '2026-08-02', 'payment_method' => 'cash',
+        ])->assertRedirect();
+
+        $payment = Payment::whereNull('installment_schedule_id')->firstOrFail();
+        $payment->update(['status' => 'pending']);
+        $payment->booking->update(['status' => 'approved']);
+        User::factory()->create(['file_no' => 'AT-ALREADY-USED']);
+
+        $this->actingAs($admin)->put(route('payments.update', $payment), [
+            'payment_method' => 'cash',
+            'status' => 'reversed',
+            'file_no' => 'AT-ALREADY-USED',
+            'verification_notes' => 'Payment rejected.',
+        ])->assertRedirect(route('payments.index'));
+
+        $this->assertSame('reversed', $payment->refresh()->status);
+        $this->assertTrue($payment->customer->notifications()->get()->pluck('data.title')->contains('Payment rejected'));
+    }
+
     public function test_updating_customer_automatically_restores_portal_permissions(): void
     {
         $this->seed();

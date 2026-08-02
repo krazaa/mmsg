@@ -80,6 +80,7 @@ class PaymentController extends Controller
             'transaction_reference' => ['nullable', 'string', 'max:100'],
             'status' => ['required', Rule::in(['pending', 'verified', 'reversed'])],
             'file_no' => [
+                Rule::excludeIf(! $requiresFileNumber),
                 Rule::requiredIf($requiresFileNumber),
                 'nullable',
                 'string',
@@ -99,8 +100,12 @@ class PaymentController extends Controller
         $becameVerified = false;
         $becameActive = false;
         $becameReversed = false;
-        DB::transaction(function () use ($payment, $data, $fileNumber, $commissions, &$becameVerified, &$becameActive, &$becameReversed) {
+        $becameRejected = false;
+        DB::transaction(function () use ($payment, $data, $fileNumber, $commissions, &$becameVerified, &$becameActive, &$becameReversed, &$becameRejected) {
             $locked = Payment::lockForUpdate()->findOrFail($payment->id);
+            if ($locked->status === 'pending' && $data['status'] === 'reversed') {
+                $becameRejected = true;
+            }
             if ($locked->status === 'pending' && $data['status'] === 'verified') {
                 $becameVerified = true;
                 $booking = Booking::with('customer')->lockForUpdate()->findOrFail($locked->booking_id);
@@ -166,6 +171,17 @@ class PaymentController extends Controller
         if ($becameReversed) {
             $reversedPayment = $payment->fresh()->load('customer');
             $reversedPayment->customer->notify(new AccountActivityNotification('Payment reversed', 'A previously verified payment was reversed. Please contact the office if you need assistance.', 'payment', route('dashboard').'#payments', ['Receipt' => $reversedPayment->receipt_number, 'Amount' => 'Rs '.number_format($reversedPayment->amount, 2)]));
+        }
+
+        if ($becameRejected) {
+            $rejectedPayment = $payment->fresh()->load('customer');
+            $rejectedPayment->customer->notify(new AccountActivityNotification(
+                'Payment rejected',
+                'Your payment proof was rejected. Review the office note and submit a new payment proof.',
+                'payment',
+                route('dashboard').'#payments',
+                ['Receipt' => $rejectedPayment->receipt_number, 'Amount' => 'Rs '.number_format($rejectedPayment->amount, 2)],
+            ));
         }
 
         return redirect()->route('payments.index')->with('success', 'Payment updated.');
