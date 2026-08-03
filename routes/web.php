@@ -5,8 +5,8 @@ use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CommissionRuleController;
-use App\Http\Controllers\CustomerBookingController;
 use App\Http\Controllers\CustomerAnnouncementController;
+use App\Http\Controllers\CustomerBookingController;
 use App\Http\Controllers\CustomerCommissionPayoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerNotificationController;
@@ -94,7 +94,7 @@ Route::get('/sitemap.xml', function () {
 Route::get('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'show'])->name('email-unsubscribe.show');
 Route::post('/email/unsubscribe/{token}', [EmailUnsubscribeController::class, 'store'])->name('email-unsubscribe.store');
 Route::get('/management/login', [ManagementAuthController::class, 'create'])->name('management.login');
-Route::post('/management/login', [ManagementAuthController::class, 'store'])->middleware('throttle:6,1')->name('management.login.store');
+Route::post('/management/login', [ManagementAuthController::class, 'store'])->name('management.login.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'permission:view dashboard'])->name('dashboard');
 Route::get('/data-version', fn () => response()->json([
