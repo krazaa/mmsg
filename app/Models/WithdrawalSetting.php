@@ -32,6 +32,9 @@ class WithdrawalSetting extends Model
             return [$frequency => [
                 'request_limit' => (int) ($setting?->request_limit ?? 1),
                 'withdrawal_day' => $setting?->withdrawal_day !== null ? (int) $setting->withdrawal_day : null,
+                'withdrawal_day_mode' => in_array($setting?->withdrawal_day_mode, ['selected_day', 'before_selected_day'], true)
+                    ? $setting->withdrawal_day_mode
+                    : 'selected_day',
                 'minimum_amount' => (float) ($setting?->minimum_amount ?? 1),
                 'maximum_amount' => (float) ($setting?->maximum_amount ?? 0),
             ]];

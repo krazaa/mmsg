@@ -50,6 +50,13 @@
                                             @endforeach
                                         </select>
                                     </label>
+                                    <label class="block text-xs font-black uppercase tracking-wide text-slate-500">When requests are accepted
+                                        <select name="policies[{{ $frequency }}][withdrawal_day_mode]" class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white">
+                                            <option value="selected_day" @selected(old("policies.$frequency.withdrawal_day_mode", $policy['withdrawal_day_mode']) === 'selected_day')>Only on the selected day</option>
+                                            <option value="before_selected_day" @selected(old("policies.$frequency.withdrawal_day_mode", $policy['withdrawal_day_mode']) === 'before_selected_day')>Before the selected day</option>
+                                        </select>
+                                        <span class="mt-1 block text-[10px] font-normal normal-case text-slate-400">This applies only when a withdrawal day is selected.</span>
+                                    </label>
                                     <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Minimum amount<input type="number" name="policies[{{ $frequency }}][minimum_amount]" value="{{ old("policies.$frequency.minimum_amount", $policy['minimum_amount']) }}" min="1" step="0.01" required class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white"></label>
                                     <label class="block text-xs font-black uppercase tracking-wide text-slate-500">Maximum amount<input type="number" name="policies[{{ $frequency }}][maximum_amount]" value="{{ old("policies.$frequency.maximum_amount", $policy['maximum_amount']) }}" min="0" step="0.01" required class="mt-1.5 w-full rounded-xl border-slate-300 py-2.5 text-sm normal-case dark:border-slate-600 dark:bg-slate-800 dark:text-white"><span class="mt-1 block text-[10px] font-normal normal-case text-slate-400">Use 0 for unlimited.</span></label>
                                 </div>

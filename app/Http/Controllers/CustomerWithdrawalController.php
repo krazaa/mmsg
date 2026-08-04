@@ -206,7 +206,7 @@ class CustomerWithdrawalController extends Controller
         $policy = WithdrawalSetting::policy($frequency);
         if (! $this->withdrawalDayAllowed($frequency, $policy)) {
             throw ValidationException::withMessages([
-                'amount' => 'Withdrawal submissions are closed today. Requests must be submitted before '.str_replace('every ', '', $this->withdrawalDayLabel($frequency, $policy)).'.',
+                'amount' => 'Withdrawal submissions are closed today. '.$this->withdrawalDayRuleText($frequency, $policy).'.',
             ]);
         }
 
@@ -311,6 +311,7 @@ class CustomerWithdrawalController extends Controller
             'policies' => ['required', 'array'],
             'policies.*.request_limit' => ['required', 'integer', 'min:1', 'max:100'],
             'policies.*.withdrawal_day' => ['nullable', 'integer', 'min:1', 'max:7'],
+            'policies.*.withdrawal_day_mode' => ['nullable', Rule::in(['selected_day', 'before_selected_day'])],
             'policies.*.minimum_amount' => ['required', 'numeric', 'min:1'],
             'policies.*.maximum_amount' => ['required', 'numeric', 'min:0'],
         ]);
@@ -319,6 +320,7 @@ class CustomerWithdrawalController extends Controller
             if (! $policy) {
                 throw ValidationException::withMessages(["policies.{$frequency}" => ucfirst($frequency).' settings are required.']);
             }
+            $data['policies'][$frequency]['withdrawal_day_mode'] = $policy['withdrawal_day_mode'] ?? 'selected_day';
             if ((float) $policy['maximum_amount'] > 0 && (float) $policy['maximum_amount'] < (float) $policy['minimum_amount']) {
                 throw ValidationException::withMessages([
                     "policies.{$frequency}.maximum_amount" => 'The maximum amount must be zero (unlimited) or at least the minimum amount.',
@@ -446,7 +448,9 @@ class CustomerWithdrawalController extends Controller
             return true;
         }
 
-        return now()->isoWeekday() !== (int) $day;
+        return ($policy['withdrawal_day_mode'] ?? 'selected_day') === 'before_selected_day'
+            ? now()->isoWeekday() < (int) $day
+            : now()->isoWeekday() === (int) $day;
     }
 
     private function withdrawalDayLabel(string $frequency, array $policy): string
@@ -457,6 +461,19 @@ class CustomerWithdrawalController extends Controller
         }
 
         return 'every '.now()->startOfWeek()->addDays((int) $day - 1)->format('l');
+    }
+
+    private function withdrawalDayRuleText(string $frequency, array $policy): string
+    {
+        if (($policy['withdrawal_day'] ?? null) === null) {
+            return 'Requests are accepted on any day';
+        }
+
+        $day = str_replace('every ', '', $this->withdrawalDayLabel($frequency, $policy));
+
+        return ($policy['withdrawal_day_mode'] ?? 'selected_day') === 'before_selected_day'
+            ? 'Requests are accepted before '.$day
+            : 'Requests are accepted only on '.$day;
     }
 
     private function customerFrequency(Request $request, array $settings): string

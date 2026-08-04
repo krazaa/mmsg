@@ -12,6 +12,7 @@
                     $withdrawalPolicy = \App\Models\WithdrawalSetting::policy($withdrawalFrequency);
                     $withdrawalDays = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'];
                     $withdrawalDay = $withdrawalDays[$withdrawalPolicy['withdrawal_day'] ?? 0] ?? 'Any day';
+                    $withdrawalDayMode = ($withdrawalPolicy['withdrawal_day_mode'] ?? 'selected_day') === 'before_selected_day' ? 'Before' : 'Only on';
                 @endphp
                 <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="customer-theme-account-hero relative bg-gradient-to-r from-slate-950 via-indigo-950 to-indigo-800 px-5 py-6 text-white sm:px-8 sm:py-7">
@@ -71,7 +72,7 @@
                                 </div>
                                 <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
                                     <div class="min-w-0 text-[10px] font-black uppercase tracking-wider text-slate-400">Withdrawal day</div>
-                                    <span class="max-w-[60%] break-words rounded-full bg-indigo-100 px-3 py-1.5 text-right text-xs font-black tracking-wider text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">{{ $withdrawalDay }}</span>
+                                    <span class="max-w-[60%] break-words rounded-full bg-indigo-100 px-3 py-1.5 text-right text-xs font-black tracking-wider text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">{{ $withdrawalDay === 'Any day' ? $withdrawalDay : $withdrawalDayMode.' '.$withdrawalDay }}</span>
                                 </div>
                             </div>
                         </section>

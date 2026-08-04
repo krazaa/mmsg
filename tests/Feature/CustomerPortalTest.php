@@ -267,9 +267,21 @@ class CustomerPortalTest extends TestCase
             'account_number' => 'PK00TEST123',
         ])->assertSessionHasErrors('withdrawal_pin');
         $this->assertSame(1, $user->refresh()->withdrawal_pin_failed_attempts);
-        $closedWeekday = now()->isoWeekday();
+        $selectedWeekday = now()->isoWeekday() === 7 ? 1 : now()->isoWeekday() + 1;
         WithdrawalSetting::where('frequency', 'weekly')->firstOrFail()->update([
-            'withdrawal_day' => $closedWeekday,
+            'withdrawal_day' => $selectedWeekday,
+            'withdrawal_day_mode' => 'selected_day',
+        ]);
+        $this->actingAs($user)->post(route('customer.withdrawals.store'), [
+            'amount' => 500,
+            'withdrawal_pin' => '2468',
+            'payment_method' => 'bank_transfer',
+            'account_title' => 'Portal Customer',
+            'account_number' => 'PK00TEST123',
+        ])->assertSessionHasErrors('amount');
+        WithdrawalSetting::where('frequency', 'weekly')->firstOrFail()->update([
+            'withdrawal_day' => now()->isoWeekday(),
+            'withdrawal_day_mode' => 'before_selected_day',
         ]);
         $this->actingAs($user)->post(route('customer.withdrawals.store'), [
             'amount' => 500,
@@ -288,7 +300,7 @@ class CustomerPortalTest extends TestCase
             'payment_method' => 'bank_transfer',
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
-        ])->assertSessionHasErrors('amount');
+        ])->dumpSession()->assertSessionHasErrors('amount');
         WithdrawalSetting::where('frequency', 'weekly')->firstOrFail()->update(['maximum_amount' => 0]);
         WithdrawalSetting::query()->update([
             'fee_enabled' => true,
@@ -315,9 +327,9 @@ class CustomerPortalTest extends TestCase
         $this->actingAs($admin)->put(route('withdrawal-settings.update'), [
             'frequency' => 'monthly',
             'policies' => [
-                'daily' => ['request_limit' => 1, 'withdrawal_day' => 2, 'minimum_amount' => 100, 'maximum_amount' => 500],
-                'weekly' => ['request_limit' => 2, 'withdrawal_day' => 5, 'minimum_amount' => 200, 'maximum_amount' => 1000],
-                'monthly' => ['request_limit' => 3, 'withdrawal_day' => 7, 'minimum_amount' => 300, 'maximum_amount' => 1500],
+                'daily' => ['request_limit' => 1, 'withdrawal_day' => 2, 'withdrawal_day_mode' => 'selected_day', 'minimum_amount' => 100, 'maximum_amount' => 500],
+                'weekly' => ['request_limit' => 2, 'withdrawal_day' => 5, 'withdrawal_day_mode' => 'before_selected_day', 'minimum_amount' => 200, 'maximum_amount' => 1000],
+                'monthly' => ['request_limit' => 3, 'withdrawal_day' => 7, 'withdrawal_day_mode' => 'selected_day', 'minimum_amount' => 300, 'maximum_amount' => 1500],
             ],
         ])->assertRedirect()->assertSessionHas('success');
         $this->assertSame('monthly', $user->refresh()->withdrawal_frequency);
@@ -335,13 +347,14 @@ class CustomerPortalTest extends TestCase
         $this->assertSame([
             'frequency' => 'monthly',
             'policies' => [
-                'daily' => ['request_limit' => 1, 'withdrawal_day' => 2, 'minimum_amount' => 100.0, 'maximum_amount' => 500.0],
-                'weekly' => ['request_limit' => 2, 'withdrawal_day' => 5, 'minimum_amount' => 200.0, 'maximum_amount' => 1000.0],
-                'monthly' => ['request_limit' => 3, 'withdrawal_day' => 7, 'minimum_amount' => 300.0, 'maximum_amount' => 1500.0],
+                'daily' => ['request_limit' => 1, 'withdrawal_day' => 2, 'withdrawal_day_mode' => 'selected_day', 'minimum_amount' => 100.0, 'maximum_amount' => 500.0],
+                'weekly' => ['request_limit' => 2, 'withdrawal_day' => 5, 'withdrawal_day_mode' => 'before_selected_day', 'minimum_amount' => 200.0, 'maximum_amount' => 1000.0],
+                'monthly' => ['request_limit' => 3, 'withdrawal_day' => 7, 'withdrawal_day_mode' => 'selected_day', 'minimum_amount' => 300.0, 'maximum_amount' => 1500.0],
             ],
             'fee' => ['enabled' => true, 'type' => 'fixed', 'value' => 25.0],
             'pin_recovery_enabled' => true,
         ], WithdrawalSetting::settings());
+        WithdrawalSetting::where('frequency', 'monthly')->update(['withdrawal_day' => null]);
         $this->actingAs($admin)->get(route('withdrawal-settings.edit'))
             ->assertOk()
             ->assertSee('Withdrawal settings')
@@ -378,7 +391,7 @@ class CustomerPortalTest extends TestCase
             'payment_method' => 'bank_transfer',
             'account_title' => 'Portal Customer',
             'account_number' => 'PK00TEST123',
-        ])->assertSessionHasErrors('amount');
+        ])->dumpSession()->assertSessionHasErrors('amount');
         $withdrawal = WithdrawalRequest::firstOrFail();
         $this->actingAs($admin)->patch(route('withdrawal-requests.review', $withdrawal), [
             'decision' => 'paid',
@@ -399,7 +412,7 @@ class CustomerPortalTest extends TestCase
         ];
         foreach (range(1, 4) as $attempt) {
             $this->actingAs($user)->post(route('customer.withdrawals.store'), $wrongPinRequest)
-                ->assertSessionHasErrors('withdrawal_pin');
+                ->dumpSession()->assertSessionHasErrors('withdrawal_pin');
         }
         $user->refresh();
         $this->assertSame(4, $user->withdrawal_pin_failed_attempts);
