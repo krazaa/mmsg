@@ -56,7 +56,7 @@ class PlotPackageController extends Controller
     {
         $data = $this->validated($request);
         $package = PlotPackage::create($this->attributes($data));
-        foreach (['cash', 'installment'] as $paymentPlan) {
+        foreach (['cash', 'first_payment', 'installment'] as $paymentPlan) {
             foreach ([1 => 5, 2 => 3, 3 => 2] as $level => $percentage) {
                 $package->commissionRules()->create(compact('level', 'percentage') + ['payment_plan' => $paymentPlan, 'status' => true]);
             }

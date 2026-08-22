@@ -17,7 +17,7 @@
         ['label' => 'Plots', 'route' => 'plots.index', 'active' => 'plots.*', 'permission' => 'manage allotments', 'color' => 'bg-indigo-500'],
         ['label' => 'Plot allotments & inventory', 'route' => 'allotments.index', 'active' => 'allotments.*', 'permission' => 'manage allotments', 'color' => 'bg-lime-400'],
         ['label' => 'Packages', 'route' => 'packages.index', 'active' => 'packages.*', 'permission' => 'manage packages', 'color' => 'bg-violet-400'],
-        ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400'],
+        ['label' => 'Commissions', 'route' => 'commission-rules.index', 'active' => 'commission-rules.*', 'permission' => 'manage commissions', 'color' => 'bg-amber-400', 'hide_from_staff' => true],
         ['label' => 'Withdrawal settings', 'route' => 'withdrawal-settings.edit', 'active' => 'withdrawal-settings.*', 'permission' => 'manage withdrawals', 'color' => 'bg-teal-400'],
         ['label' => 'Announcement popup', 'route' => 'customer-announcement.edit', 'active' => 'customer-announcement.*', 'permission' => 'manage commissions', 'color' => 'bg-orange-400'],
         ['label' => 'App settings', 'route' => 'app-settings.edit', 'active' => 'app-settings.*', 'permission' => 'manage commissions', 'color' => 'bg-indigo-400'],
@@ -83,7 +83,7 @@
                 <div x-show="settingsOpen && (sidebarOpen || sidebarExpanded || sidebarHover)" x-transition class="ml-7 mt-1 space-y-1 border-l border-indigo-400/25 pl-3">
                     @foreach($settingsItems as $setting)
                         @php($settingIsActive = $isSettingActive($setting))
-                        @if(!($setting['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin')
+                        @if((!($setting['hide_from_staff'] ?? false) || Auth::user()->role !== 'staff') && (!($setting['super_admin_only'] ?? false) || Auth::user()->role === 'super_admin'))
                             @can($setting['permission'])
                             <a href="{{ route($setting['route'], $setting['params'] ?? []).(isset($setting['fragment']) ? '#'.$setting['fragment'] : '') }}" @click="sidebarOpen = false" class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $settingIsActive ? 'bg-white text-indigo-950 shadow-md' : 'text-indigo-200/70 hover:bg-white/10 hover:text-white' }}">
                                 <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $setting['color'] }} {{ $settingIsActive ? 'ring-4 ring-indigo-100' : '' }}"></span>

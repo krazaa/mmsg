@@ -126,7 +126,7 @@ class CustomerPaymentSubmissionTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
         $project = Project::create(['name' => 'Test', 'slug' => 'payment-test', 'location' => 'Test', 'gross_area_marla' => 1000, 'saleable_area_marla' => 1000]);
         $package = PlotPackage::create(['project_id' => $project->id, 'name' => 'Plan', 'size_marla' => 5, 'booking_amount' => 100000, 'months' => 12, 'monthly_amount' => 25000, 'month_12_balloon' => 0, 'month_24_balloon' => 0, 'month_36_balloon' => 0]);
-        CommissionRule::create(['package_id' => $package->id, 'level' => 1, 'percentage' => 5, 'status' => true]);
+        CommissionRule::create(['package_id' => $package->id, 'payment_plan' => 'installment', 'level' => 1, 'percentage' => 5, 'status' => true]);
         $agent = User::factory()->create(['role' => 'customer', 'status' => true]);
         $customerUser->update(['role' => 'customer', 'name' => 'Customer', 'cnic' => '11111-1111111-1', 'phone' => '0300', 'referral_code' => 'REF-PAY']);
         $customer = Customer::findOrFail($customerUser->id);

@@ -31,8 +31,10 @@ class TestDatabaseSeeder extends Seeder
                 'booking_amount' => 350000, 'months' => 36, 'monthly_amount' => 50000,
                 'month_12_balloon' => 150000, 'month_24_balloon' => 250000, 'month_36_balloon' => 350000, 'status' => true,
             ]);
-            foreach ([1 => 5, 2 => 3, 3 => 2] as $level => $percentage) {
-                CommissionRule::create(['package_id' => $package->id, 'level' => $level, 'percentage' => $percentage, 'status' => true]);
+            foreach (['cash', 'first_payment', 'installment'] as $paymentPlan) {
+                foreach ([1 => 5, 2 => 3, 3 => 2] as $level => $percentage) {
+                    CommissionRule::create(['package_id' => $package->id, 'payment_plan' => $paymentPlan, 'level' => $level, 'percentage' => $percentage, 'status' => true]);
+                }
             }
         }
 

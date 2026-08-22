@@ -17,6 +17,7 @@ class Commission extends Model
         return [
             'amount' => 'decimal:2',
             'paid_amount' => 'decimal:2',
+            'fixed_amount' => 'decimal:2',
         ];
     }
 

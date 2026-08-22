@@ -167,8 +167,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('customers', CustomerController::class)->middleware('permission:manage customers');
         Route::resource('staff', StaffController::class)->except('show')->parameters(['staff' => 'staff'])->middleware('permission:manage staff');
         Route::post('/customers/{customer}/commission-payouts', [CustomerCommissionPayoutController::class, 'store'])->middleware('permission:manage commissions')->name('customers.commission-payouts.store');
-        Route::get('/commission-rules', [CommissionRuleController::class, 'index'])->middleware('permission:manage commissions')->name('commission-rules.index');
-        Route::put('/commission-rules/{package}', [CommissionRuleController::class, 'update'])->middleware('permission:manage commissions')->name('commission-rules.update');
+        Route::get('/commission-rules', [CommissionRuleController::class, 'index'])->middleware(['permission:manage commissions', 'role:super_admin|admin'])->name('commission-rules.index');
+        Route::put('/commission-rules/{package}', [CommissionRuleController::class, 'update'])->middleware(['permission:manage commissions', 'role:super_admin|admin'])->name('commission-rules.update');
         Route::resource('packages', PlotPackageController::class)->except('show')->parameters(['packages' => 'package'])->middleware('permission:manage packages');
         Route::get('/allotments', [PlotAllotmentController::class, 'index'])->middleware('permission:manage allotments')->name('allotments.index');
         Route::post('/inventory/plots', [PlotAllotmentController::class, 'storeInventory'])->middleware('permission:manage allotments')->name('inventory.plots.store');

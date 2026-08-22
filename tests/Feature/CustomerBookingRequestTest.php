@@ -33,7 +33,7 @@ class CustomerBookingRequestTest extends TestCase
         $customer = Customer::findOrFail($customerUser->id);
         $project = Project::create(['name' => 'New Project', 'slug' => 'new-project', 'location' => 'Abbottabad', 'gross_area_marla' => 1000, 'saleable_area_marla' => 1000, 'status' => true]);
         $package = PlotPackage::create(['project_id' => $project->id, 'name' => '10 Marla', 'size_marla' => 10, 'booking_amount' => 200000, 'months' => 12, 'monthly_amount' => 50000, 'month_12_balloon' => 0, 'month_24_balloon' => 0, 'month_36_balloon' => 0, 'status' => true]);
-        CommissionRule::create(['package_id' => $package->id, 'level' => 1, 'percentage' => 5, 'status' => true]);
+        CommissionRule::create(['package_id' => $package->id, 'payment_plan' => 'first_payment', 'level' => 1, 'percentage' => 5, 'status' => true]);
         $fullProject = Project::create(['name' => 'Sold Out Project', 'slug' => 'sold-out-project', 'location' => 'Abbottabad', 'gross_area_marla' => 100, 'saleable_area_marla' => 100, 'sold_area_marla' => 100, 'status' => true]);
         PlotPackage::create(['project_id' => $fullProject->id, 'name' => 'Sold Out Plan', 'size_marla' => 5, 'booking_amount' => 100000, 'months' => 12, 'monthly_amount' => 10000, 'month_12_balloon' => 0, 'month_24_balloon' => 0, 'month_36_balloon' => 0, 'status' => true]);
 

@@ -18,8 +18,12 @@ class CommissionService implements CommissionDistributor
             $booking->update(['agent_id' => $beneficiary]);
         }
 
+        $commissionType = $booking->payment_plan === 'cash'
+            ? 'cash'
+            : ($payment->installment_schedule_id === null ? 'first_payment' : 'installment');
+
         $rules = CommissionRule::query()->where('package_id', $booking->package_id)
-            ->where('payment_plan', $booking->payment_plan === 'cash' ? 'cash' : 'installment')
+            ->where('payment_plan', $commissionType)
             ->where('status', true)->orderBy('level')->limit(3)->get();
 
         foreach ($rules as $rule) {
@@ -33,7 +37,11 @@ class CommissionService implements CommissionDistributor
                     'booking_id' => $booking->id,
                     'beneficiary_id' => $beneficiary,
                     'percentage' => $rule->percentage,
-                    'amount' => (float) $payment->amount * (float) $rule->percentage / 100,
+                    'calculation_type' => $rule->calculation_type,
+                    'fixed_amount' => $rule->fixed_amount,
+                    'amount' => $rule->calculation_type === 'fixed'
+                        ? (float) $rule->fixed_amount
+                        : (float) $payment->amount * (float) $rule->percentage / 100,
                     'status' => 'earned',
                 ]
             );
